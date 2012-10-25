@@ -163,6 +163,55 @@ class Handlebars_Engine
     }
 
     /**
+     * Add a new helper.
+     *
+     * @param string $name   helper name
+     * @param mixed  $helper helper callable
+     *
+     * @return void
+     */
+    public function addHelper($name, $helper)
+    {
+        $this->getHelpers()->add($name, $helper);
+    }
+
+    /**
+     * Get a helper by name.
+     *
+     * @param string $name helper name
+     *
+     * @return callable Helper
+     */
+    public function getHelper($name)
+    {
+        return $this->getHelpers()->get($name);
+    }
+
+    /**
+     * Check whether this instance has a helper.
+     *
+     * @param string $name helper name
+     *
+     * @return boolean True if the helper is present
+     */
+    public function hasHelper($name)
+    {
+        return $this->getHelpers()->has($name);
+    }
+
+    /**
+     * Remove a helper by name.
+     *
+     * @param string $name helper name
+     *
+     * @return void
+     */
+    public function removeHelper($name)
+    {
+        $this->getHelpers()->remove($name);
+    }
+
+    /**
      * Set current loader 
      * 
      * @param Handlebars_Loader $loader handlebars loader
