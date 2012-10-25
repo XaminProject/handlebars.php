@@ -1,0 +1,13 @@
+{
+    "name": "xamin/handlebars.php",
+    "description": "Handlebars processor for php",
+    "authors": [
+        {
+            "name": "fzerorubigd",
+            "email": "fzerorubigd@gmail.com"
+        }
+    ],
+    "require": {
+
+    }
+}
