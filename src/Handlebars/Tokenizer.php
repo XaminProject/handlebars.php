@@ -21,11 +21,13 @@
 /**
  * Handlebars parser (infact its a mustache parser)
  * This class is responsible for turning raw template source into a set of Mustache tokens.
+ * Some minor changes to handle Handlebars instead of Mustache
  * 
  * @category  Xamin
  * @package   Handlebars
  * @author    Justin Hileman <dontknow@example.org>
  * @copyright 2012 Justin Hileman
+ * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @license   MIT <http://opensource.org/licenses/mit-license.php>
  * @version   Release: @package_version@
  * @link      http://xamin.ir
@@ -40,7 +42,7 @@ class Handlebars_Tokenizer
 
     // Token types
     const T_SECTION      = '#';
-    const T_INVERTED     = '^'; //Must remove this
+    //const T_INVERTED     = '^'; //Must remove this
     const T_END_SECTION  = '/';
     const T_COMMENT      = '!';
     const T_PARTIAL      = '>'; //Maybe remove this partials and replace them with helpers
@@ -54,7 +56,7 @@ class Handlebars_Tokenizer
     // Valid token types
     private static $_tagTypes = array(
         self::T_SECTION      => true,
-        self::T_INVERTED     => true,
+        //self::T_INVERTED     => true,
         self::T_END_SECTION  => true,
         self::T_COMMENT      => true,
         self::T_PARTIAL      => true,
@@ -154,7 +156,8 @@ class Handlebars_Tokenizer
 
             default:
                 if ($this->tagChange($this->ctag, $text, $i)) {
-                    if ($this->tagType == self::T_SECTION || $this->tagType == self::T_INVERTED) {
+                    // Sections (Helpers) can accept parameters
+                    if ($this->tagType == self::T_SECTION /*|| $this->tagType == self::T_INVERTED*/) {
                         $newBuffer = explode(' ', trim($this->buffer), 2);
                         $args = '';
                         if (count($newBuffer) == 2) {
