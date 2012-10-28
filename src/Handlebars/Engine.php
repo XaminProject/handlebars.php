@@ -54,7 +54,7 @@ class Handlebars_Engine
     /**
      * @var Handlebars_Loader
      */ 
-    private $_partialLoader;
+    private $_partialsLoader;
 
     /**
      * @var Handlebars_Cache
@@ -80,7 +80,7 @@ class Handlebars_Engine
      * escape         => a callable function to escape values
      * escapeArgs     => array to pass as extra parameter to escape function
      * loader         => Handlebars_Loader object
-     * partial_loader => Handlebars_Loader object
+     * partials_loader => Handlebars_Loader object
      * cache          => Handlebars_Cache object
      *
      * @param array $options array of options to set
@@ -95,8 +95,8 @@ class Handlebars_Engine
             $this->setLoader($options['loader']);
         }            
 
-        if (isset($options['partial_loader'])) {
-            $this->setPartialLoader($options['partial_loader']);
+        if (isset($options['partials_loader'])) {
+            $this->setPartialsLoader($options['partials_loader']);
         }   
 
         if (isset($options['cache'])) {
@@ -237,28 +237,28 @@ class Handlebars_Engine
     }
 
     /**
-     * Set current partial loader 
+     * Set current partials loader 
      * 
      * @param Handlebars_Loader $loader handlebars loader
      * 
      * @return void
      */
-    public function setPartialLoader(Handlebars_Loader $loader)
+    public function setPartialsLoader(Handlebars_Loader $loader)
     {
-        $this->_partialLoader = $loader;
+        $this->_partialsLoader = $loader;
     }
 
     /**
-     * get current partial loader 
+     * get current partials loader 
      *
      * @return Handlebars_Loader
      */
-    public function getPartialLoader()
+    public function getPartialsLoader()
     {
-        if (!isset($this->_partialLoader)) {
-            $this->_partialLoader = new Handlebars_Loader_StringLoader();
+        if (!isset($this->_partialsLoader)) {
+            $this->_partialsLoader = new Handlebars_Loader_StringLoader();
         }            
-        return $this->_partialLoader;
+        return $this->_partialsLoader;
     }
 
     /**
