@@ -110,11 +110,11 @@ class Handlebars_Template
             $index++;
             switch ($current[Handlebars_Tokenizer::TYPE]) {
             case Handlebars_Tokenizer::T_SECTION :
-                array_push($this->_stack, array(0, $current[Handlebars_Tokenizer::NODES]));
+                $newStack = isset($current[Handlebars_Tokenizer::NODES]) ? $current[Handlebars_Tokenizer::NODES] : array();
+                array_push($this->_stack, array(0, $newStack));
                 $buffer .= $this->_section($context, $current);
                 array_pop($this->_stack);
                 break;
-            case Handlebars_Tokenizer::T_INVERTED : //TODO: This has no effect, remove the whole ^ thing!
             case Handlebars_Tokenizer::T_COMMENT : 
                 $buffer .= '';
                 break;
@@ -152,11 +152,15 @@ class Handlebars_Template
         $helpers = $this->handlebars->getHelpers();
         $sectionName = $current[Handlebars_Tokenizer::NAME];
         if ($helpers->has($sectionName)) {
-            $source = substr(
-                $this->getSource(),
-                $current[Handlebars_Tokenizer::INDEX],
-                $current[Handlebars_Tokenizer::END] - $current[Handlebars_Tokenizer::INDEX]
-            );
+            if (isset($current[Handlebars_Tokenizer::END])) {
+                $source = substr(
+                    $this->getSource(),
+                    $current[Handlebars_Tokenizer::INDEX],
+                    $current[Handlebars_Tokenizer::END] - $current[Handlebars_Tokenizer::INDEX]
+                );
+            } else {
+                $source = '';
+            }    
             $params = array(
                 $this,  //First argument is this template
                 $context, //Secound is current context
