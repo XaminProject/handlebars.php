@@ -8,6 +8,7 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @license   GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
  * @version   GIT: $Id$
@@ -21,6 +22,7 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @license   GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
  * @version   Release: @package_version@
@@ -125,7 +127,7 @@ class Handlebars_Context
         } else {
             $chunks = explode('.', $variableName);
             foreach ($chunks as $chunk) {
-                if ($current == '') {
+                if (is_string($current) and $current == '') {
                     return $current;
                 }
                 $current = $this->_findVariableInContext($current, $chunk);
