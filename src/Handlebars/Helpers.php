@@ -45,7 +45,7 @@ class Handlebars_Helpers
      *
      * @throw InvalidArgumentException when $helpers is not an array (or traversable) or helper is not a caallable
      */
-    public function  __construct($helpers = null, $defaults = true)
+    public function __construct($helpers = null, $defaults = true)
     {
         if ($defaults) {
             $this->addDefaultHelpers();
@@ -68,8 +68,7 @@ class Handlebars_Helpers
     {
         $this->add(
             'if', 
-            function ($template, $context, $args, $source) 
-            {
+            function ($template, $context, $args, $source) {
                 $tmp = $context->get($args);
                 $buffer = '';
                 if ($tmp) {
@@ -81,8 +80,7 @@ class Handlebars_Helpers
 
         $this->add(
             'each', 
-            function($template, $context, $args, $source) 
-            {
+            function ($template, $context, $args, $source) {
                 $tmp = $context->get($args);
                 $buffer = '';
                 if (is_array($tmp) || $tmp instanceof Traversable) {
@@ -98,8 +96,7 @@ class Handlebars_Helpers
 
         $this->add(
             'unless', 
-            function ($template, $context, $args, $source) 
-            {
+            function ($template, $context, $args, $source) {
                 $tmp = $context->get($args);
                 $buffer = '';
                 if (!$tmp) {
@@ -111,8 +108,7 @@ class Handlebars_Helpers
 
         $this->add(
             'with', 
-            function ($template, $context, $args, $source) 
-            {
+            function ($template, $context, $args, $source) {
                 $tmp = $context->get($args);
                 $context->push($tmp);
                 $buffer = $template->render($context);
@@ -120,6 +116,14 @@ class Handlebars_Helpers
                 return $buffer;
             }
         );       
+        
+        //Just for compatibility with ember
+        $this->add(
+            'bindAttr',
+            function ($template, $context, $args, $source) {
+                return $args;
+            }
+        );
     }
 
     /**
