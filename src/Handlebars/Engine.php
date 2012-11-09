@@ -413,7 +413,7 @@ class Handlebars_Engine
      */
     public function loadPartial($name)
     {
-        $source = $this->getPartialLoader()->load($name);
+        $source = $this->getPartialsLoader()->load($name);
         $tree = $this->_tokenize($source);
         return new Handlebars_Template($this, $tree, $source);
     }
