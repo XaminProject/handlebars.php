@@ -138,7 +138,7 @@ class Handlebars_Context
                 if (is_string($current) and $current == '') {
                     return $current;
                 }
-                $current = $this->_findVariableInContext($current, $chunk);
+                $current = $this->_findVariableInContext($current, $chunk, $strict);
             }
         }
         return $current;
