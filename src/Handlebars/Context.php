@@ -98,11 +98,13 @@ class Handlebars_Context
      * Supported types : 
      * variable , ../variable , variable.variable , .
      * 
-     * @param string $variableName variavle name to get from current context
+     * @param string  $variableName variavle name to get from current context
+     * @param boolean $strict       strict search? if not found then throw exception
      *
      * @return mixed
+     * @throw InvalidArgumentException in strict mode and variable not found
      */
-    public function get($variableName)
+    public function get($variableName, $strict = false)
     {
         //Need to clean up
         $variableName = trim($variableName);
@@ -112,6 +114,9 @@ class Handlebars_Context
             $level++;
         }
         if (count($this->stack) < $level) {
+            if ($strict) {
+                throw new InvalidArgumentException('can not find variable in context');
+            }                
             return '';
         }
         end($this->stack);
@@ -121,6 +126,9 @@ class Handlebars_Context
         }
         $current = current($this->stack);
         if (!$variableName) {
+            if ($strict) {
+                throw new InvalidArgumentException('can not find variable in context');
+            }                
             return '';
         } elseif ($variableName == '.') {
             return $current;
@@ -139,12 +147,14 @@ class Handlebars_Context
     /**
      * Check if $variable->$inside is available
      *
-     * @param mixed  $variable variable to check
-     * @param string $inside   property/method to check
+     * @param mixed   $variable variable to check
+     * @param string  $inside   property/method to check
+     * @param boolean $strict   strict search? if not found then throw exception
      *
      * @return boolean true if exist
+     * @throw InvalidArgumentException in strict mode and variable not found
      */ 
-    private function _findVariableInContext($variable, $inside)
+    private function _findVariableInContext($variable, $inside, $strict = false)
     {
         $value = '';
         if (is_array($variable)) {
@@ -159,6 +169,8 @@ class Handlebars_Context
             }                
         } elseif ($inside === '.') {
             $value = $variable;
+        } elseif ($strict) {
+            throw new InvalidArgumentException('can not find variable in context');
         }
         return $value;
     }

@@ -168,6 +168,29 @@ class Handlebars_Template
                 $source
                 );
             return call_user_func_array($helpers->$sectionName, $params);
+        } elseif (trim($current[Handlebars_Tokenizer::ARGS]) == '') { 
+            //Fallback for mustache style each/with/for just if there is no argument at all.
+            try {
+                $sectionVar = $context->get($sectionName, true);
+            } catch (InvalidArgumentException $e) {
+                throw new RuntimeException($sectionName . ' is not registered as a helper');            
+            }
+            $buffer = '';
+            if (is_array($sectionVar) || $sectionVar instanceof Traversable) {
+                foreach ($sectionVar as $d) {
+                    $context->push($d);
+                    $buffer .= $this->render($context);
+                    $context->pop();
+                }
+            } elseif (is_object($sectionVar)) {
+                //Act like with 
+                $context->push($sectionVar);
+                $buffer = $this->render($context);
+                $context->pop();
+            } elseif ($sectionVar) {
+                $buffer = $this->render($context);
+            }
+            return $buffer;
         } else {
             throw new RuntimeException($sectionName . ' is not registered as a helper');
         }                    
