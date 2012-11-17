@@ -79,7 +79,7 @@ class Handlebars_Helpers
                     $template->discard($context);
                 } else {
                     $template->setStopToken('else');
-                    $template->discard($context, 'else');
+                    $template->discard($context);
                     $template->setStopToken(false);
                     $buffer = $template->render($context);
                 }
