@@ -44,6 +44,8 @@ class Handlebars_Template
      * @var array Run stack
      */
     private $_stack = array();
+
+    private $_stopToken = false;
     /**
      * Handlebars template constructor
      *
@@ -88,16 +90,38 @@ class Handlebars_Template
     {
         return $this->handlebars;
     }
+    
+    /**
+     * set stop token for render and discard method
+     *
+     * @param string $token token to set as stop token or false to remove
+     * 
+     * @return void 
+     */
 
+    public function setStopToken($token)
+    {
+        $this->_stopToken = $token;
+    }
+    
+    /**
+     * get current stop token 
+     *
+     * @return string|false 
+     */
+
+    public function getStopToken()
+    {
+        return $this->_stopToken;
+    }        
     /**
      * Render top tree
      *
-     * @param mixed  $context current context
-     * @param string $waitFor return on this string
+     * @param mixed $context current context
      *
      * @return string
      */
-    public function render($context, $waitFor = false)
+    public function render($context)
     {
         if (!$context instanceof Handlebars_Context) {
             $context = new Handlebars_Context($context);
@@ -110,16 +134,16 @@ class Handlebars_Template
             $current = $tree[$index];
             $index++;
             //if the section is exactly like waitFor 
-            if (is_string($waitFor) 
-				&& $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
-				&& $current[Handlebars_Tokenizer::NAME] === $waitFor
-			) {
-				//Ok break here, the helper should be aware of this.
-				$newStack = array_pop($this->_stack);
-				$newStack[0] = $index;
-				array_push($this->_stack, $newStack);
-				break;
-			}
+            if (is_string($this->_stopToken) 
+                && $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
+                && $current[Handlebars_Tokenizer::NAME] === $this->_stopToken
+            ) {
+                //Ok break here, the helper should be aware of this.
+                $newStack = array_pop($this->_stack);
+                $newStack[0] = $index;
+                array_push($this->_stack, $newStack);
+                break;
+            }
             switch ($current[Handlebars_Tokenizer::TYPE]) {
             case Handlebars_Tokenizer::T_SECTION :
                 $newStack = isset($current[Handlebars_Tokenizer::NODES]) ? $current[Handlebars_Tokenizer::NODES] : array();
@@ -154,12 +178,11 @@ class Handlebars_Template
     /**
      * Discard top tree
      *
-     * @param mixed  $context current context
-     * @param string $waitFor return on this string
+     * @param mixed $context current context
      *
      * @return string
      */
-    public function discard($context, $waitFor = false)
+    public function discard($context)
     {
         if (!$context instanceof Handlebars_Context) {
             $context = new Handlebars_Context($context);
@@ -171,17 +194,17 @@ class Handlebars_Template
             $current = $tree[$index];
             $index++;
             //if the section is exactly like waitFor 
-            if (is_string($waitFor) 
-				&& $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
-				&& $current[Handlebars_Tokenizer::NAME] === $waitFor
-			) {
-				//Ok break here, the helper should be aware of this.
-				$newStack = array_pop($this->_stack);
-				$newStack[0] = $index;
-				array_push($this->_stack, $newStack);				
-				break;
-			}
-		}
+            if (is_string($this->_stopToken) 
+                && $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
+                && $current[Handlebars_Tokenizer::NAME] === $this->_stopToken
+            ) {
+                //Ok break here, the helper should be aware of this.
+                $newStack = array_pop($this->_stack);
+                $newStack[0] = $index;
+                array_push($this->_stack, $newStack);                
+                break;
+            }
+        }
         return '';
     }    
 

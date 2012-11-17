@@ -71,11 +71,16 @@ class Handlebars_Helpers
             function ($template, $context, $args, $source) {
                 $tmp = $context->get($args);
                 $buffer = '';
+                
                 if ($tmp) {
-                    $buffer = $template->render($context, 'else');
+                    $template->setStopToken('else');
+                    $buffer = $template->render($context);
+                    $template->setStopToken(false);
                     $template->discard($context);
                 } else {
+                    $template->setStopToken('else');
                     $template->discard($context, 'else');
+                    $template->setStopToken(false);
                     $buffer = $template->render($context);
                 }
                 return $buffer;
