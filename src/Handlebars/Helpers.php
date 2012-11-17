@@ -70,14 +70,13 @@ class Handlebars_Helpers
             'if', 
             function ($template, $context, $args, $source) {
                 $tmp = $context->get($args);
-                $parts = explode('{{else}}', $source, 2);
                 $buffer = '';
                 if ($tmp) {
-                    $buffer = $template->getEngine()->render($parts[0], $context);
+                    $buffer = $template->render($context, 'else');
+                    $template->discard($context);
                 } else {
-                    if (isset($parts[1])) {
-                        $buffer = $template->getEngine()->render($parts[1], $context);
-                    }
+                    $template->discard($context, 'else');
+                    $buffer = $template->render($context);
                 }
                 return $buffer;
             }

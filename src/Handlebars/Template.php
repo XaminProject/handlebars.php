@@ -92,11 +92,12 @@ class Handlebars_Template
     /**
      * Render top tree
      *
-     * @param mixed $context current context
+     * @param mixed  $context current context
+     * @param string $waitFor return on this string
      *
      * @return string
      */
-    public function render($context)
+    public function render($context, $waitFor = false)
     {
         if (!$context instanceof Handlebars_Context) {
             $context = new Handlebars_Context($context);
@@ -108,6 +109,17 @@ class Handlebars_Template
         while (array_key_exists($index, $tree)) {
             $current = $tree[$index];
             $index++;
+            //if the section is exactly like waitFor 
+            if (is_string($waitFor) 
+				&& $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
+				&& $current[Handlebars_Tokenizer::NAME] === $waitFor
+			) {
+				//Ok break here, the helper should be aware of this.
+				$newStack = array_pop($this->_stack);
+				$newStack[0] = $index;
+				array_push($this->_stack, $newStack);
+				break;
+			}
             switch ($current[Handlebars_Tokenizer::TYPE]) {
             case Handlebars_Tokenizer::T_SECTION :
                 $newStack = isset($current[Handlebars_Tokenizer::NODES]) ? $current[Handlebars_Tokenizer::NODES] : array();
@@ -138,6 +150,40 @@ class Handlebars_Template
         }
         return $buffer;
     }
+    
+    /**
+     * Discard top tree
+     *
+     * @param mixed  $context current context
+     * @param string $waitFor return on this string
+     *
+     * @return string
+     */
+    public function discard($context, $waitFor = false)
+    {
+        if (!$context instanceof Handlebars_Context) {
+            $context = new Handlebars_Context($context);
+        }            
+        $topTree = end($this->_stack); //This method never pop a value from stack
+        list($index ,$tree) = $topTree;
+
+        while (array_key_exists($index, $tree)) {
+            $current = $tree[$index];
+            $index++;
+            //if the section is exactly like waitFor 
+            if (is_string($waitFor) 
+				&& $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
+				&& $current[Handlebars_Tokenizer::NAME] === $waitFor
+			) {
+				//Ok break here, the helper should be aware of this.
+				$newStack = array_pop($this->_stack);
+				$newStack[0] = $index;
+				array_push($this->_stack, $newStack);				
+				break;
+			}
+		}
+        return '';
+    }    
 
     /**
      * Process section nodes
