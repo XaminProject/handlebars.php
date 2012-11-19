@@ -168,10 +168,12 @@ class Handlebars_Template
                 throw new RuntimeException('Invalid node type : ' . json_encode($current));
             }
         }
-        //Ok break here, the helper should be aware of this.
-        $newStack = array_pop($this->_stack);
-        $newStack[0] = $index;
-        array_push($this->_stack, $newStack);        
+        if ($this->_stopToken) {
+            //Ok break here, the helper should be aware of this.
+            $newStack = array_pop($this->_stack);
+            $newStack[0] = $index;
+            array_push($this->_stack, $newStack);             
+        }       
         return $buffer;
     }
     
@@ -201,10 +203,12 @@ class Handlebars_Template
                 break;
             }
         }
-        //Ok break here, the helper should be aware of this.
-        $newStack = array_pop($this->_stack);
-        $newStack[0] = $index;
-        array_push($this->_stack, $newStack);                
+        if ($this->_stopToken) {
+            //Ok break here, the helper should be aware of this.
+            $newStack = array_pop($this->_stack);
+            $newStack[0] = $index;
+            array_push($this->_stack, $newStack);             
+        }
         return '';
     }    
 
