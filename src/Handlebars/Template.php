@@ -138,10 +138,6 @@ class Handlebars_Template
                 && $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
                 && $current[Handlebars_Tokenizer::NAME] === $this->_stopToken
             ) {
-                //Ok break here, the helper should be aware of this.
-                $newStack = array_pop($this->_stack);
-                $newStack[0] = $index;
-                array_push($this->_stack, $newStack);
                 break;
             }
             switch ($current[Handlebars_Tokenizer::TYPE]) {
@@ -172,6 +168,10 @@ class Handlebars_Template
                 throw new RuntimeException('Invalid node type : ' . json_encode($current));
             }
         }
+        //Ok break here, the helper should be aware of this.
+        $newStack = array_pop($this->_stack);
+        $newStack[0] = $index;
+        array_push($this->_stack, $newStack);        
         return $buffer;
     }
     
@@ -198,13 +198,13 @@ class Handlebars_Template
                 && $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
                 && $current[Handlebars_Tokenizer::NAME] === $this->_stopToken
             ) {
-                //Ok break here, the helper should be aware of this.
-                $newStack = array_pop($this->_stack);
-                $newStack[0] = $index;
-                array_push($this->_stack, $newStack);                
                 break;
             }
         }
+        //Ok break here, the helper should be aware of this.
+        $newStack = array_pop($this->_stack);
+        $newStack[0] = $index;
+        array_push($this->_stack, $newStack);                
         return '';
     }    
 
