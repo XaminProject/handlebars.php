@@ -45,7 +45,6 @@ class Handlebars_Template
      */
     private $_stack = array();
 
-    private $_stopToken = false;
     /**
      * Handlebars template constructor
      *
@@ -58,7 +57,7 @@ class Handlebars_Template
         $this->handlebars = $engine;
         $this->tree = $tree;
         $this->source = $source;
-        array_push($this->_stack, array (0, $this->getTree()));
+        array_push($this->_stack, array (0, $this->getTree(), false));
     }
 
     /**
@@ -101,7 +100,9 @@ class Handlebars_Template
 
     public function setStopToken($token)
     {
-        $this->_stopToken = $token;
+		$topStack = array_pop($this->_stack);
+        $topStack[2] = $token;
+        array_push($this->_stack, $topStack);
     }
     
     /**
@@ -112,7 +113,8 @@ class Handlebars_Template
 
     public function getStopToken()
     {
-        return $this->_stopToken;
+		$topStack = end($this->_stack);
+        return $topStack[2];
     }        
     /**
      * Render top tree
@@ -126,24 +128,27 @@ class Handlebars_Template
         if (!$context instanceof Handlebars_Context) {
             $context = new Handlebars_Context($context);
         }            
-        $topTree = end($this->_stack); //This method never pop a value from stack
-        list($index ,$tree) = $topTree;
+        $topTree = end($this->_stack); //This method (render) never pop a value from stack
+		if (count($topTree) < 3) {
+			print_r($topTree);die();
+		}
+        list($index ,$tree, $stop) = $topTree;
 
         $buffer = '';
         while (array_key_exists($index, $tree)) {
             $current = $tree[$index];
             $index++;
             //if the section is exactly like waitFor 
-            if (is_string($this->_stopToken) 
+            if (is_string($stop) 
                 && $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
-                && $current[Handlebars_Tokenizer::NAME] === $this->_stopToken
+                && $current[Handlebars_Tokenizer::NAME] === $stop
             ) {
                 break;
             }
             switch ($current[Handlebars_Tokenizer::TYPE]) {
             case Handlebars_Tokenizer::T_SECTION :
                 $newStack = isset($current[Handlebars_Tokenizer::NODES]) ? $current[Handlebars_Tokenizer::NODES] : array();
-                array_push($this->_stack, array(0, $newStack));
+                array_push($this->_stack, array(0, $newStack, false));
                 $buffer .= $this->_section($context, $current);
                 array_pop($this->_stack);
                 break;
@@ -168,10 +173,11 @@ class Handlebars_Template
                 throw new RuntimeException('Invalid node type : ' . json_encode($current));
             }
         }
-        if ($this->_stopToken) {
+        if ($stop) {
             //Ok break here, the helper should be aware of this.
             $newStack = array_pop($this->_stack);
             $newStack[0] = $index;
+            $newStack[2] = false; //No stop token from now on
             array_push($this->_stack, $newStack);             
         }       
         return $buffer;
@@ -190,23 +196,24 @@ class Handlebars_Template
             $context = new Handlebars_Context($context);
         }            
         $topTree = end($this->_stack); //This method never pop a value from stack
-        list($index ,$tree) = $topTree;
+        list($index ,$tree, $stop) = $topTree;
 
         while (array_key_exists($index, $tree)) {
             $current = $tree[$index];
             $index++;
             //if the section is exactly like waitFor 
-            if (is_string($this->_stopToken) 
+            if (is_string($stop) 
                 && $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
-                && $current[Handlebars_Tokenizer::NAME] === $this->_stopToken
+                && $current[Handlebars_Tokenizer::NAME] === $stop
             ) {
                 break;
             }
         }
-        if ($this->_stopToken) {
+        if ($stop) {
             //Ok break here, the helper should be aware of this.
             $newStack = array_pop($this->_stack);
             $newStack[0] = $index;
+            $newStack[0] = false;
             array_push($this->_stack, $newStack);             
         }
         return '';
