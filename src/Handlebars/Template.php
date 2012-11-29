@@ -2,9 +2,9 @@
 /**
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
- * 
+ *
  * PHP version 5.3
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -18,7 +18,7 @@
 /**
  * Handlebars base template
  * contain some utility method to get context and helpers
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -34,7 +34,7 @@ class Handlebars_Template
      * @var Handlebars_Engine
      */
     protected $handlebars;
-    
+
 
     protected $tree = array();
 
@@ -83,37 +83,37 @@ class Handlebars_Template
 
     /**
      * Get current engine associated with this object
-     * 
+     *
      * @return Handlebars_Engine
      */
     public function getEngine()
     {
         return $this->handlebars;
     }
-    
+
     /**
      * set stop token for render and discard method
      *
      * @param string $token token to set as stop token or false to remove
-     * 
-     * @return void 
+     *
+     * @return void
      */
 
     public function setStopToken($token)
     {
         $this->_stopToken = $token;
     }
-    
+
     /**
-     * get current stop token 
+     * get current stop token
      *
-     * @return string|false 
+     * @return string|false
      */
 
     public function getStopToken()
     {
         return $this->_stopToken;
-    }        
+    }
     /**
      * Render top tree
      *
@@ -125,7 +125,7 @@ class Handlebars_Template
     {
         if (!$context instanceof Handlebars_Context) {
             $context = new Handlebars_Context($context);
-        }            
+        }
         $topTree = end($this->_stack); //This method never pop a value from stack
         list($index ,$tree) = $topTree;
 
@@ -133,9 +133,9 @@ class Handlebars_Template
         while (array_key_exists($index, $tree)) {
             $current = $tree[$index];
             $index++;
-            //if the section is exactly like waitFor 
-            if (is_string($this->_stopToken) 
-                && $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
+            //if the section is exactly like waitFor
+            if (is_string($this->_stopToken)
+                && $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED
                 && $current[Handlebars_Tokenizer::NAME] === $this->_stopToken
             ) {
                 //Ok break here, the helper should be aware of this.
@@ -151,7 +151,13 @@ class Handlebars_Template
                 $buffer .= $this->_section($context, $current);
                 array_pop($this->_stack);
                 break;
-            case Handlebars_Tokenizer::T_COMMENT : 
+            case Handlebars_Tokenizer::T_INVERTED :
+                $newStack = isset($current[Handlebars_Tokenizer::NODES]) ? $current[Handlebars_Tokenizer::NODES] : array();
+                array_push($this->_stack, array(0, $newStack));
+                $buffer .= $this->_inverted($context, $current);
+                array_pop($this->_stack);
+                break;
+            case Handlebars_Tokenizer::T_COMMENT :
                 $buffer .= '';
                 break;
             case Handlebars_Tokenizer::T_PARTIAL:
@@ -174,7 +180,7 @@ class Handlebars_Template
         }
         return $buffer;
     }
-    
+
     /**
      * Discard top tree
      *
@@ -186,27 +192,27 @@ class Handlebars_Template
     {
         if (!$context instanceof Handlebars_Context) {
             $context = new Handlebars_Context($context);
-        }            
+        }
         $topTree = end($this->_stack); //This method never pop a value from stack
         list($index ,$tree) = $topTree;
 
         while (array_key_exists($index, $tree)) {
             $current = $tree[$index];
             $index++;
-            //if the section is exactly like waitFor 
-            if (is_string($this->_stopToken) 
-                && $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED 
+            //if the section is exactly like waitFor
+            if (is_string($this->_stopToken)
+                && $current[Handlebars_Tokenizer::TYPE] == Handlebars_Tokenizer::T_ESCAPED
                 && $current[Handlebars_Tokenizer::NAME] === $this->_stopToken
             ) {
                 //Ok break here, the helper should be aware of this.
                 $newStack = array_pop($this->_stack);
                 $newStack[0] = $index;
-                array_push($this->_stack, $newStack);                
+                array_push($this->_stack, $newStack);
                 break;
             }
         }
         return '';
-    }    
+    }
 
     /**
      * Process section nodes
@@ -215,7 +221,7 @@ class Handlebars_Template
      * @param array              $current section node data
      *
      * @return string the result
-     */ 
+     */
     private function _section(Handlebars_Context $context, $current)
     {
         $helpers = $this->handlebars->getHelpers();
@@ -229,7 +235,7 @@ class Handlebars_Template
                 );
             } else {
                 $source = '';
-            }    
+            }
             $params = array(
                 $this,  //First argument is this template
                 $context, //Secound is current context
@@ -237,12 +243,12 @@ class Handlebars_Template
                 $source
                 );
             return call_user_func_array($helpers->$sectionName, $params);
-        } elseif (trim($current[Handlebars_Tokenizer::ARGS]) == '') { 
+        } elseif (trim($current[Handlebars_Tokenizer::ARGS]) == '') {
             //Fallback for mustache style each/with/for just if there is no argument at all.
             try {
                 $sectionVar = $context->get($sectionName, true);
             } catch (InvalidArgumentException $e) {
-                throw new RuntimeException($sectionName . ' is not registered as a helper');            
+                throw new RuntimeException($sectionName . ' is not registered as a helper');
             }
             $buffer = '';
             if (is_array($sectionVar) || $sectionVar instanceof Traversable) {
@@ -252,7 +258,7 @@ class Handlebars_Template
                     $context->pop();
                 }
             } elseif (is_object($sectionVar)) {
-                //Act like with 
+                //Act like with
                 $context->push($sectionVar);
                 $buffer = $this->render($context);
                 $context->pop();
@@ -262,7 +268,27 @@ class Handlebars_Template
             return $buffer;
         } else {
             throw new RuntimeException($sectionName . ' is not registered as a helper');
-        }                    
+        }
+    }
+
+    /**
+     * Process inverted section
+     *
+     * @param Handlebars_Context $context current context
+     * @param array              $current section node data
+     *
+     * @return string the result
+     */
+    private function _inverted(Handlebars_Context $context, $current)
+    {
+        $sectionName = $current[Handlebars_Tokenizer::NAME];
+        $data = $context->get($sectionName);
+        if (!$data) {
+            return $this->render($context);
+        } else {
+            //No need to disacard here, since itshas no else
+            return '';
+        }
     }
 
     /**
@@ -298,6 +324,6 @@ class Handlebars_Template
         }
         return $value;
     }
-    
-    
+
+
 }

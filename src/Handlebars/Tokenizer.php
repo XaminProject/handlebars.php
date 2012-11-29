@@ -4,9 +4,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  * Changes to match xamin-std and handlebars made by xamin team
- * 
+ *
  * PHP version 5.3
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    Justin Hileman <dontknow@example.org>
@@ -22,12 +22,12 @@
  * Handlebars parser (infact its a mustache parser)
  * This class is responsible for turning raw template source into a set of Mustache tokens.
  * Some minor changes to handle Handlebars instead of Mustache
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    Justin Hileman <dontknow@example.org>
- * @copyright 2012 Justin Hileman
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @copyright 2012 Justin Hileman
  * @license   MIT <http://opensource.org/licenses/mit-license.php>
  * @version   Release: @package_version@
  * @link      http://xamin.ir
@@ -42,7 +42,7 @@ class Handlebars_Tokenizer
 
     // Token types
     const T_SECTION      = '#';
-    //const T_INVERTED     = '^'; //Must remove this
+    const T_INVERTED     = '^';
     const T_END_SECTION  = '/';
     const T_COMMENT      = '!';
     const T_PARTIAL      = '>'; //Maybe remove this partials and replace them with helpers
@@ -56,7 +56,7 @@ class Handlebars_Tokenizer
     // Valid token types
     private static $_tagTypes = array(
         self::T_SECTION      => true,
-        //self::T_INVERTED     => true,
+        self::T_INVERTED     => true,
         self::T_END_SECTION  => true,
         self::T_COMMENT      => true,
         self::T_PARTIAL      => true,
@@ -132,7 +132,7 @@ class Handlebars_Tokenizer
                 break;
 
             case self::IN_TAG_TYPE:
-                
+
                 $i += strlen($this->otag) - 1;
                 if (isset(self::$_tagTypes[$text[$i + 1]])) {
                     $tag = $text[$i + 1];
@@ -157,14 +157,14 @@ class Handlebars_Tokenizer
             default:
                 if ($this->tagChange($this->ctag, $text, $i)) {
                     // Sections (Helpers) can accept parameters
-                    if ($this->tagType == self::T_SECTION /*|| $this->tagType == self::T_INVERTED*/) {
+                    if ($this->tagType == self::T_SECTION) {
                         $newBuffer = explode(' ', trim($this->buffer), 2);
                         $args = '';
                         if (count($newBuffer) == 2) {
                             $args = $newBuffer[1];
                         }
                         $this->buffer = $newBuffer[0];
-                    }                        
+                    }
                     $t = array(
                         self::TYPE  => $this->tagType,
                         self::NAME  => trim($this->buffer),
