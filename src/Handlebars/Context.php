@@ -130,7 +130,7 @@ class Handlebars_Context
                 throw new InvalidArgumentException('can not find variable in context');
             }                
             return '';
-        } elseif ($variableName == '.') {
+        } elseif ($variableName == '.' || $variableName == 'this') {
             return $current;
         } else {
             $chunks = explode('.', $variableName);
