@@ -1,5 +1,5 @@
 {
-    "name": "xamin/handlebars.php",
+    "name": "meraki/handlebars.php",
     "description": "Handlebars processor for php",
     "homepage": "https://github.com/XaminProject/handlebars.php",
     "type": "library",
