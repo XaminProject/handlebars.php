@@ -1,17 +1,13 @@
 {
     "name": "xamin/handlebars.php",
     "description": "Handlebars processor for php",
-    "homepage": "https://github.com/meraki/handlebars.php",
+    "homepage": "https://github.com/XaminProject/handlebars.php",
     "type": "library",
     "license": "GPLv3",    
     "authors": [
         {
             "name": "fzerorubigd",
             "email": "fzerorubigd@gmail.com"
-        },
-        {
-            "name": "Joey Baker",
-            "email": "joey@byjoeybaker.com"
         }
     ],
     "require": {
