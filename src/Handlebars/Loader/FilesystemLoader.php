@@ -31,6 +31,7 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
 {
     private $_baseDir;
     private $_extension = '.handlebars';
+    private $_prefix = '';
     private $_templates = array();
 
     /**
@@ -59,6 +60,10 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
         if (isset($options['extension'])) {
             $this->_extension = '.' . ltrim($options['extension'], '.');
         }
+        
+        if (isset($options['prefix'])) {
+            $this->_prefix = $options['prefix'];
+        }
     }
 
     /**
@@ -72,7 +77,7 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
      * @return string Handkebars Template source
      */
     public function load($name)
-    {
+    { 
         if (!isset($this->_templates[$name])) {
             $this->_templates[$name] = $this->loadFile($name);
         }
@@ -108,7 +113,14 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
      */
     protected function getFileName($name)
     {
-        $fileName = $this->_baseDir . '/' . $name;
+        $fileName = $this->_baseDir . '/';
+        
+        if (substr($name, strlen($this->_prefix)) !== $this->_prefix){
+            $fileName .= $this->_prefix;
+        }
+        
+        $fileName .= $name;
+        
         if (substr($fileName, 0 - strlen($this->_extension)) !== $this->_extension) {
             $fileName .= $this->_extension;
         }
