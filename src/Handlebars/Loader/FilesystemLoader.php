@@ -3,9 +3,9 @@
 /**
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
- * 
+ *
  * PHP version 5.3
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -60,7 +60,7 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
         if (isset($options['extension'])) {
             $this->_extension = '.' . ltrim($options['extension'], '.');
         }
-        
+
         if (isset($options['prefix'])) {
             $this->_prefix = $options['prefix'];
         }
@@ -77,7 +77,7 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
      * @return string Handkebars Template source
      */
     public function load($name)
-    { 
+    {
         if (!isset($this->_templates[$name])) {
             $this->_templates[$name] = $this->loadFile($name);
         }
@@ -114,13 +114,16 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
     protected function getFileName($name)
     {
         $fileName = $this->_baseDir . '/';
-        
-        if (substr($name, strlen($this->_prefix)) !== $this->_prefix){
-            $fileName .= $this->_prefix;
+        $fileParts = explode('/', $name);
+        $file = array_pop($fileParts);
+
+        if (substr($file, strlen($this->_prefix)) !== $this->_prefix){
+             $file = $this->_prefix . $file;
         }
-        
-        $fileName .= $name;
-        
+
+        $fileParts[] = $file;
+        $fileName .= implode('/', $fileParts);
+
         if (substr($fileName, 0 - strlen($this->_extension)) !== $this->_extension) {
             $fileName .= $this->_extension;
         }
