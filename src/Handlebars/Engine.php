@@ -2,9 +2,9 @@
 /**
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
- * 
+ *
  * PHP version 5.3
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -18,7 +18,7 @@
 /**
  * Handlebars parser (infact its a mustache parser)
  * This class is responsible for turning raw template source into a set of Mustache tokens.
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -42,7 +42,7 @@ class Handlebars_Engine
      */
     private $_parser;
     /**
-     * @var Handlebars_Helpers 
+     * @var Handlebars_Helpers
      */
     private $_helpers;
 
@@ -53,7 +53,7 @@ class Handlebars_Engine
 
     /**
      * @var Handlebars_Loader
-     */ 
+     */
     private $_partialsLoader;
 
     /**
@@ -67,7 +67,7 @@ class Handlebars_Engine
 
     /**
      * @var array parametes to pass to escape function, script prepend string to this array
-     */ 
+     */
     private $_escapeArgs = array (
         ENT_COMPAT,
         'UTF-8'
@@ -75,7 +75,7 @@ class Handlebars_Engine
 
     /**
      * Handlebars engine constructor
-     * $options array can contain : 
+     * $options array can contain :
      * helpers        => Handlebars_Helpers object
      * escape         => a callable function to escape values
      * escapeArgs     => array to pass as extra parameter to escape function
@@ -93,15 +93,15 @@ class Handlebars_Engine
 
         if (isset($options['loader'])) {
             $this->setLoader($options['loader']);
-        }            
+        }
 
         if (isset($options['partials_loader'])) {
             $this->setPartialsLoader($options['partials_loader']);
-        }   
+        }
 
         if (isset($options['cache'])) {
             $this->setCache($options['cache']);
-        }            
+        }
 
         if (isset($options['escape'])) {
             if (!is_callable($options['escape'])) {
@@ -110,15 +110,15 @@ class Handlebars_Engine
 
             $this->_escape = $options['escape'];
         }
-        
+
         if (isset($options['escapeArgs'])) {
             if (!is_array($options['escapeArgs'])) {
                 $options['escapeArgs'] = array($options['escapeArgs']);
-            }                
+            }
             $this->_escapeArgs = $options['escapeArgs'];
-        }    
+        }
     }
-    
+
 
     /**
      * Shortcut 'render' invocation.
@@ -150,7 +150,7 @@ class Handlebars_Engine
     }
 
     /**
-     * Get helpers, or create new one if ther is no helper 
+     * Get helpers, or create new one if ther is no helper
      *
      * @return Handlebars_Helpers
      */
@@ -158,7 +158,7 @@ class Handlebars_Engine
     {
         if (!isset($this->_helpers)) {
             $this->_helpers = new Handlebars_Helpers();
-        }        
+        }
         return $this->_helpers;
     }
 
@@ -212,10 +212,10 @@ class Handlebars_Engine
     }
 
     /**
-     * Set current loader 
-     * 
+     * Set current loader
+     *
      * @param Handlebars_Loader $loader handlebars loader
-     * 
+     *
      * @return void
      */
     public function setLoader(Handlebars_Loader $loader)
@@ -224,7 +224,7 @@ class Handlebars_Engine
     }
 
     /**
-     * get current loader 
+     * get current loader
      *
      * @return Handlebars_Loader
      */
@@ -232,15 +232,15 @@ class Handlebars_Engine
     {
         if (!isset($this->_loader)) {
             $this->_loader = new Handlebars_Loader_StringLoader();
-        }            
+        }
         return $this->_loader;
     }
 
     /**
-     * Set current partials loader 
-     * 
+     * Set current partials loader
+     *
      * @param Handlebars_Loader $loader handlebars loader
-     * 
+     *
      * @return void
      */
     public function setPartialsLoader(Handlebars_Loader $loader)
@@ -249,7 +249,7 @@ class Handlebars_Engine
     }
 
     /**
-     * get current partials loader 
+     * get current partials loader
      *
      * @return Handlebars_Loader
      */
@@ -257,7 +257,7 @@ class Handlebars_Engine
     {
         if (!isset($this->_partialsLoader)) {
             $this->_partialsLoader = new Handlebars_Loader_StringLoader();
-        }            
+        }
         return $this->_partialsLoader;
     }
 
@@ -282,14 +282,14 @@ class Handlebars_Engine
     {
         if (!isset($this->_cache)) {
             $this->_cache = new Handlebars_Cache_Dummy();
-        }        
+        }
         return $this->_cache;
     }
     /**
      * Get current escape function
-     * 
+     *
      * @return callable
-     */ 
+     */
     public function getEscape()
     {
         return $this->_escape;
@@ -306,15 +306,15 @@ class Handlebars_Engine
     {
         if (!is_callable($escape)) {
             throw new InvalidArgumentException('Escape function must be a callable');
-        }            
+        }
         $this->_escape = $escape;
     }
 
     /**
      * Get current escape function
-     * 
+     *
      * @return callable
-     */ 
+     */
     public function getEscapeArgs()
     {
         return $this->_escapeArgs;
@@ -331,7 +331,7 @@ class Handlebars_Engine
     {
         if (!is_array($escapeArgs)) {
             $escapeArgs = array($escapeArgs);
-        }            
+        }
         $this->_escapeArgs = $escapeArgs;
     }
 
@@ -339,7 +339,7 @@ class Handlebars_Engine
     /**
      * Set the Handlebars Tokenizer instance.
      *
-     * @param Handlebars_Tokenizer $tokenizer tokenizer 
+     * @param Handlebars_Tokenizer $tokenizer tokenizer
      *
      * @return void
      */
@@ -394,7 +394,7 @@ class Handlebars_Engine
      * Load a template by name with current template loader
      *
      * @param string $name template name
-     * 
+     *
      * @return Handlebars_Template
      */
     public function loadTemplate($name)
@@ -417,7 +417,7 @@ class Handlebars_Engine
         $tree = $this->_tokenize($source);
         return new Handlebars_Template($this, $tree, $source);
     }
-    
+
     /**
      * try to tokenize source, or get them from cache if available
      *
@@ -432,7 +432,8 @@ class Handlebars_Engine
         if ($tree === false) {
             $tokens = $this->getTokenizer()->scan($source);
             $tree = $this->getParser()->parse($tokens);
-        }   
+            $this->getCache()->set($hash, $tree);
+        }
         return $tree;
     }
-}    
+}

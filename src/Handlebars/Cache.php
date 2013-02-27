@@ -2,9 +2,9 @@
 /**
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
- * 
+ *
  * PHP version 5.3
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -16,9 +16,10 @@
 
 
 /**
- * Cache interface 
- * Base cache interface
- * 
+ * Cache interface
+ * Base cache interface, Note that Handlebars.php never call for remove.
+ * Driver should take care of expiered cache.
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -31,11 +32,11 @@
 interface Handlebars_Cache
 {
     /**
-     * Get cache for $name if exist. 
+     * Get cache for $name if exist.
      *
      * @param string $name Cache id
      *
-     * @return data on hit, boolean false on cache not found 
+     * @return data on hit, boolean false on cache not found
      */
     public function get($name);
 
@@ -50,11 +51,11 @@ interface Handlebars_Cache
     public function set($name, $value);
 
     /**
-     * Remove cache 
+     * Remove cache
      *
      * @param string $name Cache id
      *
      * @return void
      */
     public function remove($name);
-}    
+}
