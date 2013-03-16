@@ -40,21 +40,31 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
      * Passing an $options array allows overriding certain Loader options during instantiation:
      *
      *     $options = array(
-     *         // The filename extension used for Mustache templates. Defaults to '.mustache'
-     *         'extension' => '.ms',
+     *         // The filename extension used for Handlebars templates. Defaults to '.handlebars'
+     *         'extension' => '.other',
      *     );
      *
-     * @param string $baseDir Base directory containing Mustache template files.
-     * @param array  $options Array of Loader options (default: array())
+     * @param string|array $baseDirs A path contain template files or array of paths
+     * @param array        $options  Array of Loader options (default: array())
      *
      * @throws RuntimeException if $baseDir does not exist.
      */
-    public function __construct($baseDir, array $options = array())
+    public function __construct($baseDirs, array $options = array())
     {
-        $this->_baseDir = rtrim(realpath($baseDir), '/');
+        if (is_string($baseDir)) {
+            $baseDir = array(rtrim(realpath($baseDir), '/'));
+        } else {
+            foreach ($baseDir as &$dir) {
+                $dir = array(rtrim(realpath($dir), '/'));
+            }
+        }
 
-        if (!is_dir($this->_baseDir)) {
-            throw new RuntimeException('FilesystemLoader baseDir must be a directory: '.$baseDir);
+        $this->_baseDir = $baseDir;
+
+        foreach ($this->_baseDir as $dir) {
+            if (!is_dir($dir)) {
+                throw new RuntimeException('FilesystemLoader baseDir must be a directory: ' . $dir);
+            }
         }
 
         if (isset($options['extension'])) {
@@ -70,11 +80,11 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
      * Load a Template by name.
      *
      *     $loader = new FilesystemLoader(dirname(__FILE__).'/views');
-     *     $loader->load('admin/dashboard'); // loads "./views/admin/dashboard.mustache";
+     *     $loader->load('admin/dashboard'); // loads "./views/admin/dashboard.handlebars";
      *
      * @param string $name template name
      *
-     * @return string Handkebars Template source
+     * @return string Handlebars Template source
      */
     public function load($name)
     {
@@ -86,26 +96,26 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
     }
 
     /**
-     * Helper function for loading a Mustache file by name.
+     * Helper function for loading a Handlebars file by name.
      *
      * @param string $name template name
      *
-     * @return string Mustache Template source
+     * @return string Handlebars Template source
      * @throws InvalidArgumentException if a template file is not found.
      */
     protected function loadFile($name)
     {
         $fileName = $this->getFileName($name);
 
-        if (!file_exists($fileName)) {
-            throw new InvalidArgumentException('Template '.$name.' not found.');
+        if ($fileName === false) {
+            throw new InvalidArgumentException('Template ' . $name . ' not found.');
         }
 
         return file_get_contents($fileName);
     }
 
     /**
-     * Helper function for getting a Mustache template file name.
+     * Helper function for getting a Handlebars template file name.
      *
      * @param string $name template name
      *
@@ -113,21 +123,26 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
      */
     protected function getFileName($name)
     {
-        $fileName = $this->_baseDir . '/';
-        $fileParts = explode('/', $name);
-        $file = array_pop($fileParts);
+        foreach ($this->_baseDir as $baseDir) {
+            $fileName = $baseDir . '/';
+            $fileParts = explode('/', $name);
+            $file = array_pop($fileParts);
 
-        if (substr($file, strlen($this->_prefix)) !== $this->_prefix){
-             $file = $this->_prefix . $file;
+            if (substr($file, strlen($this->_prefix)) !== $this->_prefix) {
+                $file = $this->_prefix . $file;
+            }
+
+            $fileParts[] = $file;
+            $fileName .= implode('/', $fileParts);
+
+            if (substr($fileName, 0 - strlen($this->_extension)) !== $this->_extension) {
+                $fileName .= $this->_extension;
+            }
+            if (file_exists($fileName)) {
+                break;
+            }
+            $fileName = false;
         }
-
-        $fileParts[] = $file;
-        $fileName .= implode('/', $fileParts);
-
-        if (substr($fileName, 0 - strlen($this->_extension)) !== $this->_extension) {
-            $fileName .= $this->_extension;
-        }
-
         return $fileName;
     }
 }
