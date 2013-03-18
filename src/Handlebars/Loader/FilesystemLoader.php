@@ -52,7 +52,7 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
     public function __construct($baseDirs, array $options = array())
     {
         if (is_string($baseDirs)) {
-            $baseDirs = array(rtrim(realpath($baseDir), '/'));
+            $baseDirs = array(rtrim(realpath($baseDirs), '/'));
         } else {
             foreach ($baseDirs as &$dir) {
                 $dir = array(rtrim(realpath($dir), '/'));
