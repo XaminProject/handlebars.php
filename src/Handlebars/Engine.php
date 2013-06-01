@@ -73,6 +73,7 @@ class Handlebars_Engine
         'UTF-8'
         );
 
+    private $_aliases = array();
     /**
      * Handlebars engine constructor
      * $options array can contain :
@@ -116,6 +117,12 @@ class Handlebars_Engine
                 $options['escapeArgs'] = array($options['escapeArgs']);
             }
             $this->_escapeArgs = $options['escapeArgs'];
+        }
+
+        if (isset($options['partials_alias'])
+            && is_array($options['partials_alias'])
+        ) {
+            $this->_aliases = $options['partials_alias'];
         }
     }
 
@@ -413,11 +420,40 @@ class Handlebars_Engine
      */
     public function loadPartial($name)
     {
+        if (isset($this->_aliases[$name])) {
+            $name = $this->_aliases[$name];
+        }
         $source = $this->getPartialsLoader()->load($name);
         $tree = $this->_tokenize($source);
         return new Handlebars_Template($this, $tree, $source);
     }
 
+    /**
+     * Register partial alias
+     *
+     * @param string $alias   Partial alias
+     * @param string $content The real value
+     *
+     * @return void
+     */
+    public function registerPartial($alias, $content)
+    {
+        $this->_aliases[$alias] = $content;
+    }
+
+    /**
+     * Un-register partial alias
+     *
+     * @param string $alias Partial alias
+     *
+     * @return void
+     */
+    public function unRegisterPartial($alias)
+    {
+        if (isset($this->_aliases[$alias])) {
+            unset($this->_aliases[$alias]);
+        }
+    }
 
     /**
      * Load string into a template object
