@@ -2,9 +2,9 @@
 /**
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
- * 
+ *
  * PHP version 5.3
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -17,7 +17,7 @@
 
 /**
  * Handlebars loader interface
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -34,7 +34,7 @@ interface Handlebars_Loader
      *
      * @param string $name template name to load
      *
-     * @return string Mustache Template source
+     * @return Handlebars_String
      */
     public function load($name);
 }

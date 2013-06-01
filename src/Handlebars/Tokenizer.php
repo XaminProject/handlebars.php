@@ -106,6 +106,9 @@ class Handlebars_Tokenizer
      */
     public function scan($text, $delimiters = null)
     {
+        if ($text instanceof Handlebars_String) {
+            $text = $text->getString();
+        }
         $this->reset();
 
         if ($delimiters = trim($delimiters)) {

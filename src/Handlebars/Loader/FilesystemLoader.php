@@ -84,15 +84,14 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
      *
      * @param string $name template name
      *
-     * @return string Handlebars Template source
+     * @return Handlebars_String Handlebars Template source
      */
     public function load($name)
     {
         if (!isset($this->_templates[$name])) {
             $this->_templates[$name] = $this->loadFile($name);
         }
-
-        return $this->_templates[$name];
+        return new Handlebars_String($this->_templates[$name]);
     }
 
     /**

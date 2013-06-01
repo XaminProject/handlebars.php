@@ -2,9 +2,9 @@
 /**
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
- * 
+ *
  * PHP version 5.3
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -34,10 +34,10 @@ class Handlebars_Loader_StringLoader implements Handlebars_Loader
      *
      * @param string $name Handlebars Template source
      *
-     * @return string Handlebars Template source
+     * @return Handlebars_string Handlebars Template source
      */
     public function load($name)
     {
-        return $name;
+        return new Handlebars_String($name);
     }
 }

@@ -418,6 +418,20 @@ class Handlebars_Engine
         return new Handlebars_Template($this, $tree, $source);
     }
 
+
+    /**
+     * Load string into a template object
+     *
+     * @param string $source string to load
+     *
+     * @return Handlebars_Template
+     */
+    public function loadString($source)
+    {
+        $tree = $this->_tokenize($source);
+        return new Handlebars_Template($this, $tree, $source);
+    }
+
     /**
      * try to tokenize source, or get them from cache if available
      *
