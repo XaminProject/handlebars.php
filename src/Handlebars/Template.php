@@ -154,7 +154,7 @@ class Handlebars_Template
                 array_push($this->_stack, array(0, $newStack, false));
                 $buffer .= $this->_inverted($context, $current);
                 array_pop($this->_stack);
-                break;            
+                break;
             case Handlebars_Tokenizer::T_COMMENT :
                 $buffer .= '';
                 break;
@@ -297,7 +297,7 @@ class Handlebars_Template
             return '';
         }
     }
-    
+
     /**
      * Process partial section
      *
@@ -309,6 +309,11 @@ class Handlebars_Template
     private function _partial($context, $current)
     {
         $partial = $this->handlebars->loadPartial($current[Handlebars_Tokenizer::NAME]);
+
+        if ( $current[Handlebars_Tokenizer::ARGS] ) {
+            $context = $context->get($current[Handlebars_Tokenizer::ARGS]);
+        }
+
         return $partial->render($context);
     }
 
