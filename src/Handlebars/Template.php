@@ -314,6 +314,11 @@ class Handlebars_Template
     private function _partial($context, $current)
     {
         $partial = $this->handlebars->loadPartial($current[Handlebars_Tokenizer::NAME]);
+
+        if ( $current[Handlebars_Tokenizer::ARGS] ) {
+            $context = $context->get($current[Handlebars_Tokenizer::ARGS]);
+        }
+
         return $partial->render($context);
     }
 

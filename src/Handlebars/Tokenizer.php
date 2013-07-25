@@ -160,7 +160,12 @@ class Handlebars_Tokenizer
             default:
                 if ($this->tagChange($this->ctag, $text, $i)) {
                     // Sections (Helpers) can accept parameters
-                    if ($this->tagType == self::T_SECTION) {
+                    // Same thing for Partials (little known fact)
+                    if (
+                        ($this->tagType == self::T_SECTION)
+                        || ($this->tagType == self::T_PARTIAL)
+                        || ($this->tagType == self::T_PARTIAL_2)
+                    ) {
                         $newBuffer = explode(' ', trim($this->buffer), 2);
                         $args = '';
                         if (count($newBuffer) == 2) {
