@@ -32,7 +32,9 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-class Handlebars_Tokenizer
+namespace Handlebars;
+
+class Tokenizer
 {
 
     // Finite state machine states
@@ -106,7 +108,7 @@ class Handlebars_Tokenizer
      */
     public function scan($text, $delimiters = null)
     {
-        if ($text instanceof Handlebars_String) {
+        if ($text instanceof String) {
             $text = $text->getString();
         }
         $this->reset();

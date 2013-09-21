@@ -27,7 +27,10 @@
  * @link      http://xamin.ir *
  * @implements Loader
  */
-class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
+namespace Handlebars\Loader;
+use Handlesbars\String;
+
+class FilesystemLoader implements Loader
 {
     private $_baseDir;
     private $_extension = '.handlebars';
@@ -63,7 +66,7 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
 
         foreach ($this->_baseDir as $dir) {
             if (!is_dir($dir)) {
-                throw new RuntimeException('FilesystemLoader baseDir must be a directory: ' . $dir);
+                throw new \RuntimeException('FilesystemLoader baseDir must be a directory: ' . $dir);
             }
         }
 
@@ -84,14 +87,14 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
      *
      * @param string $name template name
      *
-     * @return Handlebars_String Handlebars Template source
+     * @return String Handlebars Template source
      */
     public function load($name)
     {
         if (!isset($this->_templates[$name])) {
             $this->_templates[$name] = $this->loadFile($name);
         }
-        return new Handlebars_String($this->_templates[$name]);
+        return new String($this->_templates[$name]);
     }
 
     /**
@@ -107,7 +110,7 @@ class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
         $fileName = $this->getFileName($name);
 
         if ($fileName === false) {
-            throw new InvalidArgumentException('Template ' . $name . ' not found.');
+            throw new \InvalidArgumentException('Template ' . $name . ' not found.');
         }
 
         return file_get_contents($fileName);

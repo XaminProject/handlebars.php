@@ -26,8 +26,9 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
- 
-class Handlebars_Cache_APC implements Handlebars_Cache
+namespace Handlebars\Cache;
+
+class APC implements Cache
 {
     private $_cache = array();
  

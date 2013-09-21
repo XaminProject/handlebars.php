@@ -26,7 +26,11 @@
  * @link      http://xamin.ir *
  * @implements Loader
  */
-class Handlebars_Loader_StringLoader implements Handlebars_Loader
+namespace Handlebars\Loader;
+use Handlebars\Loader;
+use Handlebars\String;
+
+class StringLoader implements Loader
 {
 
     /**
@@ -34,10 +38,10 @@ class Handlebars_Loader_StringLoader implements Handlebars_Loader
      *
      * @param string $name Handlebars Template source
      *
-     * @return Handlebars_string Handlebars Template source
+     * @return String Handlebars Template source
      */
     public function load($name)
     {
-        return new Handlebars_String($name);
+        return new String($name);
     }
 }

@@ -25,8 +25,9 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
+namespace Handlebars;
 
-class Handlebars_String
+class String
 {
     private $_string;
 

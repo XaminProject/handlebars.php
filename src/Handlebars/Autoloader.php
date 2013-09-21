@@ -28,7 +28,9 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-class Handlebars_Autoloader
+namespace Handlebars;
+
+class Autoloader
 {
 
     private $_baseDir;
