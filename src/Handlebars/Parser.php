@@ -52,7 +52,7 @@ class Parser
      *
      * @throws LogicException when nesting errors or mismatched section tags are encountered.
      */
-    private function _buildTree(ArrayIterator $tokens)
+    private function _buildTree(\ArrayIterator $tokens)
     {
         $stack = array();
 

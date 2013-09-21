@@ -177,28 +177,28 @@ class Helpers
     {
         $this->add(
             'if',
-	        array('Helpers', '_helper_if')
+	        array('Handlebars\Helpers', '_helper_if')
         );
 
         $this->add(
             'each',
-	        array('Helpers', '_helper_each')
+	        array('Handlebars\Helpers', '_helper_each')
         );
 
         $this->add(
             'unless',
-	        array('Helpers', '_helper_unless')
+	        array('Handlebars\Helpers', '_helper_unless')
         );
 
         $this->add(
             'with',
-	        array('Helpers', '_helper_with')
+	        array('Handlebars\Helpers', '_helper_with')
         );
 
         //Just for compatibility with ember
         $this->add(
             'bindAttr',
-	        array('Helpers', '_helper_bindAttr')
+	        array('Handlebars\Helpers', '_helper_bindAttr')
         );
     }
 
