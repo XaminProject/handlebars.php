@@ -33,7 +33,15 @@ use Handlebars\Cache\Dummy;
 
 class Handlebars
 {
+    private static $instance = false;
     const VERSION = '1.0.0';
+
+    public static function factory ($options=array()) {
+        if (self::$instance === false) {
+            self::$instance = new Handlebars($options);
+        }
+        return self::$instance;
+    }
 
     /**
      * @var Tokenizer
