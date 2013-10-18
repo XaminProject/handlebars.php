@@ -9,7 +9,7 @@
  * @package   Handlebars
  * @author    Joey Baker <joey@byjoeybaker.com>
  * @copyright 2013 (c) Meraki, LLP
- * @license   GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
+ * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
@@ -22,7 +22,7 @@
  * @package   Handlebars
  * @author    Joey Baker <joey@byjoeybaker.com>
  * @copyright 2012 (c) Meraki, LLP
- * @license   GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
+ * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
