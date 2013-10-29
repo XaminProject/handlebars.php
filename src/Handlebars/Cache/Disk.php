@@ -83,7 +83,7 @@ class Handlebars_Cache_Disk implements Handlebars_Cache
         $path = $this->getPath($name);
 
         return (file_exists($path)) ?
-            unserialize(@file_get_contents($path)) : false;
+            unserialize(file_get_contents($path)) : false;
     }
 
     /**
@@ -98,7 +98,7 @@ class Handlebars_Cache_Disk implements Handlebars_Cache
     {
         $path = $this->getPath($name);
 
-        @file_put_contents($path, serialize($value));
+        file_put_contents($path, serialize($value));
     }
 
     /**
@@ -112,6 +112,6 @@ class Handlebars_Cache_Disk implements Handlebars_Cache
     {
         $path = $this->getPath($name);
 
-        @unlink($path);
+        unlink($path);
     }
 }
