@@ -17,7 +17,6 @@ function smarty_function_handlebars($params, &$smarty)
         array(
             'template_class_prefix' => '__MyTemplates_',
             'cache' => new Handlebars_Cache_APC('/tmp/cache/mustache'),
-            'cache_file_mode' => 0666, // Please, configure your umask instead of doing this :)
             'loader' => new Handlebars_Loader_FilesystemLoader('/home/gree/xgree/avatar/frontend/gavatar/data/hbtpl'),
             'partials_loader' => new Handlebars_Loader_FilesystemLoader('/home/gree/xgree/avatar/frontend/gavatar/data/hbtpl'),
             'charset' => 'UTF8',
