@@ -45,6 +45,13 @@ class Handlebars_Cache_Disk implements Handlebars_Cache
         if (empty($path)) {
             throw new InvalidArgumentException('Must specify disk cache path');
         }
+        else if (!is_dir($path)) {
+            @mkdir($path, 0777, true);
+
+            if (!is_dir($path)) {
+                throw new RuntimeException('Could not create cache file path');
+            }
+        }
 
         $this->_path = $path;
         $this->_prefix = $prefix;
