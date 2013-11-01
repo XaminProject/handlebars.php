@@ -249,6 +249,7 @@ class Handlebars_Template
                 $current[Handlebars_Tokenizer::ARGS],  //Arguments
                 $source
                 );
+
             $return = call_user_func_array($helpers->$sectionName, $params);
             if ($return instanceof Handlebars_String) {
                 return $this->handlebars->loadString($return)->render($context);
@@ -264,10 +265,12 @@ class Handlebars_Template
             }
             $buffer = '';
             if (is_array($sectionVar) || $sectionVar instanceof Traversable) {
-                foreach ($sectionVar as $d) {
+                foreach ($sectionVar as $index => $d) {
+                    $context->pushIndex($index);
                     $context->push($d);
                     $buffer .= $this->render($context);
                     $context->pop();
+                    $context->popIndex();
                 }
             } elseif (is_object($sectionVar)) {
                 //Act like with
@@ -333,7 +336,14 @@ class Handlebars_Template
      */
     private function _variables($context, $current, $escaped)
     {
-        $value = $context->get($current[Handlebars_Tokenizer::NAME]);
+        $name = $current[Handlebars_Tokenizer::NAME];
+        $value = $context->get($name);
+        if( $name == '@index' ) {
+            return $context->lastIndex();
+        }
+        if( $name == '@key' ) {
+            return $context->lastKey();
+        }
         if ($escaped) {
             $args = $this->handlebars->getEscapeArgs();
             array_unshift($args, $value);
