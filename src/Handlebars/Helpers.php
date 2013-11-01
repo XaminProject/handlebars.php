@@ -104,12 +104,22 @@ class Handlebars_Helpers
 		$tmp = $context->get($args);
 		$buffer = '';
 		if (is_array($tmp) || $tmp instanceof Traversable) {
+			$islist = ( array_keys($tmp) == range(0, count($tmp) - 1) );
+
 			foreach ($tmp as $key => $var) {
-				$context->pushKey($key);
+				if( $islist ) {
+					$context->pushIndex($key);
+				} else {
+					$context->pushKey($key);
+				}
 				$context->push($var);
 				$buffer .= $template->render($context);
 				$context->pop();
-				$context->popKey();
+				if( $islist ) {
+					$context->popIndex();
+				} else {
+					$context->popKey();
+				}
 			}
 		}
 		return $buffer;
