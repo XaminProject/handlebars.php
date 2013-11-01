@@ -35,6 +35,17 @@ class Handlebars_Context
      */ 
     protected $stack = array();
 
+
+    /**
+     * @var index stack for sections
+     */
+    protected $index = array();
+
+    /**
+     * @var key stack for objects
+     */
+    protected $key = array();
+
     /**
      * Mustache rendering Context constructor.
      *
@@ -60,6 +71,26 @@ class Handlebars_Context
     }
 
     /**
+     * Push an Index onto the index stack
+     *
+     * @param int $index Index of the current section item.
+     */
+    public function pushIndex($index)
+    {
+        array_push($this->index, $index);
+    }
+
+    /**
+     * Push a Key onto the key stack
+     *
+     * @param string $key Key of the current object property.
+     */
+    public function pushKey($key)
+    {
+        array_push($this->key, $key);
+    }
+
+    /**
      * Pop the last Context frame from the stack.
      *
      * @return mixed Last Context frame (object or array)
@@ -67,6 +98,27 @@ class Handlebars_Context
     public function pop()
     {
         return array_pop($this->stack);
+    }
+
+
+    /**
+     * Pop the last index from the stack.
+     *
+     * @return int Last index
+     */
+    public function popIndex()
+    {
+        return array_pop($this->index);
+    }
+
+    /**
+     * Pop the last key from the stack.
+     *
+     * @return string Last key
+     */
+    public function popKey()
+    {
+        return array_pop($this->key);
     }
 
     /**
@@ -77,6 +129,26 @@ class Handlebars_Context
     public function last()
     {
         return end($this->stack);
+    }
+
+    /**
+     * Get the index of current section item.
+     *
+     * @return mixed Last index
+     */
+    public function lastIndex()
+    {
+        return end($this->index);
+    }
+
+    /**
+     * Get the key of current object property.
+     *
+     * @return mixed Last key
+     */
+    public function lastKey()
+    {
+        return end($this->key);
     }
 
     /**
