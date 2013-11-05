@@ -1,5 +1,5 @@
 {
-    "name": "xamin/handlebars.php",
+    "name": "virtuecenter/handlebars.php",
     "description": "Handlebars processor for php",
     "homepage": "https://github.com/XaminProject/handlebars.php",
     "type": "library",
@@ -10,9 +10,7 @@
             "email": "fzerorubigd@gmail.com"
         }
     ],
-    "require": {
-
-    },
+    "require": {},
     "autoload": {
         "psr-0": { "Handlebars": "src/" }
     }

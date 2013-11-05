@@ -27,7 +27,9 @@
  * @link      http://xamin.ir
  */
 
-class Handlebars_Cache_Dummy implements Handlebars_Cache
+namespace Handlebars\Cache;
+use Handlebars\Cache;
+class Dummy implements Cache
 {
     private $_cache = array();
 

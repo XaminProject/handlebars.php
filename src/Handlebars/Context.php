@@ -28,7 +28,9 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-class Handlebars_Context
+namespace Handlebars;
+
+class Context
 {
     /**
      * @var array stack for context only top stack is available
@@ -187,7 +189,7 @@ class Handlebars_Context
         }
         if (count($this->stack) < $level) {
             if ($strict) {
-                throw new InvalidArgumentException('can not find variable in context');
+                throw new \InvalidArgumentException('can not find variable in context');
             }                
             return '';
         }
@@ -199,7 +201,7 @@ class Handlebars_Context
         $current = current($this->stack);
         if (!$variableName) {
             if ($strict) {
-                throw new InvalidArgumentException('can not find variable in context');
+                throw new \InvalidArgumentException('can not find variable in context');
             }                
             return '';
         } elseif ($variableName == '.' || $variableName == 'this') {
@@ -244,7 +246,7 @@ class Handlebars_Context
         } elseif ($inside === '.') {
             $value = $variable;
         } elseif ($strict) {
-            throw new InvalidArgumentException('can not find variable in context');
+            throw new \InvalidArgumentException('can not find variable in context');
         }
         return $value;
     }

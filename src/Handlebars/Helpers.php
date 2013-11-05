@@ -29,8 +29,9 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
+namespace Handlebars;
 
-class Handlebars_Helpers
+class Helpers
 {
     /**
      * @var array array of helpers
@@ -52,7 +53,7 @@ class Handlebars_Helpers
         }            
         if ($helpers != null) {
             if (!is_array($helpers) && !$helpers instanceof Traversable) {
-                throw new InvalidArgumentException('HelperCollection constructor expects an array of helpers');
+                throw new \InvalidArgumentException('HelperCollection constructor expects an array of helpers');
             }                
             foreach ($helpers as $name => $helper) {
                 $this->add($name, $helpers);
@@ -188,28 +189,28 @@ class Handlebars_Helpers
     {
         $this->add(
             'if',
-	        array('Handlebars_Helpers', '_helper_if')
+	        array('Handlebars\Helpers', '_helper_if')
         );
 
         $this->add(
             'each',
-	        array('Handlebars_Helpers', '_helper_each')
+	        array('Handlebars\Helpers', '_helper_each')
         );
 
         $this->add(
             'unless',
-	        array('Handlebars_Helpers', '_helper_unless')
+	        array('Handlebars\Helpers', '_helper_unless')
         );
 
         $this->add(
             'with',
-	        array('Handlebars_Helpers', '_helper_with')
+	        array('Handlebars\Helpers', '_helper_with')
         );
 
         //Just for compatibility with ember
         $this->add(
             'bindAttr',
-	        array('Handlebars_Helpers', '_helper_bindAttr')
+	        array('Handlebars\Helpers', '_helper_bindAttr')
         );
     }
 
@@ -225,7 +226,7 @@ class Handlebars_Helpers
     public function add($name ,$helper) 
     {
         if (!is_callable($helper)) {
-            throw new InvalidArgumentException("$name Helper is not a callable.");
+            throw new \InvalidArgumentException("$name Helper is not a callable.");
         }            
         $this->helpers[$name] = $helper;
     }
@@ -253,7 +254,7 @@ class Handlebars_Helpers
     public function __get($name)
     {
         if (!$this->has($name)) {
-            throw new InvalidArgumentException('Unknow helper :' . $name);
+            throw new \InvalidArgumentException('Unknow helper :' . $name);
         }            
         return $this->helpers[$name];
     }
@@ -309,7 +310,7 @@ class Handlebars_Helpers
     public function remove($name)
     {
         if (!$this->has($name)) {
-            throw new InvalidArgumentException('Unknown helper: ' . $name);
+            throw new \InvalidArgumentException('Unknown helper: ' . $name);
         }
 
         unset($this->helpers[$name]);

@@ -29,7 +29,9 @@
  * @link      http://xamin.ir
  */
 
-interface Handlebars_Cache
+namespace Handlebars;
+
+interface Cache
 {
     /**
      * Get cache for $name if exist.

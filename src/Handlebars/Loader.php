@@ -26,7 +26,9 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-interface Handlebars_Loader
+namespace Handlebars;
+
+interface Loader
 {
 
     /**
@@ -34,7 +36,7 @@ interface Handlebars_Loader
      *
      * @param string $name template name to load
      *
-     * @return Handlebars_String
+     * @return String
      */
     public function load($name);
 }
