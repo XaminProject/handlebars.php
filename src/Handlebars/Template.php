@@ -348,7 +348,7 @@ class Template
      */
     private function _variables($context, $current, $escaped)
     {
-        $name = $current[Handlebars_Tokenizer::NAME];
+        $name = $current[Tokenizer::NAME];
         $value = $context->get($name);
         if ( $name == '@index' ) {
             return $context->lastIndex();
