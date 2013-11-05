@@ -40,7 +40,7 @@ echo $engine->render(
 );
 ```
 
-```
+```php
 <?php
 
 use Handlebars\Handlebars;
