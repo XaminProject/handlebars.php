@@ -46,7 +46,7 @@ class Autoloader
     public function __construct($baseDir = null)
     {
         if ($baseDir === null) {
-            $this->_baseDir = __DIR__.'/..';
+            $this->_baseDir = realpath(__DIR__.'/..');
         } else {
             $this->_baseDir = rtrim($baseDir, '/');
         }
@@ -58,7 +58,7 @@ class Autoloader
      * @param string $baseDir Handlebars library base directory, default is
      *                        __DIR__.'/..'
      *
-     * @return Handlebars_Autoloader Registered Autoloader instance
+     * @return Handlebars\Autoloader Registered Autoloader instance
      */
     public static function register($baseDir = null)
     {
@@ -85,9 +85,10 @@ class Autoloader
             return;
         }
 
-        $file = sprintf('%s/%s.php', $this->_baseDir, str_replace('_', '/', $class));
+        $file = sprintf('%s/%s.php', $this->_baseDir, str_replace('\\', '/', $class));
+
         if (is_file($file)) {
-            include $file;
+            require $file;
         }
     }
 
