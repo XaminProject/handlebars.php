@@ -18,8 +18,8 @@
  */
 
 namespace Handlebars\Loader;
-use Handlesbars\Loader;
-use Handlesbars\String;
+use Handlebars\Loader;
+use Handlebars\String;
 
 /**
  * Handlebars Template filesystem Loader implementation.
