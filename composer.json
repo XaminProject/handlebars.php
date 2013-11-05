@@ -3,7 +3,7 @@
     "description": "Handlebars processor for php",
     "homepage": "https://github.com/XaminProject/handlebars.php",
     "type": "library",
-    "license": "GPLv3",    
+    "license": "MIT",
     "authors": [
         {
             "name": "fzerorubigd",
