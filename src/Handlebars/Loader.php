@@ -8,12 +8,15 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
 
+namespace Handlebars;
 
 /**
  * Handlebars loader interface
@@ -26,7 +29,6 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-namespace Handlebars;
 
 interface Loader
 {
@@ -39,4 +41,5 @@ interface Loader
      * @return String
      */
     public function load($name);
+
 }

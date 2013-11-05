@@ -11,17 +11,18 @@
  * @package   Handlebars
  * @author    Justin Hileman <dontknow@example.org>
  * @author    fzerorubigd <fzerorubigd@gmail.com>
- * @copyright 2012 Justin Hileman
+ * @author    Behrooz Shabani <everplays@gmail.com>
+ * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/mit-license.php>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
 
+namespace Handlebars;
 
 /**
- * Handlebars parser (infact its a mustache parser)
- * This class is responsible for turning raw template source into a set of Mustache tokens.
- * Some minor changes to handle Handlebars instead of Mustache
+ * Handlebars tokenizer (based on mustache)
  *
  * @category  Xamin
  * @package   Handlebars
@@ -32,7 +33,6 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-namespace Handlebars;
 
 class Tokenizer
 {
@@ -47,7 +47,8 @@ class Tokenizer
     const T_INVERTED     = '^';
     const T_END_SECTION  = '/';
     const T_COMMENT      = '!';
-    const T_PARTIAL      = '>'; //Maybe remove this partials and replace them with helpers
+    // XXX: remove partials support from tokenizer and make it a helper?
+    const T_PARTIAL      = '>';
     const T_PARTIAL_2    = '<';
     const T_DELIM_CHANGE = '=';
     const T_ESCAPED      = '_v';
@@ -102,7 +103,7 @@ class Tokenizer
      * Scan and tokenize template source.
      *
      * @param string $text       Mustache template source to tokenize
-     * @param string $delimiters Optionally, pass initial opening and closing delimiters (default: null)
+     * @param string $delimiters Optional, pass opening and closing delimiters
      *
      * @return array Set of Mustache tokens
      */
@@ -163,8 +164,7 @@ class Tokenizer
                 if ($this->tagChange($this->ctag, $text, $i)) {
                     // Sections (Helpers) can accept parameters
                     // Same thing for Partials (little known fact)
-                    if (
-                        ($this->tagType == self::T_SECTION)
+                    if ( ($this->tagType == self::T_SECTION)
                         || ($this->tagType == self::T_PARTIAL)
                         || ($this->tagType == self::T_PARTIAL_2)
                     ) {
@@ -180,7 +180,9 @@ class Tokenizer
                         self::NAME  => trim($this->buffer),
                         self::OTAG  => $this->otag,
                         self::CTAG  => $this->ctag,
-                        self::INDEX => ($this->tagType == self::T_END_SECTION) ? $this->seenTag - strlen($this->otag) : $i + strlen($this->ctag),
+                        self::INDEX => ($this->tagType == self::T_END_SECTION) ?
+                                          $this->seenTag - strlen($this->otag) :
+                                          $i + strlen($this->ctag),
                         );
                     if (isset($args)) {
                         $t[self::ARGS] = $args;
@@ -196,9 +198,12 @@ class Tokenizer
                             $i++;
                         } else {
                             // Clean up `{{{ tripleStache }}}` style tokens.
-                            $lastName = $this->tokens[count($this->tokens) - 1][self::NAME];
+                            $lastIndex = count($this->tokens) - 1;
+                            $lastName = $this->tokens[$lastIndex][self::NAME];
                             if (substr($lastName, -1) === '}') {
-                                $this->tokens[count($this->tokens) - 1][self::NAME] = trim(substr($lastName, 0, -1));
+                                $this->tokens[$lastIndex][self::NAME] = trim(
+                                    substr($lastName, 0, -1)
+                                );
                             }
                         }
                     }
@@ -240,7 +245,10 @@ class Tokenizer
     protected function flushBuffer()
     {
         if (!empty($this->buffer)) {
-            $this->tokens[] = array(self::TYPE  => self::T_TEXT, self::VALUE => $this->buffer);
+            $this->tokens[] = array(
+                self::TYPE  => self::T_TEXT,
+                self::VALUE => $this->buffer
+            );
             $this->buffer   = '';
         }
     }
@@ -283,8 +291,11 @@ class Tokenizer
             $tokensCount = count($this->tokens);
             for ($j = $this->lineStart; $j < $tokensCount; $j++) {
                 if ($this->tokens[$j][self::TYPE] == self::T_TEXT) {
-                    if (isset($this->tokens[$j + 1]) && $this->tokens[$j + 1][self::TYPE] == self::T_PARTIAL) {
-                        $this->tokens[$j + 1][self::INDENT] = $this->tokens[$j][self::VALUE];
+                    if (isset($this->tokens[$j + 1])
+                        && $this->tokens[$j + 1][self::TYPE] == self::T_PARTIAL
+                    ) {
+                        $this->tokens[$j + 1][self::INDENT]
+                            = $this->tokens[$j][self::VALUE];
                     }
 
                     $this->tokens[$j] = null;
@@ -312,7 +323,10 @@ class Tokenizer
         $close      = '='.$this->ctag;
         $closeIndex = strpos($text, $close, $index);
 
-        list($otag, $ctag) = explode(' ', trim(substr($text, $startIndex, $closeIndex - $startIndex)));
+        list($otag, $ctag) = explode(
+            ' ',
+            trim(substr($text, $startIndex, $closeIndex - $startIndex))
+        );
         $this->otag = $otag;
         $this->ctag = $ctag;
 
@@ -332,4 +346,5 @@ class Tokenizer
     {
         return substr($text, $index, strlen($tag)) === $tag;
     }
+
 }

@@ -8,12 +8,16 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    Alex Soncodi <alex@brokerloop.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2013 (c) Brokerloop, Inc.
+ * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
 
+namespace Handlebars\Cache;
+use Handlebars\Cache;
 
 /**
  * A flat-file filesystem cache.
@@ -27,8 +31,9 @@
  * @link      http://xamin.ir
  */
 
-class Handlebars_Cache_Disk implements Handlebars_Cache
+class Disk implements Cache
 {
+
     private $_path = '';
     private $_prefix = '';
     private $_suffix = '';
@@ -36,7 +41,7 @@ class Handlebars_Cache_Disk implements Handlebars_Cache
     /**
      * Construct the disk cache.
      *
-     * @param string $path Filesystem path to the disk cache location
+     * @param string $path   Filesystem path to the disk cache location
      * @param string $prefix optional file prefix, defaults to empty string
      * @param string $suffix optional file extension, defaults to empty string
      */
@@ -44,8 +49,7 @@ class Handlebars_Cache_Disk implements Handlebars_Cache
     {
         if (empty($path)) {
             throw new InvalidArgumentException('Must specify disk cache path');
-        }
-        else if (!is_dir($path)) {
+        } elseif (!is_dir($path)) {
             @mkdir($path, 0777, true);
 
             if (!is_dir($path)) {
@@ -64,8 +68,10 @@ class Handlebars_Cache_Disk implements Handlebars_Cache
      * and optional extension.
      *
      * @param string $name Name of the cache item
+     *
+     * @return string full disk path of cached item
      */
-    private function getPath($name)
+    private function _getPath($name)
     {
         return $this->_path . DIRECTORY_SEPARATOR .
             $this->_prefix . $name . $this->_suffix;
@@ -80,7 +86,7 @@ class Handlebars_Cache_Disk implements Handlebars_Cache
      */
     public function get($name)
     {
-        $path = $this->getPath($name);
+        $path = $this->_getPath($name);
 
         return (file_exists($path)) ?
             unserialize(file_get_contents($path)) : false;
@@ -96,7 +102,7 @@ class Handlebars_Cache_Disk implements Handlebars_Cache
      */
     public function set($name, $value)
     {
-        $path = $this->getPath($name);
+        $path = $this->_getPath($name);
 
         file_put_contents($path, serialize($value));
     }
@@ -110,8 +116,9 @@ class Handlebars_Cache_Disk implements Handlebars_Cache
      */
     public function remove($name)
     {
-        $path = $this->getPath($name);
+        $path = $this->_getPath($name);
 
         unlink($path);
     }
+
 }

@@ -8,11 +8,17 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
+
+namespace Handlebars\Loader;
+use Handlebars\Loader;
+use Handlebars\String;
 
 /**
  * Handlebars Template string Loader implementation.
@@ -26,9 +32,6 @@
  * @link      http://xamin.ir *
  * @implements Loader
  */
-namespace Handlebars\Loader;
-use Handlebars\Loader;
-use Handlebars\String;
 
 class StringLoader implements Loader
 {
@@ -44,4 +47,5 @@ class StringLoader implements Loader
     {
         return new String($name);
     }
+
 }

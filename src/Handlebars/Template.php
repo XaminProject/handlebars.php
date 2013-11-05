@@ -8,12 +8,15 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
 
+namespace Handlebars;
 
 /**
  * Handlebars base template
@@ -27,7 +30,6 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-namespace Handlebars;
 
 class Template
 {
@@ -50,8 +52,8 @@ class Template
      * Handlebars template constructor
      *
      * @param Handlebars $engine handlebar engine
-     * @param array             $tree   Parsed tree
-     * @param string            $source Handlebars source
+     * @param array      $tree   Parsed tree
+     * @param string     $source Handlebars source
      */
     public function __construct(Handlebars $engine, $tree, $source)
     {
@@ -129,7 +131,7 @@ class Template
         if (!$context instanceof Context) {
             $context = new Context($context);
         }
-        $topTree = end($this->_stack); //This method (render) never pop a value from stack
+        $topTree = end($this->_stack); // never pop a value from stack
         list($index ,$tree, $stop) = $topTree;
 
         $buffer = '';
@@ -145,13 +147,15 @@ class Template
             }
             switch ($current[Tokenizer::TYPE]) {
             case Tokenizer::T_SECTION :
-                $newStack = isset($current[Tokenizer::NODES]) ? $current[Tokenizer::NODES] : array();
+                $newStack = isset($current[Tokenizer::NODES])
+                    ? $current[Tokenizer::NODES] : array();
                 array_push($this->_stack, array(0, $newStack, false));
                 $buffer .= $this->_section($context, $current);
                 array_pop($this->_stack);
                 break;
             case Tokenizer::T_INVERTED :
-                $newStack = isset($current[Tokenizer::NODES]) ? $current[Tokenizer::NODES] : array();
+                $newStack = isset($current[Tokenizer::NODES]) ?
+                    $current[Tokenizer::NODES] : array();
                 array_push($this->_stack, array(0, $newStack, false));
                 $buffer .= $this->_inverted($context, $current);
                 array_pop($this->_stack);
@@ -174,7 +178,9 @@ class Template
                 $buffer .= $current[Tokenizer::VALUE];
                 break;
             default:
-                throw new \RuntimeException('Invalid node type : ' . json_encode($current));
+                throw new \RuntimeException(
+                    'Invalid node type : ' . json_encode($current)
+                );
             }
         }
         if ($stop) {
@@ -226,7 +232,7 @@ class Template
      * Process section nodes
      *
      * @param Context $context current context
-     * @param array              $current section node data
+     * @param array   $current section node data
      *
      * @return string the result
      */
@@ -258,11 +264,14 @@ class Template
                 return $return;
             }
         } elseif (trim($current[Tokenizer::ARGS]) == '') {
-            //Fallback for mustache style each/with/for just if there is no argument at all.
+            // fallback to mustache style each/with/for just if there is
+            // no argument at all.
             try {
                 $sectionVar = $context->get($sectionName, true);
             } catch (InvalidArgumentException $e) {
-                throw new \RuntimeException($sectionName . ' is not registered as a helper');
+                throw new \RuntimeException(
+                    $sectionName . ' is not registered as a helper'
+                );
             }
             $buffer = '';
             if (is_array($sectionVar) || $sectionVar instanceof Traversable) {
@@ -283,7 +292,9 @@ class Template
             }
             return $buffer;
         } else {
-            throw new \RuntimeException($sectionName . ' is not registered as a helper');
+            throw new \RuntimeException(
+                $sectionName . ' is not registered as a helper'
+            );
         }
     }
 
@@ -291,7 +302,7 @@ class Template
      * Process inverted section
      *
      * @param Context $context current context
-     * @param array              $current section node data
+     * @param array   $current section node data
      *
      * @return string the result
      */
@@ -311,7 +322,7 @@ class Template
      * Process partial section
      *
      * @param Context $context current context
-     * @param array              $current section node data
+     * @param array   $current section node data
      *
      * @return string the result
      */
@@ -330,8 +341,8 @@ class Template
      * Process partial section
      *
      * @param Context $context current context
-     * @param array              $current section node data
-     * @param boolean            $escaped escape result or not
+     * @param array   $current section node data
+     * @param boolean $escaped escape result or not
      *
      * @return string the result
      */
@@ -339,19 +350,21 @@ class Template
     {
         $name = $current[Handlebars_Tokenizer::NAME];
         $value = $context->get($name);
-        if( $name == '@index' ) {
+        if ( $name == '@index' ) {
             return $context->lastIndex();
         }
-        if( $name == '@key' ) {
+        if ( $name == '@key' ) {
             return $context->lastKey();
         }
         if ($escaped) {
             $args = $this->handlebars->getEscapeArgs();
             array_unshift($args, $value);
-            $value = call_user_func_array($this->handlebars->getEscape(), array_values($args));
+            $value = call_user_func_array(
+                $this->handlebars->getEscape(),
+                array_values($args)
+            );
         }
         return $value;
     }
-
 
 }

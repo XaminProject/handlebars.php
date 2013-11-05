@@ -9,15 +9,21 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
 
+namespace Handlebars;
+
 /**
- * Handlebars parser (infact its a mustache parser)
- * This class is responsible for turning raw template source into a set of Mustache tokens.
+ * Handlebars parser (based on mustache)
+ *
+ * This class is responsible for turning raw template source into a set of
+ * Handlebars tokens.
  *
  * @category  Xamin
  * @package   Handlebars
@@ -27,7 +33,6 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-namespace Handlebars;
 
 class Parser
 {
@@ -50,7 +55,8 @@ class Parser
      *
      * @return array Token parse tree
      *
-     * @throws LogicException when nesting errors or mismatched section tags are encountered.
+     * @throws LogicException when nesting errors or mismatched section tags
+     * are encountered.
      */
     private function _buildTree(\ArrayIterator $tokens)
     {
@@ -70,7 +76,9 @@ class Parser
                     do {
                         $result = array_pop($stack);
                         if ($result === null) {
-                            throw new \LogicException('Unexpected closing tag: /'. $token[Tokenizer::NAME]);
+                            throw new \LogicException(
+                                'Unexpected closing tag: /'. $token[Tokenizer::NAME]
+                            );
                         }
 
                         if (!array_key_exists(Tokenizer::NODES, $result)
@@ -96,4 +104,5 @@ class Parser
         return $stack;
 
     }
+
 }

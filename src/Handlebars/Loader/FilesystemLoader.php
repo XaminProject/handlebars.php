@@ -9,11 +9,17 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
+
+namespace Handlebars\Loader;
+use Handlesbars\Loader;
+use Handlesbars\String;
 
 /**
  * Handlebars Template filesystem Loader implementation.
@@ -27,8 +33,6 @@
  * @link      http://xamin.ir *
  * @implements Loader
  */
-namespace Handlebars\Loader;
-use Handlesbars\String;
 
 class FilesystemLoader implements Loader
 {
@@ -40,10 +44,10 @@ class FilesystemLoader implements Loader
     /**
      * Handlebars filesystem Loader constructor.
      *
-     * Passing an $options array allows overriding certain Loader options during instantiation:
+     * $options array allows overriding certain Loader options during instantiation:
      *
      *     $options = array(
-     *         // The filename extension used for Handlebars templates. Defaults to '.handlebars'
+     *         // extension used for Handlebars templates. Defaults to '.handlebars'
      *         'extension' => '.other',
      *     );
      *
@@ -66,7 +70,9 @@ class FilesystemLoader implements Loader
 
         foreach ($this->_baseDir as $dir) {
             if (!is_dir($dir)) {
-                throw new \RuntimeException('FilesystemLoader baseDir must be a directory: ' . $dir);
+                throw new \RuntimeException(
+                    'FilesystemLoader baseDir must be a directory: ' . $dir
+                );
             }
         }
 
@@ -83,7 +89,8 @@ class FilesystemLoader implements Loader
      * Load a Template by name.
      *
      *     $loader = new FilesystemLoader(dirname(__FILE__).'/views');
-     *     $loader->load('admin/dashboard'); // loads "./views/admin/dashboard.handlebars";
+     *     // loads "./views/admin/dashboard.handlebars";
+     *     $loader->load('admin/dashboard');
      *
      * @param string $name template name
      *
@@ -136,8 +143,9 @@ class FilesystemLoader implements Loader
 
             $fileParts[] = $file;
             $fileName .= implode('/', $fileParts);
+            $lastCharacters = substr($fileName, 0 - strlen($this->_extension));
 
-            if (substr($fileName, 0 - strlen($this->_extension)) !== $this->_extension) {
+            if ($lastCharacters !== $this->_extension) {
                 $fileName .= $this->_extension;
             }
             if (file_exists($fileName)) {
@@ -147,4 +155,5 @@ class FilesystemLoader implements Loader
         }
         return $fileName;
     }
+
 }

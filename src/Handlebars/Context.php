@@ -2,23 +2,26 @@
 /**
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
- * 
+ *
  * PHP version 5.3
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
 
+namespace Handlebars;
+
 /**
  * Handlebars context
  * Context for a template
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -28,15 +31,14 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-namespace Handlebars;
 
 class Context
 {
+
     /**
      * @var array stack for context only top stack is available
-     */ 
+     */
     protected $stack = array();
-
 
     /**
      * @var index stack for sections
@@ -75,7 +77,9 @@ class Context
     /**
      * Push an Index onto the index stack
      *
-     * @param int $index Index of the current section item.
+     * @param integer $index Index of the current section item.
+     *
+     * @return void
      */
     public function pushIndex($index)
     {
@@ -86,6 +90,8 @@ class Context
      * Push a Key onto the key stack
      *
      * @param string $key Key of the current object property.
+     *
+     * @return void
      */
     public function pushKey($key)
     {
@@ -101,7 +107,6 @@ class Context
     {
         return array_pop($this->stack);
     }
-
 
     /**
      * Pop the last index from the stack.
@@ -169,14 +174,14 @@ class Context
 
     /**
      * Get a avariable from current context
-     * Supported types : 
+     * Supported types :
      * variable , ../variable , variable.variable , .
-     * 
+     *
      * @param string  $variableName variavle name to get from current context
      * @param boolean $strict       strict search? if not found then throw exception
      *
      * @return mixed
-     * @throw InvalidArgumentException in strict mode and variable not found
+     * @throws InvalidArgumentException in strict mode and variable not found
      */
     public function get($variableName, $strict = false)
     {
@@ -189,8 +194,10 @@ class Context
         }
         if (count($this->stack) < $level) {
             if ($strict) {
-                throw new \InvalidArgumentException('can not find variable in context');
-            }                
+                throw new \InvalidArgumentException(
+                    'can not find variable in context'
+                );
+            }
             return '';
         }
         end($this->stack);
@@ -201,8 +208,10 @@ class Context
         $current = current($this->stack);
         if (!$variableName) {
             if ($strict) {
-                throw new \InvalidArgumentException('can not find variable in context');
-            }                
+                throw new \InvalidArgumentException(
+                    'can not find variable in context'
+                );
+            }
             return '';
         } elseif ($variableName == '.' || $variableName == 'this') {
             return $current;
@@ -226,8 +235,8 @@ class Context
      * @param boolean $strict   strict search? if not found then throw exception
      *
      * @return boolean true if exist
-     * @throw InvalidArgumentException in strict mode and variable not found
-     */ 
+     * @throws InvalidArgumentException in strict mode and variable not found
+     */
     private function _findVariableInContext($variable, $inside, $strict = false)
     {
         $value = '';
@@ -242,7 +251,7 @@ class Context
                 $value = $variable->$inside;
             } elseif (is_callable(array($variable, $inside))) {
                 $value = call_user_func(array($variable, $inside));
-            }                
+            }
         } elseif ($inside === '.') {
             $value = $variable;
         } elseif ($strict) {
@@ -250,4 +259,5 @@ class Context
         }
         return $value;
     }
-}    
+
+}

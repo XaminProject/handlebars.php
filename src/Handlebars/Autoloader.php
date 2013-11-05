@@ -4,22 +4,25 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  * Changes to match xamin-std and handlebars made by xamin team
- * 
+ *
  * PHP version 5.3
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
 
+namespace Handlebars;
 
 /**
  * Autloader for handlebars.php
- * 
+ *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
@@ -28,7 +31,6 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-namespace Handlebars;
 
 class Autoloader
 {
@@ -38,12 +40,13 @@ class Autoloader
     /**
      * Autoloader constructor.
      *
-     * @param string $baseDir Handlebars library base directory (default: dirname(__FILE__).'/..')
+     * @param string $baseDir Handlebars library base directory default is
+     *                        __DIR__.'/..'
      */
     public function __construct($baseDir = null)
     {
         if ($baseDir === null) {
-            $this->_baseDir = dirname(__FILE__).'/..';
+            $this->_baseDir = __DIR__.'/..';
         } else {
             $this->_baseDir = rtrim($baseDir, '/');
         }
@@ -52,7 +55,8 @@ class Autoloader
     /**
      * Register a new instance as an SPL autoloader.
      *
-     * @param string $baseDir Handlebars library base directory (default: dirname(__FILE__).'/..')
+     * @param string $baseDir Handlebars library base directory, default is
+     *                        __DIR__.'/..'
      *
      * @return Handlebars_Autoloader Registered Autoloader instance
      */
@@ -86,4 +90,5 @@ class Autoloader
             include $file;
         }
     }
+
 }

@@ -1,23 +1,27 @@
 <?php
 /**
  * This file is part of Handlebars-php
- * Base on mustache-php https://github.com/bobthecow/mustache.php
+ * Based on mustache-php https://github.com/bobthecow/mustache.php
  *
  * PHP version 5.3
  *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
 
+namespace Handlebars;
+use Handlebars\Loader\StringLoader;
+use Handlebars\Cache\Dummy;
 
 /**
- * Handlebars parser (infact its a mustache parser)
- * This class is responsible for turning raw template source into a set of Mustache tokens.
+ * Handlebars template engine, based on mustache.
  *
  * @category  Xamin
  * @package   Handlebars
@@ -27,20 +31,25 @@
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-namespace Handlebars;
-use Handlebars\Loader\StringLoader;
-use Handlebars\Cache\Dummy;
 
 class Handlebars
 {
-    private static $instance = false;
+    private static $_instance = false;
     const VERSION = '1.0.0';
 
-    public static function factory ($options=array()) {
-        if (self::$instance === false) {
-            self::$instance = new Handlebars($options);
+    /**
+     * factory method
+     *
+     * @param array $options see __construct's options parameter
+     *
+     * @return void
+     */
+    public static function factory ($options=array())
+    {
+        if (self::$_instance === false) {
+            self::$_instance = new Handlebars($options);
         }
-        return self::$instance;
+        return self::$_instance;
     }
 
     /**
@@ -52,6 +61,7 @@ class Handlebars
      * @var Parser
      */
     private $_parser;
+
     /**
      * @var Helpers
      */
@@ -71,20 +81,22 @@ class Handlebars
      * @var Cache
      */
     private $_cache;
+
     /**
      * @var callable escape function to use
      */
     private $_escape = 'htmlspecialchars';
 
     /**
-     * @var array parametes to pass to escape function, script prepend string to this array
+     * @var array parametes to pass to escape function
      */
     private $_escapeArgs = array (
         ENT_COMPAT,
         'UTF-8'
-        );
+    );
 
     private $_aliases = array();
+
     /**
      * Handlebars engine constructor
      * $options array can contain :
@@ -117,7 +129,9 @@ class Handlebars
 
         if (isset($options['escape'])) {
             if (!is_callable($options['escape'])) {
-                throw new \InvalidArgumentException('Handlebars Constructor "escape" option must be callable');
+                throw new \InvalidArgumentException(
+                    'Handlebars Constructor "escape" option must be callable'
+                );
             }
 
             $this->_escape = $options['escape'];
@@ -323,7 +337,9 @@ class Handlebars
     public function setEscape($escape)
     {
         if (!is_callable($escape)) {
-            throw new \InvalidArgumentException('Escape function must be a callable');
+            throw new \InvalidArgumentException(
+                'Escape function must be a callable'
+            );
         }
         $this->_escape = $escape;
     }
@@ -369,7 +385,8 @@ class Handlebars
     /**
      * Get the current Handlebars Tokenizer instance.
      *
-     * If no Tokenizer instance has been explicitly specified, this method will instantiate and return a new one.
+     * If no Tokenizer instance has been explicitly specified, this method will
+     * instantiate and return a new one.
      *
      * @return Tokenizer
      */
@@ -396,7 +413,8 @@ class Handlebars
     /**
      * Get the current Handlebars Parser instance.
      *
-     * If no Parser instance has been explicitly specified, this method will instantiate and return a new one.
+     * If no Parser instance has been explicitly specified, this method will
+     * instantiate and return a new one.
      *
      * @return Parser
      */
@@ -497,4 +515,5 @@ class Handlebars
         }
         return $tree;
     }
+
 }
