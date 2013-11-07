@@ -3,6 +3,8 @@
     "description": "Handlebars processor for php",
     "homepage": "https://github.com/XaminProject/handlebars.php",
     "type": "library",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "license": "MIT",
     "authors": [
         {
@@ -14,8 +16,15 @@
             "email": "everplays@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.8.*"
+    },
     "autoload": {
-        "psr-0": { "Handlebars": "src/" }
+        "psr-0": {
+            "Handlebars": "src/"
+        }
     }
 }
