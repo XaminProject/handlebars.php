@@ -1,6 +1,6 @@
 Handlebars.php
 ==============
-
+[![Build Status](https://travis-ci.org/XaminProject/handlebars.php.png?branch=master)](https://travis-ci.org/XaminProject/handlebars.php)
 installation
 ------------
 
