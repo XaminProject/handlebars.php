@@ -1,3 +1,4 @@
 <?php
 
-$loader = include __DIR__ . "/../vendor/autoload.php";
+$base = __DIR__ . "/../../src";
+$loader = new \Handlebars\Autoloader($base); 
