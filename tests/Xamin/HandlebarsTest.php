@@ -163,7 +163,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     {
         $path = sys_get_temp_dir() . '/__cache__handlebars';
 
-        $this->delTree($path);
+        @$this->delTree($path);
 
         $dummy = new \Handlebars\Cache\Disk($path);
         $engine = new \Handlebars\Handlebars(array('cache' => $dummy));
