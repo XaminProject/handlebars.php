@@ -41,12 +41,12 @@ class Context
     protected $stack = array();
 
     /**
-     * @var index stack for sections
+     * @var array index stack for sections
      */
     protected $index = array();
 
     /**
-     * @var key stack for objects
+     * @var array key stack for objects
      */
     protected $key = array();
 
@@ -180,8 +180,8 @@ class Context
      * @param string  $variableName variavle name to get from current context
      * @param boolean $strict       strict search? if not found then throw exception
      *
+     * @throws \InvalidArgumentException in strict mode and variable not found
      * @return mixed
-     * @throws InvalidArgumentException in strict mode and variable not found
      */
     public function get($variableName, $strict = false)
     {
@@ -234,8 +234,8 @@ class Context
      * @param string  $inside   property/method to check
      * @param boolean $strict   strict search? if not found then throw exception
      *
+     * @throws \InvalidArgumentException in strict mode and variable not found
      * @return boolean true if exist
-     * @throws InvalidArgumentException in strict mode and variable not found
      */
     private function _findVariableInContext($variable, $inside, $strict = false)
     {

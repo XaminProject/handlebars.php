@@ -108,6 +108,8 @@ class Handlebars
      * cache          => Cache object
      *
      * @param array $options array of options to set
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct(array $options = array())
     {
@@ -332,6 +334,7 @@ class Handlebars
      *
      * @param callable $escape function
      *
+     * @throws \InvalidArgumentException
      * @return void
      */
     public function setEscape($escape)
@@ -347,7 +350,7 @@ class Handlebars
     /**
      * Get current escape function
      *
-     * @return callable
+     * @return array
      */
     public function getEscapeArgs()
     {

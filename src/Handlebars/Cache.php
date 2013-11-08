@@ -40,7 +40,7 @@ interface Cache
      *
      * @param string $name Cache id
      *
-     * @return data on hit, boolean false on cache not found
+     * @return mixed data on hit, boolean false on cache not found
      */
     public function get($name);
 

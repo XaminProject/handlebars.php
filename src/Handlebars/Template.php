@@ -111,7 +111,7 @@ class Template
     /**
      * get current stop token
      *
-     * @return string|false
+     * @return string|bool
      */
 
     public function getStopToken()
@@ -119,11 +119,13 @@ class Template
         $topStack = end($this->_stack);
         return $topStack[2];
     }
+
     /**
      * Render top tree
      *
      * @param mixed $context current context
      *
+     * @throws \RuntimeException
      * @return string
      */
     public function render($context)
@@ -234,6 +236,7 @@ class Template
      * @param Context $context current context
      * @param array   $current section node data
      *
+     * @throws \RuntimeException
      * @return string the result
      */
     private function _section(Context $context, $current)
@@ -252,7 +255,7 @@ class Template
             }
             $params = array(
                 $this,  //First argument is this template
-                $context, //Secound is current context
+                $context, //Second is current context
                 $current[Tokenizer::ARGS],  //Arguments
                 $source
                 );
@@ -268,13 +271,13 @@ class Template
             // no argument at all.
             try {
                 $sectionVar = $context->get($sectionName, true);
-            } catch (InvalidArgumentException $e) {
+            } catch (\InvalidArgumentException $e) {
                 throw new \RuntimeException(
                     $sectionName . ' is not registered as a helper'
                 );
             }
             $buffer = '';
-            if (is_array($sectionVar) || $sectionVar instanceof Traversable) {
+            if (is_array($sectionVar) || $sectionVar instanceof \Traversable) {
                 foreach ($sectionVar as $index => $d) {
                     $context->pushIndex($index);
                     $context->push($d);
@@ -313,7 +316,7 @@ class Template
         if (!$data) {
             return $this->render($context);
         } else {
-            //No need to disacard here, since itshas no else
+            //No need to discard here, since it has no else
             return '';
         }
     }
@@ -326,7 +329,7 @@ class Template
      *
      * @return string the result
      */
-    private function _partial($context, $current)
+    private function _partial(Context $context, $current)
     {
         $partial = $this->handlebars->loadPartial($current[Tokenizer::NAME]);
 
@@ -346,7 +349,7 @@ class Template
      *
      * @return string the result
      */
-    private function _variables($context, $current, $escaped)
+    private function _variables(Context $context, $current, $escaped)
     {
         $name = $current[Tokenizer::NAME];
         $value = $context->get($name);
@@ -366,5 +369,4 @@ class Template
         }
         return $value;
     }
-
 }

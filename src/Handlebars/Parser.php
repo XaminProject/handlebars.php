@@ -51,12 +51,12 @@ class Parser
     /**
      * Helper method for recursively building a parse tree.
      *
-     * @param ArrayIterator $tokens Stream of  tokens
+     * @param \ArrayIterator $tokens Stream of tokens
      *
+     * @throws \LogicException when nesting errors or mismatched section tags
+     * are encountered.
      * @return array Token parse tree
      *
-     * @throws LogicException when nesting errors or mismatched section tags
-     * are encountered.
      */
     private function _buildTree(\ArrayIterator $tokens)
     {
@@ -70,32 +70,31 @@ class Parser
                 continue;
             } else {
                 switch ($token[Tokenizer::TYPE]) {
-                case Tokenizer::T_END_SECTION:
-                    $newNodes = array ();
-                    $continue = true;
-                    do {
-                        $result = array_pop($stack);
-                        if ($result === null) {
-                            throw new \LogicException(
-                                'Unexpected closing tag: /'. $token[Tokenizer::NAME]
-                            );
-                        }
+                    case Tokenizer::T_END_SECTION:
+                        $newNodes = array();
+                        do {
+                            $result = array_pop($stack);
+                            if ($result === null) {
+                                throw new \LogicException(
+                                    'Unexpected closing tag: /' . $token[Tokenizer::NAME]
+                                );
+                            }
 
-                        if (!array_key_exists(Tokenizer::NODES, $result)
-                            && isset($result[Tokenizer::NAME])
-                            && $result[Tokenizer::NAME] == $token[Tokenizer::NAME]
-                        ) {
-                            $result[Tokenizer::NODES] = $newNodes;
-                            $result[Tokenizer::END]   = $token[Tokenizer::INDEX];
-                            array_push($stack, $result);
-                            break 2;
-                        } else {
-                            array_unshift($newNodes, $result);
-                        }
-                    } while (true);
-                    break;
-                default:
-                    array_push($stack, $token);
+                            if (!array_key_exists(Tokenizer::NODES, $result)
+                                && isset($result[Tokenizer::NAME])
+                                && $result[Tokenizer::NAME] == $token[Tokenizer::NAME]
+                            ) {
+                                $result[Tokenizer::NODES] = $newNodes;
+                                $result[Tokenizer::END] = $token[Tokenizer::INDEX];
+                                array_push($stack, $result);
+                                break 2;
+                            } else {
+                                array_unshift($newNodes, $result);
+                            }
+                        } while (true);
+                        break;
+                    default:
+                        array_push($stack, $token);
                 }
             }
 

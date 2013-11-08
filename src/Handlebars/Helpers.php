@@ -46,10 +46,10 @@ class Helpers
     /**
      * Create new helper container class
      *
-     * @param array $helpers  array of name=>$value helpers
-     * @param array $defaults add defaults helper (if, unless, each,with)
+     * @param array      $helpers  array of name=>$value helpers
+     * @param array|bool $defaults add defaults helper (if, unless, each,with)
      *
-     * @throws InvalidArgumentException when $helpers is not an array
+     * @throws \InvalidArgumentException when $helpers is not an array
      * (or traversable) or helper is not a callable
      */
     public function __construct($helpers = null, $defaults = true)
@@ -58,7 +58,7 @@ class Helpers
             $this->addDefaultHelpers();
         }
         if ($helpers != null) {
-            if (!is_array($helpers) && !$helpers instanceof Traversable) {
+            if (!is_array($helpers) && !$helpers instanceof \Traversable) {
                 throw new \InvalidArgumentException(
                     'HelperCollection constructor expects an array of helpers'
                 );
@@ -75,18 +75,17 @@ class Helpers
      * Needed for compatibility with PHP 5.2 since it doesn't support anonymous
      * functions.
      *
-     * @param Handlebars\Template $template template that is being rendered
-     * @param Handlebars\Context  $context  context object
-     * @param array               $args     passed arguments to helper
-     * @param string              $source   part of template that is wrapped
-     * within helper
+     * @param \Handlebars\Template $template template that is being rendered
+     * @param \Handlebars\Context  $context  context object
+     * @param array                $args     passed arguments to helper
+     * @param string               $source   part of template that is wrapped
+     *                                       within helper
      *
      * @return mixed
      */
     public static function helperIf($template, $context, $args, $source)
     {
         $tmp = $context->get($args);
-        $buffer = '';
 
         if ($tmp) {
             $template->setStopToken('else');
@@ -99,6 +98,7 @@ class Helpers
             $template->setStopToken(false);
             $buffer = $template->render($context);
         }
+
         return $buffer;
     }
 
@@ -108,11 +108,11 @@ class Helpers
      * Needed for compatibility with PHP 5.2 since it doesn't support anonymous
      * functions.
      *
-     * @param Handlebars\Template $template template that is being rendered
-     * @param Handlebars\Context  $context  context object
-     * @param array               $args     passed arguments to helper
-     * @param string              $source   part of template that is wrapped
-     * within helper
+     * @param \Handlebars\Template $template template that is being rendered
+     * @param \Handlebars\Context  $context  context object
+     * @param array                $args     passed arguments to helper
+     * @param string               $source   part of template that is wrapped
+     *                                       within helper
      *
      * @return mixed
      */
@@ -120,11 +120,11 @@ class Helpers
     {
         $tmp = $context->get($args);
         $buffer = '';
-        if (is_array($tmp) || $tmp instanceof Traversable) {
-            $islist = ( array_keys($tmp) == range(0, count($tmp) - 1) );
+        if (is_array($tmp) || $tmp instanceof \Traversable) {
+            $islist = (array_keys($tmp) == range(0, count($tmp) - 1));
 
             foreach ($tmp as $key => $var) {
-                if ( $islist ) {
+                if ($islist) {
                     $context->pushIndex($key);
                 } else {
                     $context->pushKey($key);
@@ -132,13 +132,14 @@ class Helpers
                 $context->push($var);
                 $buffer .= $template->render($context);
                 $context->pop();
-                if ( $islist ) {
+                if ($islist) {
                     $context->popIndex();
                 } else {
                     $context->popKey();
                 }
             }
         }
+
         return $buffer;
     }
 
@@ -147,11 +148,11 @@ class Helpers
      * Needed for compatibility with PHP 5.2 since it doesn't support anonymous
      * functions.
      *
-     * @param Handlebars\Template $template template that is being rendered
-     * @param Handlebars\Context  $context  context object
-     * @param array               $args     passed arguments to helper
-     * @param string              $source   part of template that is wrapped
-     * within helper
+     * @param \Handlebars\Template $template template that is being rendered
+     * @param \Handlebars\Context  $context  context object
+     * @param array                $args     passed arguments to helper
+     * @param string               $source   part of template that is wrapped
+     *                                       within helper
      *
      * @return mixed
      */
@@ -162,6 +163,7 @@ class Helpers
         if (!$tmp) {
             $buffer = $template->render($context);
         }
+
         return $buffer;
     }
 
@@ -170,11 +172,11 @@ class Helpers
      * Needed for compatibility with PHP 5.2 since it doesn't support anonymous
      * functions.
      *
-     * @param Handlebars\Template $template template that is being rendered
-     * @param Handlebars\Context  $context  context object
-     * @param array               $args     passed arguments to helper
-     * @param string              $source   part of template that is wrapped
-     * within helper
+     * @param \Handlebars\Template $template template that is being rendered
+     * @param \Handlebars\Context  $context  context object
+     * @param array                $args     passed arguments to helper
+     * @param string               $source   part of template that is wrapped
+     *                                       within helper
      *
      * @return mixed
      */
@@ -184,6 +186,7 @@ class Helpers
         $context->push($tmp);
         $buffer = $template->render($context);
         $context->pop();
+
         return $buffer;
     }
 
@@ -192,11 +195,11 @@ class Helpers
      * Needed for compatibility with PHP 5.2 since it doesn't support anonymous
      * functions.
      *
-     * @param Handlebars\Template $template template that is being rendered
-     * @param Handlebars\Context  $context  context object
-     * @param array               $args     passed arguments to helper
-     * @param string              $source   part of template that is wrapped
-     * within helper
+     * @param \Handlebars\Template $template template that is being rendered
+     * @param \Handlebars\Context  $context  context object
+     * @param array                $args     passed arguments to helper
+     * @param string               $source   part of template that is wrapped
+     *                                       within helper
      *
      * @return mixed
      */
@@ -245,10 +248,10 @@ class Helpers
      * @param string   $name   helper name
      * @param callable $helper a function as a helper
      *
+     * @throws \InvalidArgumentException if $helper is not a callable
      * @return void
-     * @throws InvalidArgumentException if $helper is not a callable
      */
-    public function add($name ,$helper)
+    public function add($name, $helper)
     {
         if (!is_callable($helper)) {
             throw new \InvalidArgumentException("$name Helper is not a callable.");
@@ -273,14 +276,15 @@ class Helpers
      *
      * @param string $name helper name
      *
+     * @throws \InvalidArgumentException if $name is not available
      * @return callable helper function
-     * @throws InvalidArgumentException if $name is not available
      */
     public function __get($name)
     {
         if (!$this->has($name)) {
-            throw new \InvalidArgumentException('Unknow helper :' . $name);
+            throw new \InvalidArgumentException('Unknown helper :' . $name);
         }
+
         return $this->helpers[$name];
     }
 
@@ -304,18 +308,17 @@ class Helpers
      * @param callable $helper a function as a helper
      *
      * @return void
-     * @throws InvalidArgumentException if $helper is not a callable
      */
-    public function __set($name ,$helper)
+    public function __set($name, $helper)
     {
-        $this->add($name, $helpers);
+        $this->add($name, $helper);
     }
 
 
     /**
      * Unset a helper
      *
-     * @param string $name helpername to remove
+     * @param string $name helper name to remove
      *
      * @return void
      */
@@ -329,8 +332,8 @@ class Helpers
      *
      * @param string $name helper name
      *
+     * @throws \InvalidArgumentException if the requested helper is not present.
      * @return void
-     * @throws InvalidArgumentException if the requested helper is not present.
      */
     public function remove($name)
     {

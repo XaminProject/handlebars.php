@@ -43,7 +43,7 @@ class Autoloader
      * @param string $baseDir Handlebars library base directory default is
      *                        __DIR__.'/..'
      */
-    public function __construct($baseDir = null)
+    protected function __construct($baseDir = null)
     {
         if ($baseDir === null) {
             $this->_baseDir = realpath(__DIR__.'/..');
@@ -58,7 +58,7 @@ class Autoloader
      * @param string $baseDir Handlebars library base directory, default is
      *                        __DIR__.'/..'
      *
-     * @return Handlebars\Autoloader Registered Autoloader instance
+     * @return \Handlebars\Autoloader Registered Autoloader instance
      */
     public static function register($baseDir = null)
     {
