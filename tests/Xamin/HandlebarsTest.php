@@ -108,7 +108,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             ),
             array(
                 '{{#each data}}{{this}}{{/each}}',
-                array('data' => array(1,2,3,4)),
+                array('data' => array(1, 2, 3, 4)),
                 '1234'
             ),
         );
@@ -119,11 +119,56 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      */
     public function testHelpersManagement()
     {
-        $helpers = new \Handlebars\Helpers(array('test'=> function(){}), false);
-        $engine = new \Handlebars\Handlebars(['helpers' => $helpers]);
+        $helpers = new \Handlebars\Helpers(array('test' => function () {
+        }), false);
+        $engine = new \Handlebars\Handlebars(array('helpers' => $helpers));
         $this->assertTrue(is_callable($engine->getHelper('test')));
         $this->assertTrue($engine->hasHelper('test'));
         $engine->removeHelper('test');
         $this->assertFalse($engine->hasHelper('test'));
+    }
+
+    /**
+     * Custom helper test
+     */
+    public function testCustomHelper()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        $engine->addHelper('test', function () {
+            return 'Test helper is called';
+        });
+        $this->assertEquals('Test helper is called', $engine->render('{{#test}}', array()));
+    }
+
+    /**
+     * @param $dir
+     *
+     * @return bool
+     */
+    private function delTree($dir)
+    {
+        $files = array_diff(scandir($dir), array('.', '..'));
+        foreach ($files as $file) {
+            (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
+        }
+
+        return rmdir($dir);
+    }
+
+    /**
+     * Its not a good test :) but ok
+     */
+    public function testCacheSystem()
+    {
+        $path = sys_get_temp_dir() . '/__cache__handlebars';
+
+        $this->delTree($path);
+
+        $dummy = new \Handlebars\Cache\Disk($path);
+        $engine = new \Handlebars\Handlebars(array('cache' => $dummy));
+        $this->assertEquals(0, count(glob($path . '/*')));
+        $engine->render('test', array());
+        $this->assertEquals(1, count(glob($path . '/*')));
     }
 }
