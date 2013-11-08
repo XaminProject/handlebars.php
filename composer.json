@@ -20,7 +20,8 @@
 
     },
     "require-dev": {
-        "phpunit/phpunit": "3.8.*"
+        "phpunit/phpunit": "3.7.*",
+        "squizlabs/php_codesniffer": "1.*"
     },
     "autoload": {
         "psr-0": {
