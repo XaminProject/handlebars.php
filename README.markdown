@@ -1,6 +1,8 @@
 Handlebars.php
 ==============
 [![Build Status](https://travis-ci.org/XaminProject/handlebars.php.png?branch=master)](https://travis-ci.org/XaminProject/handlebars.php)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/XaminProject/handlebars.php/badges/quality-score.png?s=23a379f19b523498926eb3f2b60195815632e8ef)](https://scrutinizer-ci.com/g/XaminProject/handlebars.php/)
+[![Code Coverage](https://scrutinizer-ci.com/g/XaminProject/handlebars.php/badges/coverage.png?s=9d6acd80ef2bda03cbd00a0cff35535614ce79ed)](https://scrutinizer-ci.com/g/XaminProject/handlebars.php/)
 installation
 ------------
 
