@@ -113,4 +113,17 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             ),
         );
     }
+
+    /**
+     * Management helpers
+     */
+    public function testHelpersManagement()
+    {
+        $helpers = new \Handlebars\Helpers(array('test'=> function(){}), false);
+        $engine = new \Handlebars\Handlebars(['helpers' => $helpers]);
+        $this->assertTrue(is_callable($engine->getHelper('test')));
+        $this->assertTrue($engine->hasHelper('test'));
+        $engine->removeHelper('test');
+        $this->assertFalse($engine->hasHelper('test'));
+    }
 }
