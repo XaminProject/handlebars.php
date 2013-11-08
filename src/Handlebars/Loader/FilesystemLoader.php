@@ -31,7 +31,6 @@ use Handlebars\String;
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   Release: @package_version@
  * @link      http://xamin.ir *
- * @implements Loader
  */
 
 class FilesystemLoader implements Loader
@@ -54,7 +53,7 @@ class FilesystemLoader implements Loader
      * @param string|array $baseDirs A path contain template files or array of paths
      * @param array        $options  Array of Loader options (default: array())
      *
-     * @throws RuntimeException if $baseDir does not exist.
+     * @throws \RuntimeException if $baseDir does not exist.
      */
     public function __construct($baseDirs, array $options = array())
     {
@@ -101,6 +100,7 @@ class FilesystemLoader implements Loader
         if (!isset($this->_templates[$name])) {
             $this->_templates[$name] = $this->loadFile($name);
         }
+
         return new String($this->_templates[$name]);
     }
 
@@ -109,8 +109,8 @@ class FilesystemLoader implements Loader
      *
      * @param string $name template name
      *
+     * @throws \InvalidArgumentException if a template file is not found.
      * @return string Handlebars Template source
-     * @throws InvalidArgumentException if a template file is not found.
      */
     protected function loadFile($name)
     {
@@ -149,11 +149,11 @@ class FilesystemLoader implements Loader
                 $fileName .= $this->_extension;
             }
             if (file_exists($fileName)) {
-                break;
+                return $fileName;
             }
-            $fileName = false;
         }
-        return $fileName;
+
+        return false;
     }
 
 }

@@ -169,6 +169,7 @@ class Context
     {
         $value = $this->get($variableName);
         $this->push($value);
+
         return $value;
     }
 
@@ -198,6 +199,7 @@ class Context
                     'can not find variable in context'
                 );
             }
+
             return '';
         }
         end($this->stack);
@@ -212,6 +214,7 @@ class Context
                     'can not find variable in context'
                 );
             }
+
             return '';
         } elseif ($variableName == '.' || $variableName == 'this') {
             return $current;
@@ -224,6 +227,7 @@ class Context
                 $current = $this->_findVariableInContext($current, $chunk, $strict);
             }
         }
+
         return $current;
     }
 
@@ -240,7 +244,7 @@ class Context
     private function _findVariableInContext($variable, $inside, $strict = false)
     {
         $value = '';
-        if ( empty( $inside ) || ( $inside == 'this' ) ) {
+        if (empty($inside) || ($inside == 'this')) {
             return $variable;
         } elseif (is_array($variable)) {
             if (isset($variable[$inside])) {
@@ -257,6 +261,7 @@ class Context
         } elseif ($strict) {
             throw new \InvalidArgumentException('can not find variable in context');
         }
+
         return $value;
     }
 

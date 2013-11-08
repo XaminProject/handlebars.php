@@ -42,13 +42,14 @@ class Handlebars
      *
      * @param array $options see __construct's options parameter
      *
-     * @return void
+     * @return Handlebars
      */
-    public static function factory ($options=array())
+    public static function factory($options = array())
     {
         if (self::$_instance === false) {
             self::$_instance = new Handlebars($options);
         }
+
         return self::$_instance;
     }
 
@@ -90,7 +91,7 @@ class Handlebars
     /**
      * @var array parametes to pass to escape function
      */
-    private $_escapeArgs = array (
+    private $_escapeArgs = array(
         ENT_COMPAT,
         'UTF-8'
     );
@@ -193,6 +194,7 @@ class Handlebars
         if (!isset($this->_helpers)) {
             $this->_helpers = new Helpers();
         }
+
         return $this->_helpers;
     }
 
@@ -218,7 +220,7 @@ class Handlebars
      */
     public function getHelper($name)
     {
-        return $this->getHelpers()->get($name);
+        return $this->getHelpers()->__get($name);
     }
 
     /**
@@ -267,6 +269,7 @@ class Handlebars
         if (!isset($this->_loader)) {
             $this->_loader = new StringLoader();
         }
+
         return $this->_loader;
     }
 
@@ -292,6 +295,7 @@ class Handlebars
         if (!isset($this->_partialsLoader)) {
             $this->_partialsLoader = new StringLoader();
         }
+
         return $this->_partialsLoader;
     }
 
@@ -317,8 +321,10 @@ class Handlebars
         if (!isset($this->_cache)) {
             $this->_cache = new Dummy();
         }
+
         return $this->_cache;
     }
+
     /**
      * Get current escape function
      *
@@ -330,7 +336,7 @@ class Handlebars
     }
 
     /**
-     * Set current escpae function
+     * Set current escape function
      *
      * @param callable $escape function
      *
@@ -358,7 +364,7 @@ class Handlebars
     }
 
     /**
-     * Set current escpae function
+     * Set current escape function
      *
      * @param array $escapeArgs arguments to pass as extra arg to function
      *
@@ -401,6 +407,7 @@ class Handlebars
 
         return $this->_tokenizer;
     }
+
     /**
      * Set the Handlebars Parser instance.
      *
@@ -429,6 +436,7 @@ class Handlebars
 
         return $this->_parser;
     }
+
     /**
      * Load a template by name with current template loader
      *
@@ -440,6 +448,7 @@ class Handlebars
     {
         $source = $this->getLoader()->load($name);
         $tree = $this->_tokenize($source);
+
         return new Template($this, $tree, $source);
     }
 
@@ -457,6 +466,7 @@ class Handlebars
         }
         $source = $this->getPartialsLoader()->load($name);
         $tree = $this->_tokenize($source);
+
         return new Template($this, $tree, $source);
     }
 
@@ -497,6 +507,7 @@ class Handlebars
     public function loadString($source)
     {
         $tree = $this->_tokenize($source);
+
         return new Template($this, $tree, $source);
     }
 
@@ -516,6 +527,7 @@ class Handlebars
             $tree = $this->getParser()->parse($tokens);
             $this->getCache()->set($hash, $tree);
         }
+
         return $tree;
     }
 

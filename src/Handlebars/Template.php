@@ -60,7 +60,7 @@ class Template
         $this->handlebars = $engine;
         $this->tree = $tree;
         $this->source = $source;
-        array_push($this->_stack, array (0, $this->getTree(), false));
+        array_push($this->_stack, array(0, $this->getTree(), false));
     }
 
     /**
@@ -117,6 +117,7 @@ class Template
     public function getStopToken()
     {
         $topStack = end($this->_stack);
+
         return $topStack[2];
     }
 
@@ -134,7 +135,7 @@ class Template
             $context = new Context($context);
         }
         $topTree = end($this->_stack); // never pop a value from stack
-        list($index ,$tree, $stop) = $topTree;
+        list($index, $tree, $stop) = $topTree;
 
         $buffer = '';
         while (array_key_exists($index, $tree)) {
@@ -192,6 +193,7 @@ class Template
             $newStack[2] = false; //No stop token from now on
             array_push($this->_stack, $newStack);
         }
+
         return $buffer;
     }
 
@@ -208,7 +210,7 @@ class Template
             $context = new Context($context);
         }
         $topTree = end($this->_stack); //This method never pop a value from stack
-        list($index ,$tree, $stop) = $topTree;
+        list($index, $tree, $stop) = $topTree;
         while (array_key_exists($index, $tree)) {
             $current = $tree[$index];
             $index++;
@@ -227,6 +229,7 @@ class Template
             $newStack[2] = false;
             array_push($this->_stack, $newStack);
         }
+
         return '';
     }
 
@@ -254,11 +257,11 @@ class Template
                 $source = '';
             }
             $params = array(
-                $this,  //First argument is this template
+                $this, //First argument is this template
                 $context, //Second is current context
-                $current[Tokenizer::ARGS],  //Arguments
+                $current[Tokenizer::ARGS], //Arguments
                 $source
-                );
+            );
 
             $return = call_user_func_array($helpers->$sectionName, $params);
             if ($return instanceof String) {
@@ -293,6 +296,7 @@ class Template
             } elseif ($sectionVar) {
                 $buffer = $this->render($context);
             }
+
             return $buffer;
         } else {
             throw new \RuntimeException(
@@ -333,7 +337,7 @@ class Template
     {
         $partial = $this->handlebars->loadPartial($current[Tokenizer::NAME]);
 
-        if ( $current[Tokenizer::ARGS] ) {
+        if ($current[Tokenizer::ARGS]) {
             $context = $context->get($current[Tokenizer::ARGS]);
         }
 
@@ -353,10 +357,10 @@ class Template
     {
         $name = $current[Tokenizer::NAME];
         $value = $context->get($name);
-        if ( $name == '@index' ) {
+        if ($name == '@index') {
             return $context->lastIndex();
         }
-        if ( $name == '@key' ) {
+        if ($name == '@key') {
             return $context->lastKey();
         }
         if ($escaped) {
@@ -367,6 +371,7 @@ class Template
                 array_values($args)
             );
         }
+
         return $value;
     }
 }

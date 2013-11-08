@@ -38,56 +38,56 @@ class Tokenizer
 {
 
     // Finite state machine states
-    const IN_TEXT     = 0;
+    const IN_TEXT = 0;
     const IN_TAG_TYPE = 1;
-    const IN_TAG      = 2;
+    const IN_TAG = 2;
 
     // Token types
-    const T_SECTION      = '#';
-    const T_INVERTED     = '^';
-    const T_END_SECTION  = '/';
-    const T_COMMENT      = '!';
+    const T_SECTION = '#';
+    const T_INVERTED = '^';
+    const T_END_SECTION = '/';
+    const T_COMMENT = '!';
     // XXX: remove partials support from tokenizer and make it a helper?
-    const T_PARTIAL      = '>';
-    const T_PARTIAL_2    = '<';
+    const T_PARTIAL = '>';
+    const T_PARTIAL_2 = '<';
     const T_DELIM_CHANGE = '=';
-    const T_ESCAPED      = '_v';
-    const T_UNESCAPED    = '{';
-    const T_UNESCAPED_2  = '&';
-    const T_TEXT         = '_t';
+    const T_ESCAPED = '_v';
+    const T_UNESCAPED = '{';
+    const T_UNESCAPED_2 = '&';
+    const T_TEXT = '_t';
 
     // Valid token types
     private static $_tagTypes = array(
-        self::T_SECTION      => true,
-        self::T_INVERTED     => true,
-        self::T_END_SECTION  => true,
-        self::T_COMMENT      => true,
-        self::T_PARTIAL      => true,
-        self::T_PARTIAL_2    => true,
+        self::T_SECTION => true,
+        self::T_INVERTED => true,
+        self::T_END_SECTION => true,
+        self::T_COMMENT => true,
+        self::T_PARTIAL => true,
+        self::T_PARTIAL_2 => true,
         self::T_DELIM_CHANGE => true,
-        self::T_ESCAPED      => true,
-        self::T_UNESCAPED    => true,
-        self::T_UNESCAPED_2  => true,
+        self::T_ESCAPED => true,
+        self::T_UNESCAPED => true,
+        self::T_UNESCAPED_2 => true,
     );
 
     // Interpolated tags
     private static $_interpolatedTags = array(
-        self::T_ESCAPED      => true,
-        self::T_UNESCAPED    => true,
-        self::T_UNESCAPED_2  => true,
+        self::T_ESCAPED => true,
+        self::T_UNESCAPED => true,
+        self::T_UNESCAPED_2 => true,
     );
 
     // Token properties
-    const TYPE   = 'type';
-    const NAME   = 'name';
-    const OTAG   = 'otag';
-    const CTAG   = 'ctag';
-    const INDEX  = 'index';
-    const END    = 'end';
+    const TYPE = 'type';
+    const NAME = 'name';
+    const OTAG = 'otag';
+    const CTAG = 'ctag';
+    const INDEX = 'index';
+    const END = 'end';
     const INDENT = 'indent';
-    const NODES  = 'nodes';
-    const VALUE  = 'value';
-    const ARGS   = 'args';
+    const NODES = 'nodes';
+    const VALUE = 'value';
+    const ARGS = 'args';
 
     protected $state;
     protected $tagType;
@@ -164,7 +164,7 @@ class Tokenizer
                 if ($this->tagChange($this->ctag, $text, $i)) {
                     // Sections (Helpers) can accept parameters
                     // Same thing for Partials (little known fact)
-                    if ( ($this->tagType == self::T_SECTION)
+                    if (($this->tagType == self::T_SECTION)
                         || ($this->tagType == self::T_PARTIAL)
                         || ($this->tagType == self::T_PARTIAL_2)
                     ) {
@@ -176,14 +176,14 @@ class Tokenizer
                         $this->buffer = $newBuffer[0];
                     }
                     $t = array(
-                        self::TYPE  => $this->tagType,
-                        self::NAME  => trim($this->buffer),
-                        self::OTAG  => $this->otag,
-                        self::CTAG  => $this->ctag,
+                        self::TYPE => $this->tagType,
+                        self::NAME => trim($this->buffer),
+                        self::OTAG => $this->otag,
+                        self::CTAG => $this->ctag,
                         self::INDEX => ($this->tagType == self::T_END_SECTION) ?
-                                          $this->seenTag - strlen($this->otag) :
-                                          $i + strlen($this->ctag),
-                        );
+                            $this->seenTag - strlen($this->otag) :
+                            $i + strlen($this->ctag),
+                    );
                     if (isset($args)) {
                         $t[self::ARGS] = $args;
                     }
@@ -226,15 +226,15 @@ class Tokenizer
      */
     protected function reset()
     {
-        $this->state     = self::IN_TEXT;
-        $this->tagType   = null;
-        $this->tag       = null;
-        $this->buffer    = '';
-        $this->tokens    = array();
-        $this->seenTag   = false;
+        $this->state = self::IN_TEXT;
+        $this->tagType = null;
+        $this->tag = null;
+        $this->buffer = '';
+        $this->tokens = array();
+        $this->seenTag = false;
         $this->lineStart = 0;
-        $this->otag      = '{{';
-        $this->ctag      = '}}';
+        $this->otag = '{{';
+        $this->ctag = '}}';
     }
 
     /**
@@ -246,10 +246,10 @@ class Tokenizer
     {
         if (!empty($this->buffer)) {
             $this->tokens[] = array(
-                self::TYPE  => self::T_TEXT,
+                self::TYPE => self::T_TEXT,
                 self::VALUE => $this->buffer
             );
-            $this->buffer   = '';
+            $this->buffer = '';
         }
     }
 
@@ -305,7 +305,7 @@ class Tokenizer
             $this->tokens[] = array(self::TYPE => self::T_TEXT, self::VALUE => "\n");
         }
 
-        $this->seenTag   = false;
+        $this->seenTag = false;
         $this->lineStart = count($this->tokens);
     }
 
@@ -320,7 +320,7 @@ class Tokenizer
     protected function changeDelimiters($text, $index)
     {
         $startIndex = strpos($text, '=', $index) + 1;
-        $close      = '='.$this->ctag;
+        $close = '=' . $this->ctag;
         $closeIndex = strpos($text, $close, $index);
 
         list($otag, $ctag) = explode(

@@ -46,7 +46,7 @@ class Autoloader
     protected function __construct($baseDir = null)
     {
         if ($baseDir === null) {
-            $this->_baseDir = realpath(__DIR__.'/..');
+            $this->_baseDir = realpath(__DIR__ . '/..');
         } else {
             $this->_baseDir = rtrim($baseDir, '/');
         }

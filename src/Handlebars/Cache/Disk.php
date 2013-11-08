@@ -44,16 +44,19 @@ class Disk implements Cache
      * @param string $path   Filesystem path to the disk cache location
      * @param string $prefix optional file prefix, defaults to empty string
      * @param string $suffix optional file extension, defaults to empty string
+     *
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function __construct($path, $prefix = '', $suffix = '')
     {
         if (empty($path)) {
-            throw new InvalidArgumentException('Must specify disk cache path');
+            throw new \InvalidArgumentException('Must specify disk cache path');
         } elseif (!is_dir($path)) {
             @mkdir($path, 0777, true);
 
             if (!is_dir($path)) {
-                throw new RuntimeException('Could not create cache file path');
+                throw new \RuntimeException('Could not create cache file path');
             }
         }
 
@@ -82,7 +85,7 @@ class Disk implements Cache
      *
      * @param string $name Cache id
      *
-     * @return data on hit, boolean false on cache not found
+     * @return mixed data on hit, boolean false on cache not found
      */
     public function get($name)
     {

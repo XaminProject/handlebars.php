@@ -30,7 +30,6 @@ use Handlebars\String;
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   Release: @package_version@
  * @link      http://xamin.ir *
- * @implements Loader
  */
 
 class StringLoader implements Loader
