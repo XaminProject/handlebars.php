@@ -61,8 +61,8 @@ class FilesystemLoader implements Loader
             $baseDirs = array(rtrim(realpath($baseDirs), '/'));
         } else {
             foreach ($baseDirs as &$dir) {
-                $dir = array(rtrim(realpath($dir), '/'));
-            }
+                $dir = rtrim(realpath($dir), '/');
+            } unset( $dir );
         }
 
         $this->_baseDir = $baseDirs;
