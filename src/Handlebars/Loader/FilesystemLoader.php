@@ -10,6 +10,8 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Craig Bass <craig@clearbooks.co.uk>
+ * @author    ^^         <craig@devls.co.uk>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -61,8 +63,8 @@ class FilesystemLoader implements Loader
             $baseDirs = array(rtrim(realpath($baseDirs), '/'));
         } else {
             foreach ($baseDirs as &$dir) {
-                $dir = array(rtrim(realpath($dir), '/'));
-            }
+                $dir = rtrim(realpath($dir), '/');
+            } unset( $dir );
         }
 
         $this->_baseDir = $baseDirs;
