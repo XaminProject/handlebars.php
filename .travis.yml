@@ -3,5 +3,8 @@ php:
   - 5.3
   - 5.4
   - 5.5
+branches:
+  except:
+    - php-52
 before_script: composer install
 script: "./vendor/bin/phpunit && ./vendor/bin/phpcs -n src/"
