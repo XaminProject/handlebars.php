@@ -171,4 +171,55 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $engine->render('test', array());
         $this->assertEquals(1, count(glob($path . '/*')));
     }
+
+    /**
+     * Test file system loader
+     */
+    public function testFileSystemLoader()
+    {
+        $loader = new \Handlebars\Loader\FilesystemLoader(realpath(__DIR__ . '/../fixture/data'));
+        $engine = new \Handlebars\Handlebars();
+        $engine->setLoader($loader);
+        $this->assertEquals('test', $engine->render('loader', array()));
+    }
+
+    /**
+     * Test partial loader
+     */
+    public function testPartialLoader()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $partialLoader = new \Handlebars\Loader\FilesystemLoader(realpath(__DIR__ . '/../fixture/data'));
+        $engine = new \Handlebars\Handlebars();
+        $engine->setLoader($loader);
+        $engine->setPartialsLoader($partialLoader);
+
+        $this->assertEquals('test', $engine->render('{{>loader}}', array()));
+    }
+
+    /**
+     * test variable access
+     */
+    public function testVariableAccess()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars();
+        $engine->setLoader($loader);
+
+        $var = new \StdClass();
+        $var->x = 'var-x';
+        $var->y = array(
+            'z' => 'var-y-z'
+        );
+        $this->assertEquals('test', $engine->render('{{var}}', array('var' => 'test')));
+        $this->assertEquals('var-x', $engine->render('{{var.x}}', array('var' => $var)));
+        $this->assertEquals('var-y-z', $engine->render('{{var.y.z}}', array('var' => $var)));
+        // Access parent context in with helper
+        $this->assertEquals('var-x', $engine->render('{{#with var.y}}{{../var.x}}{{/with}}', array('var' => $var)));
+
+        $obj = new DateTime();
+        $time = $obj->getTimestamp();
+        $this->assertEquals($time, $engine->render('{{time.getTimestamp}}', array('time' => $obj)));
+
+    }
 }
