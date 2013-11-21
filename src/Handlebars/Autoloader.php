@@ -85,7 +85,11 @@ class Autoloader
             return;
         }
 
-        $file = sprintf('%s/%s.php', $this->_baseDir, str_replace('\\', '/', $class));
+        $file = sprintf(
+            '%s/%s.php',
+            $this->_baseDir,
+            str_replace('\\', '/', $class)
+        );
 
         if (is_file($file)) {
             include $file;

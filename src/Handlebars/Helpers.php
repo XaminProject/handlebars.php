@@ -47,7 +47,8 @@ class Helpers
      * Create new helper container class
      *
      * @param array      $helpers  array of name=>$value helpers
-     * @param array|bool $defaults add defaults helper (if, unless, each,with, bindAttr)
+     * @param array|bool $defaults add defaults helper
+     *          (if, unless, each,with, bindAttr)
      *
      * @throws \InvalidArgumentException when $helpers is not an array
      * (or traversable) or helper is not a callable
@@ -69,144 +70,6 @@ class Helpers
         }
     }
 
-    /**
-     * Create handler for the 'if' helper.
-     *
-     * Needed for compatibility with PHP 5.2 since it doesn't support anonymous
-     * functions.
-     *
-     * @param \Handlebars\Template $template template that is being rendered
-     * @param \Handlebars\Context  $context  context object
-     * @param array                $args     passed arguments to helper
-     * @param string               $source   part of template that is wrapped
-     *                                       within helper
-     *
-     * @return mixed
-     */
-    public static function helperIf($template, $context, $args, $source)
-    {
-        $tmp = $context->get($args);
-
-        if ($tmp) {
-            $template->setStopToken('else');
-            $buffer = $template->render($context);
-            $template->setStopToken(false);
-            $template->discard($context);
-        } else {
-            $template->setStopToken('else');
-            $template->discard($context);
-            $template->setStopToken(false);
-            $buffer = $template->render($context);
-        }
-
-        return $buffer;
-    }
-
-    /**
-     * Create handler for the 'each' helper.
-     *
-     * Needed for compatibility with PHP 5.2 since it doesn't support anonymous
-     * functions.
-     *
-     * @param \Handlebars\Template $template template that is being rendered
-     * @param \Handlebars\Context  $context  context object
-     * @param array                $args     passed arguments to helper
-     * @param string               $source   part of template that is wrapped
-     *                                       within helper
-     *
-     * @return mixed
-     */
-    public static function helperEach($template, $context, $args, $source)
-    {
-        $tmp = $context->get($args);
-        $buffer = '';
-        if (is_array($tmp) || $tmp instanceof \Traversable) {
-            $islist = (array_keys($tmp) == range(0, count($tmp) - 1));
-
-            foreach ($tmp as $key => $var) {
-                if ($islist) {
-                    $context->pushIndex($key);
-                } else {
-                    $context->pushKey($key);
-                }
-                $context->push($var);
-                $buffer .= $template->render($context);
-                $context->pop();
-                if ($islist) {
-                    $context->popIndex();
-                } else {
-                    $context->popKey();
-                }
-            }
-        }
-
-        return $buffer;
-    }
-
-    /**
-     * Create handler for the 'unless' helper.
-     * Needed for compatibility with PHP 5.2 since it doesn't support anonymous
-     * functions.
-     *
-     * @param \Handlebars\Template $template template that is being rendered
-     * @param \Handlebars\Context  $context  context object
-     * @param array                $args     passed arguments to helper
-     * @param string               $source   part of template that is wrapped
-     *                                       within helper
-     *
-     * @return mixed
-     */
-    public static function helperUnless($template, $context, $args, $source)
-    {
-        $tmp = $context->get($args);
-        $buffer = '';
-        if (!$tmp) {
-            $buffer = $template->render($context);
-        }
-
-        return $buffer;
-    }
-
-    /**
-     * Create handler for the 'with' helper.
-     * Needed for compatibility with PHP 5.2 since it doesn't support anonymous
-     * functions.
-     *
-     * @param \Handlebars\Template $template template that is being rendered
-     * @param \Handlebars\Context  $context  context object
-     * @param array                $args     passed arguments to helper
-     * @param string               $source   part of template that is wrapped
-     *                                       within helper
-     *
-     * @return mixed
-     */
-    public static function helperWith($template, $context, $args, $source)
-    {
-        $tmp = $context->get($args);
-        $context->push($tmp);
-        $buffer = $template->render($context);
-        $context->pop();
-
-        return $buffer;
-    }
-
-    /**
-     * Create handler for the 'bindAttr' helper.
-     * Needed for compatibility with PHP 5.2 since it doesn't support anonymous
-     * functions.
-     *
-     * @param \Handlebars\Template $template template that is being rendered
-     * @param \Handlebars\Context  $context  context object
-     * @param array                $args     passed arguments to helper
-     * @param string               $source   part of template that is wrapped
-     *                                       within helper
-     *
-     * @return mixed
-     */
-    public static function helperBindAttr($template, $context, $args, $source)
-    {
-        return $args;
-    }
 
     /**
      * Add default helpers (if unless each with bindAttr)
@@ -217,28 +80,115 @@ class Helpers
     {
         $this->add(
             'if',
-            array('Handlebars\Helpers', 'helperIf')
+            function ($template, $context, $args, $source) {
+                /**
+                 * @var $template \Handlebars\Template
+                 * @var $context \Handlebars\Context
+                 * @var $args array
+                 * @var $source string
+                 */
+                $tmp = $context->get($args);
+
+                if ($tmp) {
+                    $template->setStopToken('else');
+                    $buffer = $template->render($context);
+                    $template->setStopToken(false);
+                    $template->discard($context);
+                } else {
+                    $template->setStopToken('else');
+                    $template->discard($context);
+                    $template->setStopToken(false);
+                    $buffer = $template->render($context);
+                }
+
+                return $buffer;
+            }
         );
 
         $this->add(
             'each',
-            array('Handlebars\Helpers', 'helperEach')
+            function ($template, $context, $args, $source) {
+                /**
+                 * @var $template \Handlebars\Template
+                 * @var $context \Handlebars\Context
+                 * @var $args array
+                 * @var $source string
+                 */
+                $tmp = $context->get($args);
+                $buffer = '';
+                if (is_array($tmp) || $tmp instanceof \Traversable) {
+                    $islist = (array_keys($tmp) == range(0, count($tmp) - 1));
+
+                    foreach ($tmp as $key => $var) {
+                        if ($islist) {
+                            $context->pushIndex($key);
+                        } else {
+                            $context->pushKey($key);
+                        }
+                        $context->push($var);
+                        $buffer .= $template->render($context);
+                        $context->pop();
+                        if ($islist) {
+                            $context->popIndex();
+                        } else {
+                            $context->popKey();
+                        }
+                    }
+                }
+
+                return $buffer;
+            }
         );
 
         $this->add(
             'unless',
-            array('Handlebars\Helpers', 'helperUnless')
+            function ($template, $context, $args, $source) {
+                /**
+                 * @var $template \Handlebars\Template
+                 * @var $context \Handlebars\Context
+                 * @var $args array
+                 * @var $source string
+                 */
+                $tmp = $context->get($args);
+                $buffer = '';
+                if (!$tmp) {
+                    $buffer = $template->render($context);
+                }
+
+                return $buffer;
+            }
         );
 
         $this->add(
             'with',
-            array('Handlebars\Helpers', 'helperWith')
+            function ($template, $context, $args, $source) {
+                /**
+                 * @var $template \Handlebars\Template
+                 * @var $context \Handlebars\Context
+                 * @var $args array
+                 * @var $source string
+                 */
+                $tmp = $context->get($args);
+                $context->push($tmp);
+                $buffer = $template->render($context);
+                $context->pop();
+
+                return $buffer;
+            }
         );
 
         //Just for compatibility with ember
         $this->add(
             'bindAttr',
-            array('Handlebars\Helpers', 'helperBindAttr')
+            function ($template, $context, $args, $source) {
+                /**
+                 * @var $template \Handlebars\Template
+                 * @var $context \Handlebars\Context
+                 * @var $args array
+                 * @var $source string
+                 */
+                return $args;
+            }
         );
     }
 

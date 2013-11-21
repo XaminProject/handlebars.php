@@ -111,6 +111,17 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array('data' => array(1, 2, 3, 4)),
                 '1234'
             ),
+            array(
+                '{{#unless data}}ok{{/unless}}',
+                array('data' => true),
+                ''
+            ),
+            array(
+                '{{#unless data}}ok{{/unless}}',
+                array('data' => false),
+                'ok'
+            )
+
         );
     }
 
@@ -203,7 +214,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     public function testVariableAccess()
     {
         $loader = new \Handlebars\Loader\StringLoader();
-        $engine = new \Handlebars\Handlebars();
+        $engine = \Handlebars\Handlebars::factory();
         $engine->setLoader($loader);
 
         $var = new \StdClass();

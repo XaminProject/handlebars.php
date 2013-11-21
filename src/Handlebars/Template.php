@@ -200,15 +200,10 @@ class Template
     /**
      * Discard top tree
      *
-     * @param mixed $context current context
-     *
      * @return string
      */
-    public function discard($context)
+    public function discard()
     {
-        if (!$context instanceof Context) {
-            $context = new Context($context);
-        }
         $topTree = end($this->_stack); //This method never pop a value from stack
         list($index, $tree, $stop) = $topTree;
         while (array_key_exists($index, $tree)) {
