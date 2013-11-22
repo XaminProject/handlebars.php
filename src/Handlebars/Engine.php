@@ -478,7 +478,7 @@ class Handlebars_Engine
     private function _tokenize($source)
     {
         $hash = md5(sprintf('version: %s, data : %s', self::VERSION, $source));
-        $tree = false;//$this->getCache()->get($hash);
+        $tree = $this->getCache()->get($hash);
         if ($tree === false) {
             $tokens = $this->getTokenizer()->scan($source);
             $tree = $this->getParser()->parse($tokens);
