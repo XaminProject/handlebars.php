@@ -326,7 +326,7 @@ class Handlebars_Template
     }
 
     /**
-     * Process partial section
+     * Process variable section
      *
      * @param Handlebars_Context $context current context
      * @param array              $current section node data
@@ -336,13 +336,20 @@ class Handlebars_Template
      */
     private function _variables($context, $current, $escaped)
     {
-        $name = $current[Handlebars_Tokenizer::NAME];
-        $value = $context->get($name);
-        if( $name == '@index' ) {
-            return $context->lastIndex();
-        }
-        if( $name == '@key' ) {
-            return $context->lastKey();
+        if (isset($current[Handlebars_Tokenizer::ARGS])){
+            $newStack   = isset($current[Handlebars_Tokenizer::NODES]) ? $current[Handlebars_Tokenizer::NODES] : array();
+            array_push($this->_stack, array(0, $newStack, false));
+            $value      = $this->_section($context, $current);
+            array_pop($this->_stack);
+        } else {
+            $name = $current[Handlebars_Tokenizer::NAME];
+            $value = $context->get($name);
+            if( $name == '@index' ) {
+                return $context->lastIndex();
+            }
+            if( $name == '@key' ) {
+                return $context->lastKey();
+            }
         }
         if ($escaped) {
             $args = $this->handlebars->getEscapeArgs();
@@ -351,6 +358,4 @@ class Handlebars_Template
         }
         return $value;
     }
-
-
 }
