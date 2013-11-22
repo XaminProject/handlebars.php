@@ -164,24 +164,10 @@ class Handlebars_Template
                 break;
             case Handlebars_Tokenizer::T_UNESCAPED:
             case Handlebars_Tokenizer::T_UNESCAPED_2:
-                if (isset($current[Handlebars_Tokenizer::ARGS])){
-                    $newStack = isset($current[Handlebars_Tokenizer::NODES]) ? $current[Handlebars_Tokenizer::NODES] : array();
-                    array_push($this->_stack, array(0, $newStack, false));
-                    $buffer .= $this->_section($context, $current);
-                    array_pop($this->_stack);
-                } else {
-                    $buffer .= $this->_variables($context, $current, false);
-                }
+                $buffer .= $this->_variables($context, $current, false);
                 break;
             case Handlebars_Tokenizer::T_ESCAPED:
-                if (isset($current[Handlebars_Tokenizer::ARGS])){
-                    $newStack = isset($current[Handlebars_Tokenizer::NODES]) ? $current[Handlebars_Tokenizer::NODES] : array();
-                    array_push($this->_stack, array(0, $newStack, false));
-                    $buffer .= $this->_section($context, $current);
-                    array_pop($this->_stack);
-                } else {
-                    $buffer .= $this->_variables($context, $current, true);
-                }
+                $buffer .= $this->_variables($context, $current, true);
                 break;
             case Handlebars_Tokenizer::T_TEXT:
                 $buffer .= $current[Handlebars_Tokenizer::VALUE];
