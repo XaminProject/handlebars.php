@@ -179,7 +179,6 @@ class Handlebars_Tokenizer
                     ){
                         if (strpos($this->buffer, '.') !== 0){
                             $newBuffer = explode(' ', trim($this->buffer));
-                            $args = '';
                             if (count($newBuffer) >= 2) {
                                 $args = array_slice($newBuffer, 1);
                             }
