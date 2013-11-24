@@ -3,14 +3,17 @@
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
  *
- * PHP version 5.3
+ * Handlebars base template
+ * contain some utility method to get context and helpers
  *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Mardix <https://github.com/mardix>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
+ * @copyright 2013 (c) Mardix
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
@@ -18,18 +21,8 @@
 
 namespace Handlebars;
 
-/**
- * Handlebars base template
- * contain some utility method to get context and helpers
- *
- * @category  Xamin
- * @package   Handlebars
- * @author    fzerorubigd <fzerorubigd@gmail.com>
- * @copyright 2012 (c) ParsPooyesh Co
- * @license   MIT <http://opensource.org/licenses/MIT>
- * @version   Release: @package_version@
- * @link      http://xamin.ir
- */
+use InvalidArgumentException;
+use RuntimeException;
 
 class Template
 {
@@ -39,14 +32,15 @@ class Template
     protected $handlebars;
 
 
-    protected $tree = array();
+    protected $tree = [];
 
     protected $source = '';
 
     /**
      * @var array Run stack
      */
-    private $_stack = array();
+    private $stack = [];
+    private $_stack = [];
 
     /**
      * Handlebars template constructor
@@ -60,7 +54,8 @@ class Template
         $this->handlebars = $engine;
         $this->tree = $tree;
         $this->source = $source;
-        array_push($this->_stack, array(0, $this->getTree(), false));
+        array_push($this->stack, [0, $this->getTree(), false]);
+        
     }
 
     /**
@@ -103,9 +98,10 @@ class Template
 
     public function setStopToken($token)
     {
-        $topStack = array_pop($this->_stack);
+        $this->_stack = $this->stack;
+        $topStack = array_pop($this->stack);
         $topStack[2] = $token;
-        array_push($this->_stack, $topStack);
+        array_push($this->stack, $topStack);
     }
 
     /**
@@ -116,9 +112,7 @@ class Template
 
     public function getStopToken()
     {
-        $topStack = end($this->_stack);
-
-        return $topStack[2];
+        return end($this->stack)[2];
     }
 
     /**
@@ -134,7 +128,7 @@ class Template
         if (!$context instanceof Context) {
             $context = new Context($context);
         }
-        $topTree = end($this->_stack); // never pop a value from stack
+        $topTree = end($this->stack); // never pop a value from stack
         list($index, $tree, $stop) = $topTree;
 
         $buffer = '';
@@ -151,47 +145,47 @@ class Template
             switch ($current[Tokenizer::TYPE]) {
             case Tokenizer::T_SECTION :
                 $newStack = isset($current[Tokenizer::NODES])
-                    ? $current[Tokenizer::NODES] : array();
-                array_push($this->_stack, array(0, $newStack, false));
-                $buffer .= $this->_section($context, $current);
-                array_pop($this->_stack);
+                    ? $current[Tokenizer::NODES] : [];
+                array_push($this->stack, [0, $newStack, false]);
+                $buffer .= $this->section($context, $current);
+                array_pop($this->stack);
                 break;
             case Tokenizer::T_INVERTED :
                 $newStack = isset($current[Tokenizer::NODES]) ?
-                    $current[Tokenizer::NODES] : array();
-                array_push($this->_stack, array(0, $newStack, false));
-                $buffer .= $this->_inverted($context, $current);
-                array_pop($this->_stack);
+                    $current[Tokenizer::NODES] : [];
+                array_push($this->stack, [0, $newStack, false]);
+                $buffer .= $this->inverted($context, $current);
+                array_pop($this->stack);
                 break;
             case Tokenizer::T_COMMENT :
                 $buffer .= '';
                 break;
             case Tokenizer::T_PARTIAL:
             case Tokenizer::T_PARTIAL_2:
-                $buffer .= $this->_partial($context, $current);
+                $buffer .= $this->partial($context, $current);
                 break;
             case Tokenizer::T_UNESCAPED:
             case Tokenizer::T_UNESCAPED_2:
-                $buffer .= $this->_variables($context, $current, false);
+                $buffer .= $this->variables($context, $current, false);
                 break;
             case Tokenizer::T_ESCAPED:
-                $buffer .= $this->_variables($context, $current, true);
+                $buffer .= $this->variables($context, $current, true);
                 break;
             case Tokenizer::T_TEXT:
                 $buffer .= $current[Tokenizer::VALUE];
                 break;
             default:
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     'Invalid node type : ' . json_encode($current)
                 );
             }
         }
         if ($stop) {
             //Ok break here, the helper should be aware of this.
-            $newStack = array_pop($this->_stack);
+            $newStack = array_pop($this->stack);
             $newStack[0] = $index;
             $newStack[2] = false; //No stop token from now on
-            array_push($this->_stack, $newStack);
+            array_push($this->stack, $newStack);
         }
 
         return $buffer;
@@ -204,12 +198,9 @@ class Template
      *
      * @return string
      */
-    public function discard($context)
+    public function discard()
     {
-        if (!$context instanceof Context) {
-            $context = new Context($context);
-        }
-        $topTree = end($this->_stack); //This method never pop a value from stack
+        $topTree = end($this->stack); //This method never pop a value from stack   
         list($index, $tree, $stop) = $topTree;
         while (array_key_exists($index, $tree)) {
             $current = $tree[$index];
@@ -224,10 +215,10 @@ class Template
         }
         if ($stop) {
             //Ok break here, the helper should be aware of this.
-            $newStack = array_pop($this->_stack);
+            $newStack = array_pop($this->stack);
             $newStack[0] = $index;
             $newStack[2] = false;
-            array_push($this->_stack, $newStack);
+            array_push($this->stack, $newStack);
         }
 
         return '';
@@ -242,7 +233,7 @@ class Template
      * @throws \RuntimeException
      * @return string the result
      */
-    private function _section(Context $context, $current)
+    private function section(Context $context, $current)
     {
         $helpers = $this->handlebars->getHelpers();
         $sectionName = $current[Tokenizer::NAME];
@@ -256,12 +247,12 @@ class Template
             } else {
                 $source = '';
             }
-            $params = array(
+            $params = [
                 $this, //First argument is this template
                 $context, //Second is current context
                 $current[Tokenizer::ARGS], //Arguments
                 $source
-            );
+            ];
 
             $return = call_user_func_array($helpers->$sectionName, $params);
             if ($return instanceof String) {
@@ -274,8 +265,8 @@ class Template
             // no argument at all.
             try {
                 $sectionVar = $context->get($sectionName, true);
-            } catch (\InvalidArgumentException $e) {
-                throw new \RuntimeException(
+            } catch (InvalidArgumentException $e) {
+                throw new RuntimeException(
                     $sectionName . ' is not registered as a helper'
                 );
             }
@@ -299,7 +290,7 @@ class Template
 
             return $buffer;
         } else {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 $sectionName . ' is not registered as a helper'
             );
         }
@@ -313,7 +304,7 @@ class Template
      *
      * @return string the result
      */
-    private function _inverted(Context $context, $current)
+    private function inverted(Context $context, $current)
     {
         $sectionName = $current[Tokenizer::NAME];
         $data = $context->get($sectionName);
@@ -333,7 +324,7 @@ class Template
      *
      * @return string the result
      */
-    private function _partial(Context $context, $current)
+    private function partial(Context $context, $current)
     {
         $partial = $this->handlebars->loadPartial($current[Tokenizer::NAME]);
 
@@ -353,7 +344,7 @@ class Template
      *
      * @return string the result
      */
-    private function _variables(Context $context, $current, $escaped)
+    private function variables(Context $context, $current, $escaped)
     {
         $name = $current[Tokenizer::NAME];
         $value = $context->get($name);
@@ -373,5 +364,10 @@ class Template
         }
 
         return $value;
+    }
+    
+    public function __clone()
+    {
+        return $this;
     }
 }
