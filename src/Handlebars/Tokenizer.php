@@ -5,34 +5,23 @@
  * file that was distributed with this source code.
  * Changes to match xamin-std and handlebars made by xamin team
  *
- * PHP version 5.3
- *
- * @category  Xamin
- * @package   Handlebars
- * @author    Justin Hileman <dontknow@example.org>
- * @author    fzerorubigd <fzerorubigd@gmail.com>
- * @author    Behrooz Shabani <everplays@gmail.com>
- * @copyright 2012 (c) ParsPooyesh Co
- * @copyright 2013 (c) Behrooz Shabani
- * @license   MIT <http://opensource.org/licenses/mit-license.php>
- * @version   GIT: $Id$
- * @link      http://xamin.ir
- */
-
-namespace Handlebars;
-
-/**
  * Handlebars tokenizer (based on mustache)
  *
  * @category  Xamin
  * @package   Handlebars
  * @author    Justin Hileman <dontknow@example.org>
  * @author    fzerorubigd <fzerorubigd@gmail.com>
- * @copyright 2012 Justin Hileman
+ * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Mardix <https://github.com/mardix>
+ * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
+ * @copyright 2013 (c) Mardix
  * @license   MIT <http://opensource.org/licenses/mit-license.php>
- * @version   Release: @package_version@
+ * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
+
+namespace Handlebars;
 
 class Tokenizer
 {
@@ -57,7 +46,7 @@ class Tokenizer
     const T_TEXT = '_t';
 
     // Valid token types
-    private static $_tagTypes = array(
+    private $tagTypes = [
         self::T_SECTION => true,
         self::T_INVERTED => true,
         self::T_END_SECTION => true,
@@ -68,14 +57,14 @@ class Tokenizer
         self::T_ESCAPED => true,
         self::T_UNESCAPED => true,
         self::T_UNESCAPED_2 => true,
-    );
+    ];
 
     // Interpolated tags
-    private static $_interpolatedTags = array(
+    private $interpolatedTags = [
         self::T_ESCAPED => true,
         self::T_UNESCAPED => true,
         self::T_UNESCAPED_2 => true,
-    );
+    ];
 
     // Token properties
     const TYPE = 'type';
@@ -140,7 +129,7 @@ class Tokenizer
             case self::IN_TAG_TYPE:
 
                 $i += strlen($this->otag) - 1;
-                if (isset(self::$_tagTypes[$text[$i + 1]])) {
+                if (isset($this->tagTypes[$text[$i + 1]])) {
                     $tag = $text[$i + 1];
                     $this->tagType = $tag;
                 } else {
@@ -164,10 +153,11 @@ class Tokenizer
                 if ($this->tagChange($this->ctag, $text, $i)) {
                     // Sections (Helpers) can accept parameters
                     // Same thing for Partials (little known fact)
-                    if (($this->tagType == self::T_SECTION)
-                        || ($this->tagType == self::T_PARTIAL)
-                        || ($this->tagType == self::T_PARTIAL_2)
-                    ) {
+                    if (in_array($this->tagType, [
+                                    self::T_SECTION, 
+                                    self::T_PARTIAL, 
+                                    self::T_PARTIAL_2]
+                            )) {
                         $newBuffer = explode(' ', trim($this->buffer), 2);
                         $args = '';
                         if (count($newBuffer) == 2) {
@@ -175,7 +165,7 @@ class Tokenizer
                         }
                         $this->buffer = $newBuffer[0];
                     }
-                    $t = array(
+                    $t = [
                         self::TYPE => $this->tagType,
                         self::NAME => trim($this->buffer),
                         self::OTAG => $this->otag,
@@ -183,7 +173,7 @@ class Tokenizer
                         self::INDEX => ($this->tagType == self::T_END_SECTION) ?
                             $this->seenTag - strlen($this->otag) :
                             $i + strlen($this->ctag),
-                    );
+                    ];
                     if (isset($args)) {
                         $t[self::ARGS] = $args;
                     }
@@ -230,7 +220,7 @@ class Tokenizer
         $this->tagType = null;
         $this->tag = null;
         $this->buffer = '';
-        $this->tokens = array();
+        $this->tokens = [];
         $this->seenTag = false;
         $this->lineStart = 0;
         $this->otag = '{{';
@@ -245,10 +235,10 @@ class Tokenizer
     protected function flushBuffer()
     {
         if (!empty($this->buffer)) {
-            $this->tokens[] = array(
+            $this->tokens[] = [
                 self::TYPE => self::T_TEXT,
                 self::VALUE => $this->buffer
-            );
+            ];
             $this->buffer = '';
         }
     }
@@ -263,8 +253,8 @@ class Tokenizer
         $tokensCount = count($this->tokens);
         for ($j = $this->lineStart; $j < $tokensCount; $j++) {
             $token = $this->tokens[$j];
-            if (isset(self::$_tagTypes[$token[self::TYPE]])) {
-                if (isset(self::$_interpolatedTags[$token[self::TYPE]])) {
+            if (isset($this->tagTypes[$token[self::TYPE]])) {
+                if (isset($this->interpolatedTags[$token[self::TYPE]])) {
                     return false;
                 }
             } elseif ($token[self::TYPE] == self::T_TEXT) {
@@ -302,7 +292,7 @@ class Tokenizer
                 }
             }
         } elseif (!$noNewLine) {
-            $this->tokens[] = array(self::TYPE => self::T_TEXT, self::VALUE => "\n");
+            $this->tokens[] = [self::TYPE => self::T_TEXT, self::VALUE => "\n"];
         }
 
         $this->seenTag = false;

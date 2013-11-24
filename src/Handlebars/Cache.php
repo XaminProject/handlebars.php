@@ -18,20 +18,6 @@
 
 namespace Handlebars;
 
-/**
- * Cache interface
- * Base cache interface, Note that Handlebars.php never call for remove.
- * Driver should take care of expiered cache.
- *
- * @category  Xamin
- * @package   Handlebars
- * @author    fzerorubigd <fzerorubigd@gmail.com>
- * @copyright 2012 (c) ParsPooyesh Co
- * @license   MIT <http://opensource.org/licenses/MIT>
- * @version   Release: @package_version@
- * @link      http://xamin.ir
- */
-
 interface Cache
 {
 

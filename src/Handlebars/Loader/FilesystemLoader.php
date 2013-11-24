@@ -57,7 +57,7 @@ class FilesystemLoader implements Loader
      *
      * @throws \RuntimeException if $baseDir does not exist.
      */
-    public function __construct($baseDirs, array $options = array())
+    public function __construct($baseDirs, Array $options = [])
     {
         if (is_string($baseDirs)) {
             $baseDirs = array(rtrim(realpath($baseDirs), '/'));

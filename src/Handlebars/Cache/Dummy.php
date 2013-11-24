@@ -3,7 +3,7 @@
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
  *
- * PHP version 5.3
+ * A dummy array cache
  *
  * @category  Xamin
  * @package   Handlebars
@@ -19,21 +19,9 @@
 namespace Handlebars\Cache;
 use Handlebars\Cache;
 
-/**
- * A dummy array cache
- *
- * @category  Xamin
- * @package   Handlebars
- * @author    fzerorubigd <fzerorubigd@gmail.com>
- * @copyright 2012 (c) ParsPooyesh Co
- * @license   MIT <http://opensource.org/licenses/MIT>
- * @version   Release: @package_version@
- * @link      http://xamin.ir
- */
-
 class Dummy implements Cache
 {
-    private $_cache = array();
+    private $cache = [];
 
     /**
      * Get cache for $name if exist.
@@ -44,8 +32,8 @@ class Dummy implements Cache
      */
     public function get($name)
     {
-        if (array_key_exists($name, $this->_cache)) {
-            return $this->_cache[$name];
+        if (array_key_exists($name, $this->cache)) {
+            return $this->cache[$name];
         }
         return false;
     }
@@ -60,7 +48,7 @@ class Dummy implements Cache
      */
     public function set($name, $value)
     {
-        $this->_cache[$name] = $value;
+        $this->cache[$name] = $value;
     }
 
     /**
@@ -72,7 +60,7 @@ class Dummy implements Cache
      */
     public function remove($name)
     {
-        unset($this->_cache[$name]);
+        unset($this->cache[$name]);
     }
 
 }

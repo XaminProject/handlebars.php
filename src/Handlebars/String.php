@@ -2,13 +2,16 @@
 /**
  * This file is part of Handlebars-php
  *
- * PHP version 5.3
+ * Handlebars string
  *
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
- * @copyright 2013 Authors
+ * @author    Mardix <https://github.com/mardix>
+ * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
+ * @copyright 2013 (c) Mardix
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
@@ -16,21 +19,9 @@
 
 namespace Handlebars;
 
-/**
- * Handlebars string
- *
- * @category  Xamin
- * @package   Handlebars
- * @author    fzerorubigd <fzerorubigd@gmail.com>
- * @copyright 2013 Authors
- * @license   MIT <http://opensource.org/licenses/MIT>
- * @version   Release: @package_version@
- * @link      http://xamin.ir
- */
-
 class String
 {
-    private $_string;
+    private $string = "";
 
     /**
      * Create new string
@@ -39,7 +30,7 @@ class String
      */
     public function __construct($string)
     {
-        $this->_string = $string;
+        $this->setString($string);
     }
 
     /**
@@ -59,7 +50,7 @@ class String
      */
     public function getString()
     {
-        return $this->_string;
+        return $this->string;
     }
 
     /**
@@ -71,7 +62,7 @@ class String
      */
     public function setString($string)
     {
-        $this->_string = $string;
+        $this->string = $string;
     }
 
 }

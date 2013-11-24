@@ -4,22 +4,6 @@
  * Base on mustache-php https://github.com/bobthecow/mustache.php
  * re-write to use with handlebars
  *
- * PHP version 5.3
- *
- * @category  Xamin
- * @package   Handlebars
- * @author    fzerorubigd <fzerorubigd@gmail.com>
- * @author    Behrooz Shabani <everplays@gmail.com>
- * @copyright 2012 (c) ParsPooyesh Co
- * @copyright 2013 (c) Behrooz Shabani
- * @license   MIT <http://opensource.org/licenses/MIT>
- * @version   GIT: $Id$
- * @link      http://xamin.ir
- */
-
-namespace Handlebars;
-
-/**
  * Handlebars parser (based on mustache)
  *
  * This class is responsible for turning raw template source into a set of
@@ -28,11 +12,19 @@ namespace Handlebars;
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Mardix <https://github.com/mardix>
  * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
+ * @copyright 2013 (c) Mardix
  * @license   MIT <http://opensource.org/licenses/MIT>
- * @version   Release: @package_version@
+ * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
+
+namespace Handlebars;
+use ArrayIterator;
+use LogicException;
 
 class Parser
 {
@@ -43,9 +35,9 @@ class Parser
      *
      * @return array Token parse tree
      */
-    public function parse(array $tokens = array())
+    public function parse(Array $tokens = [])
     {
-        return $this->_buildTree(new \ArrayIterator($tokens));
+        return $this->buildTree(new ArrayIterator($tokens));
     }
 
     /**
@@ -58,9 +50,9 @@ class Parser
      * @return array Token parse tree
      *
      */
-    private function _buildTree(\ArrayIterator $tokens)
+    private function buildTree(ArrayIterator $tokens)
     {
-        $stack = array();
+        $stack = [];
 
         do {
             $token = $tokens->current();
@@ -71,11 +63,11 @@ class Parser
             } else {
                 switch ($token[Tokenizer::TYPE]) {
                 case Tokenizer::T_END_SECTION:
-                    $newNodes = array();
+                    $newNodes = [];
                     do {
                         $result = array_pop($stack);
                         if ($result === null) {
-                            throw new \LogicException(
+                            throw new LogicException(
                                 'Unexpected closing tag: /' . $token[Tokenizer::NAME]
                             );
                         }

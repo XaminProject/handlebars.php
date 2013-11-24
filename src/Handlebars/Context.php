@@ -3,22 +3,6 @@
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
  *
- * PHP version 5.3
- *
- * @category  Xamin
- * @package   Handlebars
- * @author    fzerorubigd <fzerorubigd@gmail.com>
- * @author    Behrooz Shabani <everplays@gmail.com>
- * @copyright 2012 (c) ParsPooyesh Co
- * @copyright 2013 (c) Behrooz Shabani
- * @license   MIT <http://opensource.org/licenses/MIT>
- * @version   GIT: $Id$
- * @link      http://xamin.ir
- */
-
-namespace Handlebars;
-
-/**
  * Handlebars context
  * Context for a template
  *
@@ -26,11 +10,18 @@ namespace Handlebars;
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Mardix <https://github.com/mardix>
  * @copyright 2012 (c) ParsPooyesh Co
+ * @copyright 2013 (c) Behrooz Shabani
+ * @copyright 2013 (c) Mardix
  * @license   MIT <http://opensource.org/licenses/MIT>
- * @version   Release: @package_version@
+ * @version   GIT: $Id$
  * @link      http://xamin.ir
  */
+
+namespace Handlebars;
+
+use InvalidArgumentException;
 
 class Context
 {
@@ -38,17 +29,17 @@ class Context
     /**
      * @var array stack for context only top stack is available
      */
-    protected $stack = array();
+    protected $stack = [];
 
     /**
      * @var array index stack for sections
      */
-    protected $index = array();
+    protected $index = [];
 
     /**
      * @var array key stack for objects
      */
-    protected $key = array();
+    protected $key = [];
 
     /**
      * Mustache rendering Context constructor.
@@ -58,7 +49,7 @@ class Context
     public function __construct($context = null)
     {
         if ($context !== null) {
-            $this->stack = array($context);
+            $this->stack = [$context];
         }
     }
 
@@ -181,7 +172,7 @@ class Context
      * @param string  $variableName variavle name to get from current context
      * @param boolean $strict       strict search? if not found then throw exception
      *
-     * @throws \InvalidArgumentException in strict mode and variable not found
+     * @throws InvalidArgumentException in strict mode and variable not found
      * @return mixed
      */
     public function get($variableName, $strict = false)
@@ -195,7 +186,7 @@ class Context
         }
         if (count($this->stack) < $level) {
             if ($strict) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'can not find variable in context'
                 );
             }
@@ -210,11 +201,10 @@ class Context
         $current = current($this->stack);
         if (!$variableName) {
             if ($strict) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'can not find variable in context'
                 );
             }
-
             return '';
         } elseif ($variableName == '.' || $variableName == 'this') {
             return $current;
@@ -224,10 +214,9 @@ class Context
                 if (is_string($current) and $current == '') {
                     return $current;
                 }
-                $current = $this->_findVariableInContext($current, $chunk, $strict);
+                $current = $this->findVariableInContext($current, $chunk, $strict);
             }
         }
-
         return $current;
     }
 
@@ -241,7 +230,7 @@ class Context
      * @throws \InvalidArgumentException in strict mode and variable not found
      * @return boolean true if exist
      */
-    private function _findVariableInContext($variable, $inside, $strict = false)
+    private function findVariableInContext($variable, $inside, $strict = false)
     {
         $value = '';
         if (($inside !== '0' && empty($inside)) || ($inside == 'this')) {
@@ -259,10 +248,8 @@ class Context
         } elseif ($inside === '.') {
             $value = $variable;
         } elseif ($strict) {
-            throw new \InvalidArgumentException('can not find variable in context');
+            throw new InvalidArgumentException('can not find variable in context');
         }
-
         return $value;
     }
-
 }

@@ -19,18 +19,6 @@
 namespace Handlebars\Cache;
 use Handlebars\Cache;
 
-/**
- * A dummy array cache
- *
- * @category  Xamin
- * @package   Handlebars
- * @author    Joey Baker <joey@byjoeybaker.com>
- * @copyright 2012 (c) Meraki, LLP
- * @license   MIT <http://opensource.org/licenses/MIT>
- * @version   Release: @package_version@
- * @link      http://xamin.ir
- */
-
 class APC implements Cache
 {
 
