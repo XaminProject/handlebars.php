@@ -26,6 +26,7 @@ Fork of: [Handlebars.php by XaminProject](https://github.com/XaminProject/handle
 
 Handlebars.php, is the PHP port of [Handlebars.js](http://handlebarsjs.com/)
 
+Extended docs can be found at [VoodooPHP.org/docs/handlebars](http://voodoophp.org/docs/handlebars)
 
 ---
 
@@ -564,11 +565,15 @@ which is a file under /templates/my_partial.html
 
 Block helpers make it possible to define custom iterators and other helpers that can invoke the passed block with a new context.
 
+To create your own helper, use the method: `Handlebars::addHelper($name, $callback)`
+
 The following helper will UPPERCASE a string
 
-	$handlebars->addHelper("upper", function($template, $context, $args, $source){
-	                        return strtoupper($context->get($args));
-	                    });
+	$handlebars->addHelper("upper", 
+							function($template, $context, $args, $source){
+	                        	return strtoupper($context->get($args));
+	                    	}
+						);
 
 And now we can use the helper like this:
 
@@ -578,21 +583,31 @@ And now we can use the helper like this:
 
 
 
-###contribution
+#### Who's using Handlebars.php
 
 
-contributions are more than welcome, just don't forget to:
-
- * add your name to each file that you edit as author
-
- * use PHP CodeSniffer to check coding style.
-
- * The documentation was edited by [Mardix](http://github.com/mardix)
-
- * Extended doc at [Handlebars.js](http://handlebarsjs.com/)
+* [VoodooPHP](http://voodoophp.org)
 
 
-###license
+
+#### Credits
+
+* Fork of [Handlebars.php by XaminProject](https://github.com/XaminProject/handlebars.php)
+
+* The documentation was edited by [Mardix](http://github.com/mardix). 
+
+
+####Contribution
+
+Contributions are more than welcome, just don't forget to:
+
+ * Add your name to each file that you edit as author
+
+ * Use PHP CodeSniffer to check coding style.
+
+---
+
+####License
 
 
     Copyright (C) 2012-2013 Xamin Project and contributors
