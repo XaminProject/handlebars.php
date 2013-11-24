@@ -470,7 +470,7 @@ To format string to uppercase
 
 ### Lower 
 
-To format staring to lowercase
+To format string to lowercase
 
 	{{#lower title}}
 
@@ -507,11 +507,11 @@ To singularize or plurialize words based on count `{{#inflect count $singular $p
 	{{#inflect count '%d book' '%d books'}}
 
 
-### Trim 
+### Truncate 
 
 To truncate a string: `{{#truncate title $length $ellipsis}}`
 
-	{{#trim title 21 '...'}}
+	{{#truncate title 21 '...'}}
 
 
 ### Default
@@ -590,6 +590,7 @@ contributions are more than welcome, just don't forget to:
  * The documentation was edited by [Mardix](http://github.com/mardix)
 
  * Extended doc at [Handlebars.js](http://handlebarsjs.com/)
+
 
 ###license
 
