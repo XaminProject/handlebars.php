@@ -254,7 +254,7 @@ class Helpers
         if (is_array($tmp) || $tmp instanceof Traversable) {
             $tmp = array_slice($tmp, $slice_start, $slice_end);
             $buffer = '';
-            $islist = (array_keys($tmp) == range(0, count($tmp) - 1));
+            $islist = array_values($tmp) === $tmp;
             
             if (is_array($tmp) && ! count($tmp)) {
                 return $this->renderElse($template, $context);
