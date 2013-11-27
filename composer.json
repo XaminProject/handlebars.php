@@ -1,7 +1,7 @@
 {
-    "name": "voodoophp/handlebars",
+    "name": "xamin/handlebars.php",
     "description": "Handlebars processor for php",
-    "homepage": "http://voodoophp.org/docs/handlebars",
+    "homepage": "https://github.com/XaminProject/handlebars.php",
     "type": "library",
     "license": "MIT",
     "authors": [
