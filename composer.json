@@ -1,10 +1,8 @@
 {
-    "name": "voodoophp/handlebars.php",
+    "name": "voodoophp/handlebars",
     "description": "Handlebars processor for php",
-    "homepage": "https://github.com/XaminProject/handlebars.php",
+    "homepage": "http://voodoophp.org/docs/handlebars",
     "type": "library",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "license": "MIT",
     "authors": [
         {
@@ -22,10 +20,6 @@
     ],
     "require": {
         "php": ">=5.4.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "3.7.*",
-        "squizlabs/php_codesniffer": "1.*"
     },
     "autoload": {
         "psr-0": {
