@@ -274,7 +274,7 @@ class Helpers
      */
     public function __unset($name)
     {
-        unset($this->helpers[$name]);
+        $this->remove($name);
     }
 
     /**

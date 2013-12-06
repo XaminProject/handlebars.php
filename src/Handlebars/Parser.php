@@ -66,9 +66,7 @@ class Parser
             $token = $tokens->current();
             $tokens->next();
 
-            if ($token === null) {
-                continue;
-            } else {
+            if ($token !== null) {
                 switch ($token[Tokenizer::TYPE]) {
                 case Tokenizer::T_END_SECTION:
                     $newNodes = array();
@@ -87,7 +85,7 @@ class Parser
                             $result[Tokenizer::NODES] = $newNodes;
                             $result[Tokenizer::END] = $token[Tokenizer::INDEX];
                             array_push($stack, $result);
-                            break 2;
+                            break;
                         } else {
                             array_unshift($newNodes, $result);
                         }

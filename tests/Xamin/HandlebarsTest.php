@@ -112,6 +112,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '1234'
             ),
             array(
+                '{{#each data}}{{@key}}=>{{this}}{{/each}}',
+                array('data' => array('key1'=>1, 'key2'=>2,)),
+                'key1=>1key2=>2'
+            ),
+            array(
                 '{{#unless data}}ok{{/unless}}',
                 array('data' => true),
                 ''
@@ -120,6 +125,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '{{#unless data}}ok{{/unless}}',
                 array('data' => false),
                 'ok'
+            ),
+            array(
+                '{{#bindAttr data}}',
+                array(),
+                'data'
             )
 
         );
@@ -158,6 +168,107 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Test helper is called with a b c', $engine->render('{{#test2 a b c}}', array()));
         $this->assertEquals('Test helper is called with a b c', $engine->render('{{test2 a b c}}', array()));
 
+        $engine->addHelper('renderme', function() {return new \Handlebars\String("{{test}}");});
+        $this->assertEquals('Test helper is called', $engine->render('{{#renderme}}', array()));
+
+        $engine->addHelper('dontrenderme', function() {return "{{test}}";});
+        $this->assertEquals('{{test}}', $engine->render('{{#dontrenderme}}', array()));
+    }
+
+    /**
+     * Test mustache style loop and if
+     */
+    public function testMustacheStyle()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        $this->assertEquals('yes', $engine->render('{{#x}}yes{{/x}}', array ('x' => true)));
+        $this->assertEquals('', $engine->render('{{#x}}yes{{/x}}', array ('x' => false)));
+        $this->assertEquals('yes', $engine->render('{{^x}}yes{{/x}}', array ('x' => false)));
+        $this->assertEquals('1234', $engine->render('{{#x}}{{this}}{{/x}}', array ('x' => array (1,2,3,4))));
+        $std = new stdClass();
+        $std->value = 1;
+        $this->assertEquals('1', $engine->render('{{#x}}{{value}}{{/x}}', array ('x' => $std)));
+        $this->assertEquals('1', $engine->render('{{{x}}}', array ('x' => 1)));
+    }
+
+    /**
+     * @expectedException \LogicException
+     */
+    public function testParserException()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        $engine->render('{{#test}}{{#test2}}{{/test}}{{/test2}}', array());
+    }
+
+    /**
+     * Test add/get/has/clear functions on helper class
+     */
+    public function testHelpersClass()
+    {
+        $helpers = new \Handlebars\Helpers();
+        $helpers->add('test', function(){});
+        $this->assertTrue($helpers->has('test'));
+        $this->assertTrue(isset($helpers->test));
+        $this->assertFalse($helpers->isEmpty());
+        $helpers->test2 = function(){};
+        $this->assertTrue($helpers->has('test2'));
+        $this->assertTrue(isset($helpers->test2));
+        $this->assertFalse($helpers->isEmpty());
+        unset($helpers->test2);
+        $this->assertFalse($helpers->has('test2'));
+        $this->assertFalse(isset($helpers->test2));
+        $helpers->clear();
+        $this->assertFalse($helpers->has('test'));
+        $this->assertFalse(isset($helpers->test));
+        $this->assertTrue($helpers->isEmpty());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testHelperWrongConstructor()
+    {
+        $helper = new \Handlebars\Helpers("helper");
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testHelperWrongCallable()
+    {
+        $helper = new \Handlebars\Helpers();
+        $helper->add('test', 1);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testHelperWrongGet()
+    {
+        $helper = new \Handlebars\Helpers();
+        $x = $helper->test;
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testHelperWrongUnset()
+    {
+        $helper = new \Handlebars\Helpers();
+        unset($helper->test);
+    }
+
+    /**
+     * test String class
+     */
+    public function testStringClass()
+    {
+        $string = new \Handlebars\String('test');
+        $this->assertEquals('test', $string->getString());
+        $string->setString('new');
+        $this->assertEquals('new', $string->getString());
     }
 
     /**
