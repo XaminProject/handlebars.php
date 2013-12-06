@@ -11,6 +11,7 @@
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
+ * @copyright 2013 (c) f0ruD A
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
  * @link      http://xamin.ir
@@ -174,11 +175,11 @@ class Context
     }
 
     /**
-     * Get a avariable from current context
+     * Get a available from current context
      * Supported types :
      * variable , ../variable , variable.variable , .
      *
-     * @param string  $variableName variavle name to get from current context
+     * @param string  $variableName variable name to get from current context
      * @param boolean $strict       strict search? if not found then throw exception
      *
      * @throws \InvalidArgumentException in strict mode and variable not found
@@ -248,17 +249,17 @@ class Context
             return $variable;
         } elseif (is_array($variable)) {
             if (isset($variable[$inside])) {
-                $value = $variable[$inside];
+                return $variable[$inside];
             }
         } elseif (is_object($variable)) {
             if (isset($variable->$inside)) {
-                $value = $variable->$inside;
+                return $variable->$inside;
             } elseif (is_callable(array($variable, $inside))) {
-                $value = call_user_func(array($variable, $inside));
+                return call_user_func(array($variable, $inside));
             }
-        } elseif ($inside === '.') {
-            $value = $variable;
-        } elseif ($strict) {
+        }
+
+        if ($strict) {
             throw new \InvalidArgumentException('can not find variable in context');
         }
 

@@ -168,8 +168,7 @@ class Helpers
                  * @var $args array
                  * @var $source string
                  */
-                $tmp = $context->get($args);
-                $context->push($tmp);
+                $context->with($args);
                 $buffer = $template->render($context);
                 $context->pop();
 

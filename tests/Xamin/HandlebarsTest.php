@@ -1,4 +1,18 @@
 <?php
+/**
+ * This file is part of Handlebars-php
+ * Base on mustache-php https://github.com/bobthecow/mustache.php
+ *
+ * PHP version 5.3
+ *
+ * @category  Xamin
+ * @package   Handlebars
+ * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @copyright 2013 (c) f0ruD A
+ * @license   MIT <http://opensource.org/licenses/MIT>
+ * @version   GIT: $Id$
+ * @link      http://xamin.ir
+ */
 
 /**
  * Class AutoloaderTest
@@ -352,4 +366,54 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($time, $engine->render('{{time.getTimestamp}}', array('time' => $obj)));
 
     }
+
+
+    public function testContext()
+    {
+        $test = new stdClass();
+        $test->value = 'value';
+        $test->array = array('a' => '1', 'b' => '2');
+        $context = new \Handlebars\Context($test);
+        $this->assertEquals('value', $context->get('value'));
+        $this->assertEquals('value', $context->get('value', true));
+        $this->assertEquals('1', $context->get('array.a', true));
+        $this->assertEquals('2', $context->get('array.b', true));
+        $new = array('value' => 'new value');
+        $context->push($new);
+        $this->assertEquals('new value', $context->get('value'));
+        $this->assertEquals('new value', $context->get('value', true));
+        $this->assertEquals('value', $context->get('../value'));
+        $this->assertEquals('value', $context->get('../value', true));
+        $this->assertEquals($new, $context->last());
+        $this->assertEquals($new, $context->get('.'));
+        $this->assertEquals($new, $context->get('this'));
+        $this->assertEquals($new, $context->get('this.'));
+        $this->assertEquals($test, $context->get('../.'));
+        $context->pop();
+        $this->assertEquals('value', $context->get('value'));
+        $this->assertEquals('value', $context->get('value', true));
+        $this->assertFalse($context->lastIndex());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @dataProvider getInvalidData
+     */
+    public function testInvalidAccessContext($invalid)
+    {
+        $context = new \Handlebars\Context(array());
+        $this->assertEmpty($context->get($invalid));
+        $context->get($invalid, true);
+    }
+
+    public function getInvalidData()
+    {
+        return array (
+            array('../../data'),
+            array('data'),
+            array(''),
+            array('data.key.key'),
+        );
+    }
+
 }
