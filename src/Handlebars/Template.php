@@ -175,6 +175,7 @@ class Template
                 $buffer .= $this->_variables($context, $current, false);
                 break;
             case Tokenizer::T_ESCAPED:
+
                 $buffer .= $this->_variables($context, $current, true);
                 break;
             case Tokenizer::T_TEXT:
@@ -340,7 +341,26 @@ class Template
     }
 
     /**
-     * Process partial section
+     * Check if there is a helper with this variable name available or not.
+     * if there is a helper registered with this name,
+     * then call that section and ignore it as a variable
+     * for special cases like {{helper arg}} instead of {{#helper arg}}
+     *
+     * @param array $current current token
+     *
+     * @return boolean
+     */
+    private function _isSection($current)
+    {
+        $helpers = $this->getEngine()->getHelpers();
+        // Tokenizer do not process the args -if any- so be aware of that
+        $name = explode(' ', $current[Tokenizer::NAME]);
+        return $helpers->has(reset($name));
+    }
+
+
+    /**
+     * Process variables
      *
      * @param Context $context current context
      * @param array   $current section node data
@@ -350,6 +370,13 @@ class Template
      */
     private function _variables(Context $context, $current, $escaped)
     {
+        if ($this->_isSection($current)) {
+            $args = explode(' ', $current[Tokenizer::NAME]);
+            $name = array_shift($args);
+            $current[Tokenizer::NAME] = $name;
+            $current[Tokenizer::ARGS] = implode(' ', $args);
+            return $this->_section($context, $current);
+        }
         $name = $current[Tokenizer::NAME];
         $value = $context->get($name);
         if ($name == '@index') {

@@ -150,6 +150,14 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             return 'Test helper is called';
         });
         $this->assertEquals('Test helper is called', $engine->render('{{#test}}', array()));
+        $this->assertEquals('Test helper is called', $engine->render('{{test}}', array()));
+
+        $engine->addHelper('test2', function ($template, $context, $arg) {
+            return 'Test helper is called with ' . $arg;
+        });
+        $this->assertEquals('Test helper is called with a b c', $engine->render('{{#test2 a b c}}', array()));
+        $this->assertEquals('Test helper is called with a b c', $engine->render('{{test2 a b c}}', array()));
+
     }
 
     /**
