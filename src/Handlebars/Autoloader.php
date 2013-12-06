@@ -77,16 +77,16 @@ class Autoloader
      */
     public function autoload($class)
     {
-        if ($class[0] === '\\') {
-            $class = substr($class, 1);
+        if ($class[0] !== '\\') {
+            $class = '\\' . $class;
         }
 
-        if (strpos($class, 'Handlebars') !== 0) {
+        if (strpos($class, 'Handlebars') !== 1) {
             return;
         }
 
         $file = sprintf(
-            '%s/%s.php',
+            '%s%s.php',
             $this->_baseDir,
             str_replace('\\', '/', $class)
         );

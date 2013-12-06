@@ -19,6 +19,10 @@
  */
 class HandlebarsTest extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        \Handlebars\Autoloader::register();
+    }
     /**
      * Test handlebars autoloader
      *
@@ -29,7 +33,10 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         Handlebars\Autoloader::register(realpath(__DIR__ . '/../fixture/'));
 
         $this->assertTrue(class_exists('Handlebars\\Test'));
+        $this->assertTrue(class_exists('\\Handlebars\\Test'));
         $this->assertTrue(class_exists('Handlebars\\Example\\Test'));
+        $this->assertTrue(class_exists('\\Handlebars\\Example\\Test'));
+        $this->assertFalse(class_exists('\\Another\\Example\\Test'));
     }
 
     /**
@@ -325,6 +332,46 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $engine = new \Handlebars\Handlebars();
         $engine->setLoader($loader);
         $this->assertEquals('test', $engine->render('loader', array()));
+    }
+    /**
+     * Test file system loader
+     */
+    public function testFileSystemLoaderMultipleFolder()
+    {
+        $paths = array(
+            realpath(__DIR__ . '/../fixture/data'),
+            realpath(__DIR__ . '/../fixture/another')
+        );
+
+        $options = array(
+            'prefix' => '__',
+            'extension' => 'hb'
+        );
+        $loader = new \Handlebars\Loader\FilesystemLoader($paths, $options);
+        $engine = new \Handlebars\Handlebars();
+        $engine->setLoader($loader);
+        $this->assertEquals('test_extra', $engine->render('loader', array()));
+        $this->assertEquals('another_extra', $engine->render('another', array()));
+    }
+
+    /**
+     * Test file system loader
+     * @expectedException \InvalidArgumentException
+     */
+    public function testFileSystemLoaderNotFound()
+    {
+        $loader = new \Handlebars\Loader\FilesystemLoader(realpath(__DIR__ . '/../fixture/data'));
+        $engine = new \Handlebars\Handlebars();
+        $engine->setLoader($loader);
+        $engine->render('invalid_file', array());
+    }
+    /**
+     * Test file system loader
+     * @expectedException \RuntimeException
+     */
+    public function testFileSystemLoaderInvalidFolder()
+    {
+        new \Handlebars\Loader\FilesystemLoader(realpath(__DIR__ . '/../fixture/') . 'invalid/path');
     }
 
     /**

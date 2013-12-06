@@ -20,6 +20,7 @@
  */
 
 namespace Handlebars\Loader;
+
 use Handlebars\Loader;
 use Handlebars\String;
 
@@ -64,7 +65,8 @@ class FilesystemLoader implements Loader
         } else {
             foreach ($baseDirs as &$dir) {
                 $dir = rtrim(realpath($dir), '/');
-            } unset( $dir );
+            }
+            unset($dir);
         }
 
         $this->_baseDir = $baseDirs;
