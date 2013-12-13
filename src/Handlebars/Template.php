@@ -172,11 +172,11 @@ class Template
                 break;
             case Tokenizer::T_UNESCAPED:
             case Tokenizer::T_UNESCAPED_2:
-                $buffer .= $this->_variables($context, $current, false);
+                $buffer .= $this->_get($context, $current, false);
                 break;
             case Tokenizer::T_ESCAPED:
 
-                $buffer .= $this->_variables($context, $current, true);
+                $buffer .= $this->_get($context, $current, true);
                 break;
             case Tokenizer::T_TEXT:
                 $buffer .= $current[Tokenizer::VALUE];
@@ -340,11 +340,9 @@ class Template
         return $partial->render($context);
     }
 
+
     /**
      * Check if there is a helper with this variable name available or not.
-     * if there is a helper registered with this name,
-     * then call that section and ignore it as a variable
-     * for special cases like {{helper arg}} instead of {{#helper arg}}
      *
      * @param array $current current token
      *
@@ -358,9 +356,29 @@ class Template
         return $helpers->has(reset($name));
     }
 
+    /**
+     * get replacing value of a tag
+     *
+     * will process the tag as section, if a helper with the same name could be
+     * found, so {{helper arg}} can be used instead of {{#helper arg}}.
+     *
+     * @param Context $context current context
+     * @param array   $current section node data
+     * @param boolean $escaped escape result or not
+     *
+     * @return string the string to be replaced with the tag
+     */
+    private function _get(Context $context, $current, $escaped)
+    {
+        if ($this->_isSection($current)) {
+            return $this->_getSection($context, $current, $escaped);
+        } else {
+            return $this->_getVariable($context, $current, $escaped);
+        }
+    }
 
     /**
-     * Process variables
+     * Process section
      *
      * @param Context $context current context
      * @param array   $current section node data
@@ -368,15 +386,26 @@ class Template
      *
      * @return string the result
      */
-    private function _variables(Context $context, $current, $escaped)
+    private function _getSection(Context $context, $current, $escaped)
     {
-        if ($this->_isSection($current)) {
-            $args = explode(' ', $current[Tokenizer::NAME]);
-            $name = array_shift($args);
-            $current[Tokenizer::NAME] = $name;
-            $current[Tokenizer::ARGS] = implode(' ', $args);
-            return $this->_section($context, $current);
-        }
+        $args = explode(' ', $current[Tokenizer::NAME]);
+        $name = array_shift($args);
+        $current[Tokenizer::NAME] = $name;
+        $current[Tokenizer::ARGS] = implode(' ', $args);
+        return $this->_section($context, $current);
+    }
+
+    /**
+     * Process variable
+     *
+     * @param Context $context current context
+     * @param array   $current section node data
+     * @param boolean $escaped escape result or not
+     *
+     * @return string the result
+     */
+    private function _getVariable(Context $context, $current, $escaped)
+    {
         $name = $current[Tokenizer::NAME];
         $value = $context->get($name);
         if ($name == '@index') {
