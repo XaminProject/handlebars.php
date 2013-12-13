@@ -352,7 +352,7 @@ class Template
     {
         $helpers = $this->getEngine()->getHelpers();
         // Tokenizer doesn't process the args -if any- so be aware of that
-        $name = explode(' ', $current[Tokenizer::NAME]);
+        $name = explode(' ', $current[Tokenizer::NAME], 2);
         return $helpers->has(reset($name));
     }
 
@@ -388,7 +388,7 @@ class Template
      */
     private function _getSection(Context $context, $current, $escaped)
     {
-        $args = explode(' ', $current[Tokenizer::NAME]);
+        $args = explode(' ', $current[Tokenizer::NAME], 2);
         $name = array_shift($args);
         $current[Tokenizer::NAME] = $name;
         $current[Tokenizer::ARGS] = implode(' ', $args);
