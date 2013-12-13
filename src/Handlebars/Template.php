@@ -353,7 +353,7 @@ class Template
     private function _isSection($current)
     {
         $helpers = $this->getEngine()->getHelpers();
-        // Tokenizer do not process the args -if any- so be aware of that
+        // Tokenizer doesn't process the args -if any- so be aware of that
         $name = explode(' ', $current[Tokenizer::NAME]);
         return $helpers->has(reset($name));
     }
