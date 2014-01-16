@@ -219,6 +219,10 @@ class Context
             return '';
         } elseif ($variableName == '.' || $variableName == 'this') {
             return $current;
+        } elseif ($variableName == '@index') {
+            $current = $this->lastIndex();    
+        } elseif ($variableName == '@key') {
+            $current = $this->lastKey();
         } else {
             $chunks = explode('.', $variableName);
             foreach ($chunks as $chunk) {
