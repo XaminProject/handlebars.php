@@ -117,7 +117,7 @@ class Helpers
                 $tmp = $context->get($args);
                 $buffer = '';
                 if (is_array($tmp) || $tmp instanceof \Traversable) {
-                    $islist = (array_keys($tmp) == range(0, count($tmp) - 1));
+                    $islist = ($tmp instanceof \Generator) || (array_keys($tmp) == range(0, count($tmp) - 1));
 
                     foreach ($tmp as $key => $var) {
                         if ($islist) {
