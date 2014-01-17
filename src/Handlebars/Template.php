@@ -424,11 +424,12 @@ class Template
     /**
      * Break an argument string into an array of strings
      *
-     * @param string  $string Argument String as passed to a helper
+     * @param string $string Argument String as passed to a helper
      *
      * @return array the argument list as an array
      */
-    public function parseArguments($string){
+    public function parseArguments($string)
+    {
         $parts = array();
         preg_match_all('#(?<!\\\\)("|\')(?:[^\\\\]|\\\\.)*?\1|\S+#s', $string, $parts);
         $parts =  isset($parts[0])?$parts[0]:array();
