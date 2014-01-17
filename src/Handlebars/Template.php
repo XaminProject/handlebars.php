@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Chris Gray <chrisgray@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -408,12 +409,6 @@ class Template
     {
         $name = $current[Tokenizer::NAME];
         $value = $context->get($name);
-        if ($name == '@index') {
-            return $context->lastIndex();
-        }
-        if ($name == '@key') {
-            return $context->lastKey();
-        }
         if ($escaped) {
             $args = $this->handlebars->getEscapeArgs();
             array_unshift($args, $value);
@@ -424,5 +419,20 @@ class Template
         }
 
         return $value;
+    }
+    
+    /**
+     * Break an argument string into an array of strings
+     *
+     * @param string  $string Argument String as passed to a helper
+     *
+     * @return array the argument list as an array
+     */
+    public function parseArguments($string){
+        $parts = array();
+        preg_match_all('#(?<!\\\\)("|\')(?:[^\\\\]|\\\\.)*?\1|\S+#s', $string, $parts);
+        $parts =  isset($parts[0])?$parts[0]:array();
+        $parts = array_map("stripcslashes", $parts);
+        return $parts;
     }
 }

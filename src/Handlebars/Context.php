@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Chris Gray <chrisgray@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @copyright 2013 (c) f0ruD A
@@ -223,6 +224,8 @@ class Context
             $current = $this->lastIndex();    
         } elseif ($variableName == '@key') {
             $current = $this->lastKey();
+        } elseif ($variableName[0] == "'" || $variableName[0] == '"') {
+            $current = trim($variableName, '"\'');  
         } else {
             $chunks = explode('.', $variableName);
             foreach ($chunks as $chunk) {
@@ -232,7 +235,6 @@ class Context
                 $current = $this->_findVariableInContext($current, $chunk, $strict);
             }
         }
-
         return $current;
     }
 
