@@ -184,6 +184,7 @@ class Context
      * @param boolean $strict       strict search? if not found then throw exception
      *
      * @throws \InvalidArgumentException in strict mode and variable not found
+     * @throws \RuntimeException if supplied argument is a malformed quoted string 
      * @return mixed
      */
     public function get($variableName, $strict = false)
@@ -225,7 +226,11 @@ class Context
         } elseif ($variableName == '@key') {
             $current = $this->lastKey();
         } elseif ($variableName[0] == "'" || $variableName[0] == '"') {
-            $current = trim($variableName, '"\'');  
+            if ($variableName[0] == substr($variableName, -1) && strlen($variableName) > 2){
+                $current = substr($variableName, 1, strlen($variableName) -2);
+            } else {
+                throw new \RuntimeException("Malformed string: ".$variableName);
+            }
         } else {
             $chunks = explode('.', $variableName);
             foreach ($chunks as $chunk) {
