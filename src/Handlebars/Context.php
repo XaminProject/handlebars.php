@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Chris Gray <chrisgray@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @copyright 2013 (c) f0ruD A
@@ -183,6 +184,7 @@ class Context
      * @param boolean $strict       strict search? if not found then throw exception
      *
      * @throws \InvalidArgumentException in strict mode and variable not found
+     * @throws \RuntimeException if supplied argument is a malformed quoted string 
      * @return mixed
      */
     public function get($variableName, $strict = false)
@@ -219,6 +221,16 @@ class Context
             return '';
         } elseif ($variableName == '.' || $variableName == 'this') {
             return $current;
+        } elseif ($variableName == '@index') {
+            $current = $this->lastIndex();    
+        } elseif ($variableName == '@key') {
+            $current = $this->lastKey();
+        } elseif ($variableName[0] == "'" || $variableName[0] == '"') {
+            if ($variableName[0] == substr($variableName, -1) && strlen($variableName) > 2) {
+                $current = substr($variableName, 1, strlen($variableName) -2);
+            } else {
+                throw new \RuntimeException("Malformed string: ".$variableName);
+            }
         } else {
             $chunks = explode('.', $variableName);
             foreach ($chunks as $chunk) {
@@ -228,7 +240,6 @@ class Context
                 $current = $this->_findVariableInContext($current, $chunk, $strict);
             }
         }
-
         return $current;
     }
 
