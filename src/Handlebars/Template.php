@@ -434,10 +434,10 @@ class Template
         preg_match_all('#(?<!\\\\)("|\')(?:[^\\\\]|\\\\.)*?\1|\S+#s', $string, $args);
         $args =  isset($args[0])?$args[0]:array();
         
-        for($x=0, $argc = count($args); $x<$argc;$x++){
+        for ($x=0, $argc = count($args); $x<$argc;$x++) {
             // check to see if argument is a quoted string literal
-            if ($args[$x][0] == "'" || $args[$x][0] == '"'){
-                if ($args[$x][0] === substr($args[$x], -1)){
+            if ($args[$x][0] == "'" || $args[$x][0] == '"') {
+                if ($args[$x][0] === substr($args[$x], -1)) {
                     // remove enclosing quotes and unescape
                     $args[$x] = new \Handlebars\String(stripcslashes(substr($args[$x], 1, strlen($args[$x]) -2)));
                 } else {
