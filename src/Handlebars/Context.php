@@ -189,7 +189,9 @@ class Context
      */
     public function get($variableName, $strict = false)
     {
-        //Need to clean up
+        if ($variableName instanceof \Handlebars\String){
+            return (string)$variableName;
+        }
         $variableName = trim($variableName);
         $level = 0;
         while (substr($variableName, 0, 3) == '../') {
@@ -217,7 +219,6 @@ class Context
                     'can not find variable in context'
                 );
             }
-
             return '';
         } elseif ($variableName == '.' || $variableName == 'this') {
             return $current;
@@ -225,8 +226,6 @@ class Context
             $current = $this->lastIndex();    
         } elseif ($variableName == '@key') {
             $current = $this->lastKey();
-        } elseif ($variableName instanceof \Handlebars\String){
-            $current = (string)$variableName;
         } else {
             $chunks = explode('.', $variableName);
             foreach ($chunks as $chunk) {

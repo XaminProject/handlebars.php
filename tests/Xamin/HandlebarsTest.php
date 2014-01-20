@@ -94,6 +94,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '{{data.length}}',
                 array("data"=>array("length"=>"15 inches", "test","test","test")),
                 "15 inches"
+            ),
+            array(
+                '{{data.0}}',
+                array("data" => array(1,2,3,4)),
+                '1'
+            ),
+            array(
+                '{{data.property.3}}',
+                array("data"=>array("property"=>array(1,2,3,4))),
+                '4'
             )
         );
     }
@@ -525,6 +535,41 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $args = array_map(function($a){ return (string)$a; }, $args);
         $this->assertEquals($args, $expected_array);
 
+    }
+    
+    public function stringLiteralInCustomHelperProvider(){
+        return array(
+            array('{{#test2 arg1 "Argument 2"}}', array("arg1"=>"Argument 1"), "Argument 1:Argument 2"),
+            array('{{#test2 "Argument 1" "Argument 2"}}', array("arg1"=>"Argument 1"), "Argument 1:Argument 2"),
+            array('{{#test2 "Argument 1" arg2}}', array("arg2"=>"Argument 2"), "Argument 1:Argument 2")
+        );
+    }
+    /**
+     * Test String literals in the context of a helper
+     *
+     * @param string $template template text
+     * @param array  $data context data
+     * @param string $results The Expected Results
+     *
+     * @dataProvider stringLiteralInCustomHelperProvider
+     *
+     * @return void
+     */    
+    public function testStringLiteralInCustomHelper($template, $data, $results){
+        $engine = new \Handlebars\Handlebars();
+        $engine->addHelper('test2', function ($template, $context, $args) {
+            $args = $template->parseArguments($args);
+            
+            $args = array_map(function ($a) use ($context) {return $context->get($a);}, $args);
+            return implode(':', $args);
+        });
+        $res = $engine->render($template, $data);
+        $this->assertEquals($res, $results);
+    }
+    
+    public function testString(){
+        $string = new \Handlebars\String("Hello World");
+        $this->assertEquals((string)$string, "Hello World");
     }
     
     

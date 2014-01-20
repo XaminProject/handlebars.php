@@ -446,7 +446,6 @@ class Template
             }
             
         }
-
         return $args;
     }
 }
