@@ -80,6 +80,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array('data' => array('key' => 'result')),
                 'result'
             ),
+            array(
+                '{{data.length}}',
+                array("data" => array(1,2,3,4)),
+                '4'
+            ),
+            array(
+                '{{data.length}}',
+                array("data"=> (object)array(1,2,3,4)),
+                ''
+            )
         );
     }
 
