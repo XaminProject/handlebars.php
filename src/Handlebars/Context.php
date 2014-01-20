@@ -189,7 +189,9 @@ class Context
      */
     public function get($variableName, $strict = false)
     {
-        //Need to clean up
+        if ($variableName instanceof \Handlebars\String) {
+            return (string)$variableName;
+        }
         $variableName = trim($variableName);
         $level = 0;
         while (substr($variableName, 0, 3) == '../') {
@@ -217,7 +219,6 @@ class Context
                     'can not find variable in context'
                 );
             }
-
             return '';
         } elseif ($variableName == '.' || $variableName == 'this') {
             return $current;
@@ -225,12 +226,6 @@ class Context
             $current = $this->lastIndex();    
         } elseif ($variableName == '@key') {
             $current = $this->lastKey();
-        } elseif ($variableName[0] == "'" || $variableName[0] == '"') {
-            if ($variableName[0] == substr($variableName, -1) && strlen($variableName) > 2) {
-                $current = substr($variableName, 1, strlen($variableName) -2);
-            } else {
-                throw new \RuntimeException("Malformed string: ".$variableName);
-            }
         } else {
             $chunks = explode('.', $variableName);
             foreach ($chunks as $chunk) {
