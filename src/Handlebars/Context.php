@@ -225,12 +225,8 @@ class Context
             $current = $this->lastIndex();    
         } elseif ($variableName == '@key') {
             $current = $this->lastKey();
-        } elseif ($variableName[0] == "'" || $variableName[0] == '"') {
-            if ($variableName[0] == substr($variableName, -1) && strlen($variableName) > 2) {
-                $current = substr($variableName, 1, strlen($variableName) -2);
-            } else {
-                throw new \RuntimeException("Malformed string: ".$variableName);
-            }
+        } elseif ($variableName instanceof \Handlebars\String){
+            $current = (string)$variableName;
         } else {
             $chunks = explode('.', $variableName);
             foreach ($chunks as $chunk) {

@@ -89,6 +89,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '{{data.length}}',
                 array("data"=> (object)array(1,2,3,4)),
                 ''
+            ),
+            array(
+                '{{data.length}}',
+                array("data"=>array("length"=>"15 inches", "test","test","test")),
+                "15 inches"
             )
         );
     }
@@ -472,5 +477,56 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             array('data.key.key'),
         );
     }
+    
+    /**
+     * Test for proper handling of the length property
+     **/
+    public function testArrayLengthEmulation(){
+        
+        $data = array("numbers"=>array(1,2,3,4),
+                      "object"=>(object)array("prop1"=>"val1", "prop2"=>"val2"),
+                      "object_with_length_property"=>(object)array("length"=>"15cm")
+        );
+        $context = new \Handlebars\Context($data);
+        // make sure we are getting the array length when given an array
+        $this->assertEquals($context->get("numbers.length"), 4);
+        // make sure we are not getting a length when given an object
+        $this->assertEmpty($context->get("object.length"));
+        // make sure we can still get the length property when given an object
+        $this->assertEquals($context->get("object_with_length_property.length"), "15cm");        
+    }
+    
+    public function argumentParserProvider(){
+        return array(
+                    array('arg1 arg2', array("arg1","arg2")),
+                    array('"arg1 arg2"', array("arg1 arg2")),
+                    array('arg1 arg2 "arg number 3"', array("arg1","arg2","arg number 3")),
+                    array('arg1 "arg\"2" "\"arg3\""', array("arg1",'arg"2', '"arg3"')),
+                    array("'arg1 arg2'", array("arg1 arg2")),
+                    array("arg1 arg2 'arg number 3'", array("arg1","arg2","arg number 3")),
+                    array('arg1 "arg\"2" "\\\'arg3\\\'"', array("arg1",'arg"2', "'arg3'"))
+        );
+    }
+    /**
+     * Test Argument Parser
+     *
+     * @param string $arg_string argument text
+     * @param array  $arg_ array data
+     *
+     * @dataProvider argumentParserProvider
+     *
+     * @return void
+     */
+    public function testArgumentParser($arg_string, $expected_array){
+        $engine = new \Handlebars\Handlebars();
+        $template = new \Handlebars\Template($engine, null, null);
+        // get the string version of the arguments array
+        $args = $template->parseArguments($arg_string);
+        $args = array_map(function($a){ return (string)$a; }, $args);
+        $this->assertEquals($args, $expected_array);
+
+    }
+    
+    
 
 }
