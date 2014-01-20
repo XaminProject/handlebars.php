@@ -9,7 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
- * @author    Chris Gray <chrisgray@gmail.com>
+ * @author    Chris Gray <chris.w.gray@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
