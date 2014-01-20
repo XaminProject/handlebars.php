@@ -9,7 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
- * @author    Chris Gray <chrisgray@gmail.com>
+ * @author    Chris Gray <chris.w.gray@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @copyright 2013 (c) f0ruD A
@@ -261,6 +261,8 @@ class Context
         } elseif (is_array($variable)) {
             if (isset($variable[$inside])) {
                 return $variable[$inside];
+            } elseif ($inside == "length") {
+                return count($variable);
             }
         } elseif (is_object($variable)) {
             if (isset($variable->$inside)) {
