@@ -254,7 +254,7 @@ class Context
         if (($inside !== '0' && empty($inside)) || ($inside == 'this')) {
             return $variable;
         } elseif (is_array($variable)) {
-            if (isset($variable[$inside])) {
+            if (isset($variable[$inside]) || array_key_exists($inside, $variable)) {
                 return $variable[$inside];
             } elseif ($inside == "length") {
                 return count($variable);
