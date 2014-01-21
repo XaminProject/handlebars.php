@@ -10,6 +10,7 @@
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @author    Chris Gray <chris.w.gray@gmail.com>
+ * @author    Ulrik Lystbaek <ulrik@bettertaste.dk>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @copyright 2013 (c) f0ruD A
@@ -254,7 +255,7 @@ class Context
         if (($inside !== '0' && empty($inside)) || ($inside == 'this')) {
             return $variable;
         } elseif (is_array($variable)) {
-            if (isset($variable[$inside])) {
+            if (isset($variable[$inside]) || array_key_exists($inside, $variable)) {
                 return $variable[$inside];
             } elseif ($inside == "length") {
                 return count($variable);
