@@ -8,6 +8,7 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @copyright 2013 (c) f0ruD A
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
@@ -170,6 +171,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             array(
                 '{{#unless data}}ok{{/unless}}',
                 array('data' => false),
+                'ok'
+            ),
+            array(
+                '{{#unless data}}ok{{else}}fail{{/unless}}',
+                array('data' => false),
+                'ok'
+            ),
+            array(
+                '{{#unless data}}fail{{else}}ok{{/unless}}',
+                array('data' => true),
                 'ok'
             ),
             array(
