@@ -10,6 +10,7 @@
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @author    Chris Gray <chris.w.gray@gmail.com>
+ * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -228,6 +229,18 @@ class Template
         }
 
         return '';
+    }
+
+    /**
+     * Rewind top tree index to the first element
+     *
+     * @return void
+     */
+    public function rewind()
+    {
+        $topStack = array_pop($this->_stack);
+        $topStack[0] = 0;
+        array_push($this->_stack, $topStack);
     }
 
     /**

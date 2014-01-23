@@ -117,7 +117,13 @@ class Helpers
                  */
                 $tmp = $context->get($args);
                 $buffer = '';
-                if (is_array($tmp) || $tmp instanceof \Traversable) {
+
+                if (!$tmp) {
+                    $template->setStopToken('else');
+                    $template->discard();
+                    $template->setStopToken(false);
+                    $buffer = $template->render($context);
+                } elseif (is_array($tmp) || $tmp instanceof \Traversable) {
                     $islist = ($tmp instanceof \Generator) || (array_keys($tmp) == range(0, count($tmp) - 1));
 
                     foreach ($tmp as $key => $var) {
@@ -127,6 +133,8 @@ class Helpers
                             $context->pushKey($key);
                         }
                         $context->push($var);
+                        $template->setStopToken('else');
+                        $template->rewind();
                         $buffer .= $template->render($context);
                         $context->pop();
                         if ($islist) {

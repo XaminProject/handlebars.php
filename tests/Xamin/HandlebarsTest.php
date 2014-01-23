@@ -164,6 +164,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 'key1=>1key2=>2'
             ),
             array(
+                '{{#each data}}{{this}}{{else}}fail{{/each}}',
+                array('data' => array(1, 2, 3, 4)),
+                '1234'
+            ),
+            array(
+                '{{#each data}}fail{{else}}ok{{/each}}',
+                array('data' => false),
+                'ok'
+            ),
+            array(
                 '{{#unless data}}ok{{/unless}}',
                 array('data' => true),
                 ''
