@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -116,7 +117,13 @@ class Helpers
                  */
                 $tmp = $context->get($args);
                 $buffer = '';
-                if (is_array($tmp) || $tmp instanceof \Traversable) {
+
+                if (!$tmp) {
+                    $template->setStopToken('else');
+                    $template->discard();
+                    $template->setStopToken(false);
+                    $buffer = $template->render($context);
+                } elseif (is_array($tmp) || $tmp instanceof \Traversable) {
                     $islist = ($tmp instanceof \Generator) || (array_keys($tmp) == range(0, count($tmp) - 1));
 
                     foreach ($tmp as $key => $var) {
@@ -126,6 +133,8 @@ class Helpers
                             $context->pushKey($key);
                         }
                         $context->push($var);
+                        $template->setStopToken('else');
+                        $template->rewind();
                         $buffer .= $template->render($context);
                         $context->pop();
                         if ($islist) {

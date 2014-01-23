@@ -8,6 +8,7 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @copyright 2013 (c) f0ruD A
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
@@ -161,6 +162,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '{{#each data}}{{@key}}=>{{this}}{{/each}}',
                 array('data' => array('key1'=>1, 'key2'=>2,)),
                 'key1=>1key2=>2'
+            ),
+            array(
+                '{{#each data}}{{this}}{{else}}fail{{/each}}',
+                array('data' => array(1, 2, 3, 4)),
+                '1234'
+            ),
+            array(
+                '{{#each data}}fail{{else}}ok{{/each}}',
+                array('data' => false),
+                'ok'
             ),
             array(
                 '{{#unless data}}ok{{/unless}}',
