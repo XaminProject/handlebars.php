@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -150,8 +151,15 @@ class Helpers
                  * @var $source string
                  */
                 $tmp = $context->get($args);
-                $buffer = '';
+
                 if (!$tmp) {
+                    $template->setStopToken('else');
+                    $buffer = $template->render($context);
+                    $template->setStopToken(false);
+                } else {
+                    $template->setStopToken('else');
+                    $template->discard();
+                    $template->setStopToken(false);
                     $buffer = $template->render($context);
                 }
 
