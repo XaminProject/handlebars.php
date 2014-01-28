@@ -143,6 +143,8 @@ class Helpers
                             $context->popKey();
                         }
                     }
+
+                    $template->setStopToken(false);
                 }
 
                 return $buffer;
