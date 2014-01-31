@@ -240,6 +240,12 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
 
         $engine->addHelper('dontrenderme', function() {return "{{test}}";});
         $this->assertEquals('{{test}}', $engine->render('{{#dontrenderme}}', array()));
+
+        $engine->addHelper('markupHelper', function() {
+            return '<strong>Test</strong>';
+        });
+        $this->assertEquals('<strong>Test</strong>', $engine->render('{{{markupHelper}}}', array()));
+        $this->assertEquals('&lt;strong&gt;Test&lt;/strong&gt;', $engine->render('{{markupHelper}}', array()));
     }
 
     /**
