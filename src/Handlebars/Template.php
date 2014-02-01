@@ -407,9 +407,16 @@ class Template
         $current[Tokenizer::NAME] = $name;
         $current[Tokenizer::ARGS] = implode(' ', $args);
         $result = $this->_section($context, $current);
-        if ( $escaped ) {
-            $result = htmlspecialchars($result);
+
+        if ($escaped) {
+            $escape_args = $this->handlebars->getEscapeArgs();
+            array_unshift($escape_args, $result);
+            $result = call_user_func_array(
+                $this->handlebars->getEscape(),
+                array_values($escape_args)
+            );
         }
+
         return $result;
     }
 
