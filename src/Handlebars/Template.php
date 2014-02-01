@@ -406,7 +406,11 @@ class Template
         $name = array_shift($args);
         $current[Tokenizer::NAME] = $name;
         $current[Tokenizer::ARGS] = implode(' ', $args);
-        return $this->_section($context, $current);
+        $result = $this->_section($context, $current);
+        if ( $escaped ) {
+            $result = htmlspecialchars($result);
+        }
+        return $result;
     }
 
     /**
