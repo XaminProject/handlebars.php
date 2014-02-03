@@ -480,7 +480,7 @@ class Template
      *
      * @return array the argument list as an array
      */
-    public funcion parseTagAttributes ($string) 
+    public function parseTagAttributes ($string) 
     {
         $attributes = [];
         $pattern = '#(?(DEFINE)
