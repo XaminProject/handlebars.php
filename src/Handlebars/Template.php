@@ -408,7 +408,7 @@ class Template
         $current[Tokenizer::ARGS] = implode(' ', $args);
         $result = $this->_section($context, $current);
 
-        if ($escaped) {
+        if ($escaped && !($result instanceof SafeString)) {
             $escape_args = $this->handlebars->getEscapeArgs();
             array_unshift($escape_args, $result);
             $result = call_user_func_array(
