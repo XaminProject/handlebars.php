@@ -246,6 +246,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         });
         $this->assertEquals('<strong>Test</strong>', $engine->render('{{{markupHelper}}}', array()));
         $this->assertEquals('&lt;strong&gt;Test&lt;/strong&gt;', $engine->render('{{markupHelper}}', array()));
+
+        $engine->addHelper('safeStringTest', function() {
+            return new \Handlebars\SafeString('<strong>Test</strong>');
+        });
+        $this->assertEquals('<strong>Test</strong>', $engine->render('{{safeStringTest}}', array()));
     }
 
     /**
