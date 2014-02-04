@@ -11,6 +11,7 @@
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @author    Chris Gray <chris.w.gray@gmail.com>
  * @author    Ulrik Lystbaek <ulrik@bettertaste.dk>
+ * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @copyright 2013 (c) f0ruD A
@@ -37,6 +38,17 @@ namespace Handlebars;
 
 class Context
 {
+
+    /**
+     * List of charcters that cannot be used in identifiers.
+     */
+    const NOT_VALID_NAME_CHARS = '!"#%&\'()*+,./;<=>@[\\]^`{|}~';
+
+    /**
+     * List of characters that cannot be used in identifiers in segment-literal
+     * notation.
+     */
+    const NOT_VALID_SEGMENT_NAME_CHARS = "]";
 
     /**
      * @var array stack for context only top stack is available
@@ -179,13 +191,14 @@ class Context
     /**
      * Get a available from current context
      * Supported types :
-     * variable , ../variable , variable.variable , .
+     * variable , ../variable , variable.variable , variable.[variable] , .
      *
      * @param string  $variableName variable name to get from current context
      * @param boolean $strict       strict search? if not found then throw exception
      *
      * @throws \InvalidArgumentException in strict mode and variable not found
      * @throws \RuntimeException if supplied argument is a malformed quoted string 
+     * @throws \InvalidArgumentException if variable name is invalid
      * @return mixed
      */
     public function get($variableName, $strict = false)
@@ -228,7 +241,7 @@ class Context
         } elseif ($variableName == '@key') {
             $current = $this->lastKey();
         } else {
-            $chunks = explode('.', $variableName);
+            $chunks = $this->_splitVariableName($variableName);
             foreach ($chunks as $chunk) {
                 if (is_string($current) and $current == '') {
                     return $current;
@@ -273,6 +286,41 @@ class Context
         }
 
         return $value;
+    }
+
+    /**
+     * Splits variable name to chunks.
+     *
+     * @param string $variable_name Fully qualified name of a variable.
+     *
+     * @throws \InvalidArgumentException if variable name is invalid.
+     * @return array
+     */
+    private function _splitVariableName($variable_name)
+    {
+        $bad_chars = preg_quote(self::NOT_VALID_NAME_CHARS, '/');
+        $bad_seg_chars = preg_quote(self::NOT_VALID_SEGMENT_NAME_CHARS, '/');
+
+        $name_pattern = "(?:[^" . $bad_chars . "\s]+)|(?:\[[^" . $bad_seg_chars . "]+\])";
+        $check_pattern = "/^((" . $name_pattern . ")\.)*(" . $name_pattern  . ")\.?$/";
+        $get_pattern = "/(?:" . $name_pattern . ")/";
+
+        if (!preg_match($check_pattern, $variable_name)) {
+            throw new \InvalidArgumentException('variable name is invalid');
+        }
+
+        preg_match_all($get_pattern, $variable_name, $matches);
+
+        $chunks = array();
+        foreach ($matches[0] as $chunk) {
+            // Remove wrapper braces if needed
+            if ($chunk[0] == '[') {
+                $chunk = substr($chunk, 1, -1);
+            }
+            $chunks[] = $chunk;
+        }
+
+        return $chunks;
     }
 
 }
