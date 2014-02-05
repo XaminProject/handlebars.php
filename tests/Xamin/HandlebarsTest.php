@@ -105,7 +105,17 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '{{data.property.3}}',
                 array("data"=>array("property"=>array(1,2,3,4))),
                 '4'
-            )
+            ),
+            array(
+                '{{data.unsafe}}',
+                array('data' => array('unsafe' => '<strong>Test</strong>')),
+                '&lt;strong&gt;Test&lt;/strong&gt;'
+            ),
+            array(
+                '{{{data.safe}}}',
+                array('data' => array('safe' => '<strong>Test</strong>')),
+                '<strong>Test</strong>'
+            ),
         );
     }
 
