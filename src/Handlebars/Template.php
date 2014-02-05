@@ -455,7 +455,7 @@ class Template
     public function parseArguments($string)
     {
         $args = array();
-        preg_match_all('#(?<!\\\\)("|\')(?:[^\\\\]|\\\\.)*?\1|\S+#s', $string, $args);
+        preg_match_all('#(?:[^\'"\[\]\s]|\[.+?\])+|(?<!\\\\)("|\')(?:[^\\\\]|\\\\.)*?\1|\S+#s', $string, $args);
         $args =  isset($args[0])?$args[0]:array();
         
         for ($x=0, $argc = count($args); $x<$argc;$x++) {

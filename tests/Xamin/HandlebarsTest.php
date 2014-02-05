@@ -476,12 +476,18 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     {
         $test = new stdClass();
         $test->value = 'value';
-        $test->array = array('a' => '1', 'b' => '2');
+        $test->array = array(
+            'a' => '1',
+            'b' => '2',
+            '!"#%&\'()*+,./;<=>@[\\^`{|}~ ' => '3',
+        );
         $context = new \Handlebars\Context($test);
         $this->assertEquals('value', $context->get('value'));
         $this->assertEquals('value', $context->get('value', true));
+        $this->assertEquals('value', $context->get('[value]', true));
         $this->assertEquals('1', $context->get('array.a', true));
         $this->assertEquals('2', $context->get('array.b', true));
+        $this->assertEquals('3', $context->get('array.[!"#%&\'()*+,./;<=>@[\\^`{|}~ ]', true));
         $new = array('value' => 'new value');
         $context->push($new);
         $this->assertEquals('new value', $context->get('value'));
@@ -546,7 +552,9 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                     array('arg1 "arg\"2" "\"arg3\""', array("arg1",'arg"2', '"arg3"')),
                     array("'arg1 arg2'", array("arg1 arg2")),
                     array("arg1 arg2 'arg number 3'", array("arg1","arg2","arg number 3")),
-                    array('arg1 "arg\"2" "\\\'arg3\\\'"', array("arg1",'arg"2', "'arg3'"))
+                    array('arg1 "arg\"2" "\\\'arg3\\\'"', array("arg1",'arg"2', "'arg3'")),
+                    array('arg1 arg2.[value\'s "segment"].val', array("arg1", 'arg2.[value\'s "segment"].val')),
+                    array('"arg1.[value 1]" arg2', array("arg1.[value 1]", 'arg2')),
         );
     }
     /**
