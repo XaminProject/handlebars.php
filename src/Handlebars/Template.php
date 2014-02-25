@@ -291,12 +291,20 @@ class Template
             }
             $buffer = '';
             if (is_array($sectionVar) || $sectionVar instanceof \Traversable) {
-                foreach ($sectionVar as $index => $d) {
-                    $context->pushIndex($index);
+                $isList = is_array($sectionVar) && (array_keys($sectionVar) == range(0, count($sectionVar) - 1));
+                $index = 0;
+
+                foreach ($sectionVar as $key => $d) {
+                    $specialVariables = array('@index' => $index);
+                    if (!$isList) {
+                        $specialVariables['@key'] = $key;
+                    }
+                    $context->pushSpecialVariables($specialVariables);
                     $context->push($d);
                     $buffer .= $this->render($context);
                     $context->pop();
-                    $context->popIndex();
+                    $context->popSpecialVariables();
+                    $index++;
                 }
             } elseif (is_object($sectionVar)) {
                 //Act like with

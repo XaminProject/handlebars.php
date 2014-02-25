@@ -66,6 +66,12 @@ class Context
     protected $key = array();
 
     /**
+     * @var array Special variables stack for sections. Each stack element can
+     * contain elements with "@index" and "@key" keys.
+     */
+    protected $specialVariables = array();
+
+    /**
      * Mustache rendering Context constructor.
      *
      * @param mixed $context Default rendering context (default: null)
@@ -90,27 +96,17 @@ class Context
     }
 
     /**
-     * Push an Index onto the index stack
+     * Push an array of special variables to stack.
      *
-     * @param integer $index Index of the current section item.
-     *
-     * @return void
-     */
-    public function pushIndex($index)
-    {
-        array_push($this->index, $index);
-    }
-
-    /**
-     * Push a Key onto the key stack
-     *
-     * @param string $key Key of the current object property.
+     * @param array $variables An associative array of special variables.
      *
      * @return void
+     *
+     * @see \Handlebars\Context::$specialVariables
      */
-    public function pushKey($key)
+    public function pushSpecialVariables($variables)
     {
-        array_push($this->key, $key);
+        array_push($this->specialVariables, $variables);
     }
 
     /**
@@ -124,23 +120,15 @@ class Context
     }
 
     /**
-     * Pop the last index from the stack.
+     * Pop the last special variables set from the stack.
      *
-     * @return int Last index
-     */
-    public function popIndex()
-    {
-        return array_pop($this->index);
-    }
-
-    /**
-     * Pop the last key from the stack.
+     * @return array Associative array of special variables.
      *
-     * @return string Last key
+     * @see \Handlebars\Context::$specialVariables
      */
-    public function popKey()
+    public function popSpecialVariables()
     {
-        return array_pop($this->key);
+        return array_pop($this->specialVariables);
     }
 
     /**
@@ -154,23 +142,15 @@ class Context
     }
 
     /**
-     * Get the index of current section item.
+     * Get the last special variables set from the stack.
      *
-     * @return mixed Last index
-     */
-    public function lastIndex()
-    {
-        return end($this->index);
-    }
-
-    /**
-     * Get the key of current object property.
+     * @return array Associative array of special variables.
      *
-     * @return mixed Last key
+     * @see \Handlebars\Context::$specialVariables
      */
-    public function lastKey()
+    public function lastSpecialVariables()
     {
-        return end($this->key);
+        return end($this->specialVariables);
     }
 
     /**
@@ -236,10 +216,17 @@ class Context
             return '';
         } elseif ($variableName == '.' || $variableName == 'this') {
             return $current;
-        } elseif ($variableName == '@index') {
-            $current = $this->lastIndex();    
-        } elseif ($variableName == '@key') {
-            $current = $this->lastKey();
+        } elseif ($variableName[0] == '@') {
+            $specialVariables = $this->lastSpecialVariables();
+            if (isset($specialVariables[$variableName])) {
+                return $specialVariables[$variableName];
+            } elseif ($strict) {
+                throw new \InvalidArgumentException(
+                    'can not find variable in context'
+                );
+            } else {
+                return '';
+            }
         } else {
             $chunks = $this->_splitVariableName($variableName);
             foreach ($chunks as $chunk) {

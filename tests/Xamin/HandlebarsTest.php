@@ -174,6 +174,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 'key1=>1key2=>2'
             ),
             array(
+                '{{#each data}}{{@key}}=>{{this}}{{/each}}',
+                array('data' => new \ArrayIterator(array('key1'=>1, 'key2'=>2))),
+                'key1=>1key2=>2'
+            ),
+            array(
+                '{{#each data}}{{@index}}=>{{this}},{{/each}}',
+                array('data' => array('key1'=>1, 'key2'=>2,)),
+                '0=>1,1=>2,'
+            ),
+            array(
                 '{{#each data}}{{this}}{{else}}fail{{/each}}',
                 array('data' => array(1, 2, 3, 4)),
                 '1234'
@@ -274,6 +284,8 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $engine->render('{{#x}}yes{{/x}}', array ('x' => false)));
         $this->assertEquals('yes', $engine->render('{{^x}}yes{{/x}}', array ('x' => false)));
         $this->assertEquals('1234', $engine->render('{{#x}}{{this}}{{/x}}', array ('x' => array (1,2,3,4))));
+        $this->assertEquals('012', $engine->render('{{#x}}{{@index}}{{/x}}', array ('x' => array ('a','b','c'))));
+        $this->assertEquals('abc', $engine->render('{{#x}}{{@key}}{{/x}}', array ('x' => array ('a'=>1,'b'=>2,'c'=>3))));
         $std = new stdClass();
         $std->value = 1;
         $this->assertEquals('1', $engine->render('{{#x}}{{value}}{{/x}}', array ('x' => $std)));
@@ -512,7 +524,6 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $context->pop();
         $this->assertEquals('value', $context->get('value'));
         $this->assertEquals('value', $context->get('value', true));
-        $this->assertFalse($context->lastIndex());
     }
 
     /**
