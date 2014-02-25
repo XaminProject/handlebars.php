@@ -67,7 +67,7 @@ class Context
 
     /**
      * @var array Special variables stack for sections. Each stack element can
-     * contain elements with "@index" and "@key" keys.
+     * contain elements with "@index", "@key", "@first" and "@last" keys.
      */
     protected $specialVariables = array();
 

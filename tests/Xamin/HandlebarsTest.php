@@ -184,6 +184,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '0=>1,1=>2,'
             ),
             array(
+                '{{#each data}}{{#if @first}}the first is {{this}}{{/if}}{{/each}}',
+                array('data' => array('one', 'two', 'three')),
+                'the first is one'
+            ),
+            array(
+                '{{#each data}}{{#if @last}}the last is {{this}}{{/if}}{{/each}}',
+                array('data' => array('one', 'two', 'three')),
+                'the last is three'
+            ),
+            array(
                 '{{#each data}}{{this}}{{else}}fail{{/each}}',
                 array('data' => array(1, 2, 3, 4)),
                 '1234'

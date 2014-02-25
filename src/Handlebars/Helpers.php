@@ -126,9 +126,14 @@ class Helpers
                 } elseif (is_array($tmp) || $tmp instanceof \Traversable) {
                     $isList = is_array($tmp) && (array_keys($tmp) == range(0, count($tmp) - 1));
                     $index = 0;
+                    $lastIndex = $isList ? (count($tmp) - 1) : false;
 
                     foreach ($tmp as $key => $var) {
-                        $specialVariables = array('@index' => $index);
+                        $specialVariables = array(
+                            '@index' => $index,
+                            '@first' => ($index === 0),
+                            '@last' => ($index === $lastIndex),
+                        );
                         if (!$isList) {
                             $specialVariables['@key'] = $key;
                         }

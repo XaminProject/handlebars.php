@@ -293,9 +293,14 @@ class Template
             if (is_array($sectionVar) || $sectionVar instanceof \Traversable) {
                 $isList = is_array($sectionVar) && (array_keys($sectionVar) == range(0, count($sectionVar) - 1));
                 $index = 0;
+                $lastIndex = $isList ? (count($sectionVar) - 1) : false;
 
                 foreach ($sectionVar as $key => $d) {
-                    $specialVariables = array('@index' => $index);
+                    $specialVariables = array(
+                        '@index' => $index,
+                        '@first' => ($index === 0),
+                        '@last' => ($index === $lastIndex),
+                    );
                     if (!$isList) {
                         $specialVariables['@key'] = $key;
                     }
