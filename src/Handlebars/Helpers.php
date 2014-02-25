@@ -124,24 +124,27 @@ class Helpers
                     $template->setStopToken(false);
                     $buffer = $template->render($context);
                 } elseif (is_array($tmp) || $tmp instanceof \Traversable) {
-                    $islist = ($tmp instanceof \Generator) || (array_keys($tmp) == range(0, count($tmp) - 1));
+                    $isList = is_array($tmp) && (array_keys($tmp) == range(0, count($tmp) - 1));
+                    $index = 0;
+                    $lastIndex = $isList ? (count($tmp) - 1) : false;
 
                     foreach ($tmp as $key => $var) {
-                        if ($islist) {
-                            $context->pushIndex($key);
-                        } else {
-                            $context->pushKey($key);
+                        $specialVariables = array(
+                            '@index' => $index,
+                            '@first' => ($index === 0),
+                            '@last' => ($index === $lastIndex),
+                        );
+                        if (!$isList) {
+                            $specialVariables['@key'] = $key;
                         }
+                        $context->pushSpecialVariables($specialVariables);
                         $context->push($var);
                         $template->setStopToken('else');
                         $template->rewind();
                         $buffer .= $template->render($context);
                         $context->pop();
-                        if ($islist) {
-                            $context->popIndex();
-                        } else {
-                            $context->popKey();
-                        }
+                        $context->popSpecialVariables();
+                        $index++;
                     }
 
                     $template->setStopToken(false);
