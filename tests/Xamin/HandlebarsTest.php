@@ -24,6 +24,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     {
         \Handlebars\Autoloader::register();
     }
+
     /**
      * Test handlebars autoloader
      *
@@ -83,27 +84,27 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             ),
             array(
                 '{{data.length}}',
-                array("data" => array(1,2,3,4)),
+                array("data" => array(1, 2, 3, 4)),
                 '4'
             ),
             array(
                 '{{data.length}}',
-                array("data"=> (object)array(1,2,3,4)),
+                array("data" => (object)array(1, 2, 3, 4)),
                 ''
             ),
             array(
                 '{{data.length}}',
-                array("data"=>array("length"=>"15 inches", "test","test","test")),
+                array("data" => array("length" => "15 inches", "test", "test", "test")),
                 "15 inches"
             ),
             array(
                 '{{data.0}}',
-                array("data" => array(1,2,3,4)),
+                array("data" => array(1, 2, 3, 4)),
                 '1'
             ),
             array(
                 '{{data.property.3}}',
-                array("data"=>array("property"=>array(1,2,3,4))),
+                array("data" => array("property" => array(1, 2, 3, 4))),
                 '4'
             ),
             array(
@@ -170,17 +171,17 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             ),
             array(
                 '{{#each data}}{{@key}}=>{{this}}{{/each}}',
-                array('data' => array('key1'=>1, 'key2'=>2,)),
+                array('data' => array('key1' => 1, 'key2' => 2,)),
                 'key1=>1key2=>2'
             ),
             array(
                 '{{#each data}}{{@key}}=>{{this}}{{/each}}',
-                array('data' => new \ArrayIterator(array('key1'=>1, 'key2'=>2))),
+                array('data' => new \ArrayIterator(array('key1' => 1, 'key2' => 2))),
                 'key1=>1key2=>2'
             ),
             array(
                 '{{#each data}}{{@index}}=>{{this}},{{/each}}',
-                array('data' => array('key1'=>1, 'key2'=>2,)),
+                array('data' => array('key1' => 1, 'key2' => 2,)),
                 '0=>1,1=>2,'
             ),
             array(
@@ -238,7 +239,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     public function testHelpersManagement()
     {
         $helpers = new \Handlebars\Helpers(array('test' => function () {
-        }), false);
+            }), false);
         $engine = new \Handlebars\Handlebars(array('helpers' => $helpers));
         $this->assertTrue(is_callable($engine->getHelper('test')));
         $this->assertTrue($engine->hasHelper('test'));
@@ -265,19 +266,23 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Test helper is called with a b c', $engine->render('{{#test2 a b c}}', array()));
         $this->assertEquals('Test helper is called with a b c', $engine->render('{{test2 a b c}}', array()));
 
-        $engine->addHelper('renderme', function() {return new \Handlebars\String("{{test}}");});
+        $engine->addHelper('renderme', function () {
+            return new \Handlebars\String("{{test}}");
+        });
         $this->assertEquals('Test helper is called', $engine->render('{{#renderme}}', array()));
 
-        $engine->addHelper('dontrenderme', function() {return "{{test}}";});
+        $engine->addHelper('dontrenderme', function () {
+            return "{{test}}";
+        });
         $this->assertEquals('{{test}}', $engine->render('{{#dontrenderme}}', array()));
 
-        $engine->addHelper('markupHelper', function() {
+        $engine->addHelper('markupHelper', function () {
             return '<strong>Test</strong>';
         });
         $this->assertEquals('<strong>Test</strong>', $engine->render('{{{markupHelper}}}', array()));
         $this->assertEquals('&lt;strong&gt;Test&lt;/strong&gt;', $engine->render('{{markupHelper}}', array()));
 
-        $engine->addHelper('safeStringTest', function() {
+        $engine->addHelper('safeStringTest', function () {
             return new \Handlebars\SafeString('<strong>Test</strong>');
         });
         $this->assertEquals('<strong>Test</strong>', $engine->render('{{safeStringTest}}', array()));
@@ -306,16 +311,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     {
         $loader = new \Handlebars\Loader\StringLoader();
         $engine = new \Handlebars\Handlebars(array('loader' => $loader));
-        $this->assertEquals('yes', $engine->render('{{#x}}yes{{/x}}', array ('x' => true)));
-        $this->assertEquals('', $engine->render('{{#x}}yes{{/x}}', array ('x' => false)));
-        $this->assertEquals('yes', $engine->render('{{^x}}yes{{/x}}', array ('x' => false)));
-        $this->assertEquals('1234', $engine->render('{{#x}}{{this}}{{/x}}', array ('x' => array (1,2,3,4))));
-        $this->assertEquals('012', $engine->render('{{#x}}{{@index}}{{/x}}', array ('x' => array ('a','b','c'))));
-        $this->assertEquals('abc', $engine->render('{{#x}}{{@key}}{{/x}}', array ('x' => array ('a'=>1,'b'=>2,'c'=>3))));
+        $this->assertEquals('yes', $engine->render('{{#x}}yes{{/x}}', array('x' => true)));
+        $this->assertEquals('', $engine->render('{{#x}}yes{{/x}}', array('x' => false)));
+        $this->assertEquals('yes', $engine->render('{{^x}}yes{{/x}}', array('x' => false)));
+        $this->assertEquals('1234', $engine->render('{{#x}}{{this}}{{/x}}', array('x' => array(1, 2, 3, 4))));
+        $this->assertEquals('012', $engine->render('{{#x}}{{@index}}{{/x}}', array('x' => array('a', 'b', 'c'))));
+        $this->assertEquals('abc', $engine->render('{{#x}}{{@key}}{{/x}}', array('x' => array('a' => 1, 'b' => 2, 'c' => 3))));
         $std = new stdClass();
         $std->value = 1;
-        $this->assertEquals('1', $engine->render('{{#x}}{{value}}{{/x}}', array ('x' => $std)));
-        $this->assertEquals('1', $engine->render('{{{x}}}', array ('x' => 1)));
+        $this->assertEquals('1', $engine->render('{{#x}}{{value}}{{/x}}', array('x' => $std)));
+        $this->assertEquals('1', $engine->render('{{{x}}}', array('x' => 1)));
     }
 
     /**
@@ -334,11 +339,13 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     public function testHelpersClass()
     {
         $helpers = new \Handlebars\Helpers();
-        $helpers->add('test', function(){});
+        $helpers->add('test', function () {
+        });
         $this->assertTrue($helpers->has('test'));
         $this->assertTrue(isset($helpers->test));
         $this->assertFalse($helpers->isEmpty());
-        $helpers->test2 = function(){};
+        $helpers->test2 = function () {
+        };
         $this->assertTrue($helpers->has('test2'));
         $this->assertTrue(isset($helpers->test2));
         $this->assertFalse($helpers->isEmpty());
@@ -450,6 +457,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $engine->setLoader($loader);
         $this->assertEquals('test', $engine->render('loader', array()));
     }
+
     /**
      * Test file system loader
      */
@@ -473,6 +481,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test file system loader
+     *
      * @expectedException \InvalidArgumentException
      */
     public function testFileSystemLoaderNotFound()
@@ -482,8 +491,10 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $engine->setLoader($loader);
         $engine->render('invalid_file', array());
     }
+
     /**
      * Test file system loader
+     *
      * @expectedException \RuntimeException
      */
     public function testFileSystemLoaderInvalidFolder()
@@ -600,22 +611,23 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
 
     public function getInvalidData()
     {
-        return array (
+        return array(
             array('../../data'),
             array('data'),
             array(''),
             array('data.key.key'),
         );
     }
-    
+
     /**
      * Test for proper handling of the length property
      **/
-    public function testArrayLengthEmulation(){
-        
-        $data = array("numbers"=>array(1,2,3,4),
-                      "object"=>(object)array("prop1"=>"val1", "prop2"=>"val2"),
-                      "object_with_length_property"=>(object)array("length"=>"15cm")
+    public function testArrayLengthEmulation()
+    {
+
+        $data = array("numbers" => array(1, 2, 3, 4),
+            "object" => (object)array("prop1" => "val1", "prop2" => "val2"),
+            "object_with_length_property" => (object)array("length" => "15cm")
         );
         $context = new \Handlebars\Context($data);
         // make sure we are getting the array length when given an array
@@ -623,20 +635,21 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         // make sure we are not getting a length when given an object
         $this->assertEmpty($context->get("object.length"));
         // make sure we can still get the length property when given an object
-        $this->assertEquals($context->get("object_with_length_property.length"), "15cm");        
+        $this->assertEquals($context->get("object_with_length_property.length"), "15cm");
     }
-    
-    public function argumentParserProvider(){
+
+    public function argumentParserProvider()
+    {
         return array(
-                    array('arg1 arg2', array("arg1","arg2")),
-                    array('"arg1 arg2"', array("arg1 arg2")),
-                    array('arg1 arg2 "arg number 3"', array("arg1","arg2","arg number 3")),
-                    array('arg1 "arg\"2" "\"arg3\""', array("arg1",'arg"2', '"arg3"')),
-                    array("'arg1 arg2'", array("arg1 arg2")),
-                    array("arg1 arg2 'arg number 3'", array("arg1","arg2","arg number 3")),
-                    array('arg1 "arg\"2" "\\\'arg3\\\'"', array("arg1",'arg"2', "'arg3'")),
-                    array('arg1 arg2.[value\'s "segment"].val', array("arg1", 'arg2.[value\'s "segment"].val')),
-                    array('"arg1.[value 1]" arg2', array("arg1.[value 1]", 'arg2')),
+            array('arg1 arg2', array("arg1", "arg2")),
+            array('"arg1 arg2"', array("arg1 arg2")),
+            array('arg1 arg2 "arg number 3"', array("arg1", "arg2", "arg number 3")),
+            array('arg1 "arg\"2" "\"arg3\""', array("arg1", 'arg"2', '"arg3"')),
+            array("'arg1 arg2'", array("arg1 arg2")),
+            array("arg1 arg2 'arg number 3'", array("arg1", "arg2", "arg number 3")),
+            array('arg1 "arg\"2" "\\\'arg3\\\'"', array("arg1", 'arg"2', "'arg3'")),
+            array('arg1 arg2.[value\'s "segment"].val', array("arg1", 'arg2.[value\'s "segment"].val')),
+            array('"arg1.[value 1]" arg2', array("arg1.[value 1]", 'arg2')),
         );
     }
 
@@ -650,51 +663,85 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testArgumentParser($arg_string, $expected_array){
+    public function testArgumentParser($arg_string, $expected_array)
+    {
         $engine = new \Handlebars\Handlebars();
         $template = new \Handlebars\Template($engine, null, null);
         // get the string version of the arguments array
         $args = $template->parseArguments($arg_string);
-        $args = array_map(function($a){ return (string)$a; }, $args);
+        $args = array_map(function ($a) {
+            return (string)$a;
+        }, $args);
         $this->assertEquals($args, $expected_array);
 
     }
-    
-    public function stringLiteralInCustomHelperProvider(){
+
+    public function stringLiteralInCustomHelperProvider()
+    {
         return array(
-            array('{{#test2 arg1 "Argument 2"}}', array("arg1"=>"Argument 1"), "Argument 1:Argument 2"),
-            array('{{#test2 "Argument 1" "Argument 2"}}', array("arg1"=>"Argument 1"), "Argument 1:Argument 2"),
-            array('{{#test2 "Argument 1" arg2}}', array("arg2"=>"Argument 2"), "Argument 1:Argument 2")
+            array('{{#test2 arg1 "Argument 2"}}', array("arg1" => "Argument 1"), "Argument 1:Argument 2"),
+            array('{{#test2 "Argument 1" "Argument 2"}}', array("arg1" => "Argument 1"), "Argument 1:Argument 2"),
+            array('{{#test2 "Argument 1" arg2}}', array("arg2" => "Argument 2"), "Argument 1:Argument 2")
         );
     }
+
     /**
      * Test String literals in the context of a helper
      *
      * @param string $template template text
-     * @param array  $data context data
-     * @param string $results The Expected Results
+     * @param array  $data     context data
+     * @param string $results  The Expected Results
      *
      * @dataProvider stringLiteralInCustomHelperProvider
      *
      * @return void
-     */    
-    public function testStringLiteralInCustomHelper($template, $data, $results){
+     */
+    public function testStringLiteralInCustomHelper($template, $data, $results)
+    {
         $engine = new \Handlebars\Handlebars();
         $engine->addHelper('test2', function ($template, $context, $args) {
             $args = $template->parseArguments($args);
-            
-            $args = array_map(function ($a) use ($context) {return $context->get($a);}, $args);
+
+            $args = array_map(function ($a) use ($context) {
+                return $context->get($a);
+            }, $args);
+
             return implode(':', $args);
         });
         $res = $engine->render($template, $data);
         $this->assertEquals($res, $results);
     }
-    
-    public function testString(){
+
+    public function testString()
+    {
         $string = new \Handlebars\String("Hello World");
         $this->assertEquals((string)$string, "Hello World");
     }
-    
-    
+
+    public function testInvalidNames()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(
+            array(
+                'loader' => $loader,
+            )
+        );
+        $all = \Handlebars\Context::NOT_VALID_NAME_CHARS;
+
+        for ($i = 0; $i < strlen($all); $i++) {
+            // Dot in string is valid, its an exception here
+            if ($all{$i} === '.') {
+                continue;
+            }
+            try {
+                $name = 'var' . $all{$i} . 'var';
+                $engine->render('{{' . $name . '}}', array($name => 'VALUE'));
+                throw new Exception("Accept the $name :/");
+            } catch (Exception $e) {
+                $this->assertInstanceOf("InvalidArgumentException", $e);
+            }
+        }
+
+    }
 
 }

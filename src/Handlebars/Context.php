@@ -278,12 +278,12 @@ class Context
     /**
      * Splits variable name to chunks.
      *
-     * @param string $variable_name Fully qualified name of a variable.
+     * @param string $variableName Fully qualified name of a variable.
      *
      * @throws \InvalidArgumentException if variable name is invalid.
      * @return array
      */
-    private function _splitVariableName($variable_name)
+    private function _splitVariableName($variableName)
     {
         $bad_chars = preg_quote(self::NOT_VALID_NAME_CHARS, '/');
         $bad_seg_chars = preg_quote(self::NOT_VALID_SEGMENT_NAME_CHARS, '/');
@@ -292,11 +292,11 @@ class Context
         $check_pattern = "/^((" . $name_pattern . ")\.)*(" . $name_pattern  . ")\.?$/";
         $get_pattern = "/(?:" . $name_pattern . ")/";
 
-        if (!preg_match($check_pattern, $variable_name)) {
+        if (!preg_match($check_pattern, $variableName)) {
             throw new \InvalidArgumentException('variable name is invalid');
         }
 
-        preg_match_all($get_pattern, $variable_name, $matches);
+        preg_match_all($get_pattern, $variableName, $matches);
 
         $chunks = array();
         foreach ($matches[0] as $chunk) {
