@@ -244,6 +244,100 @@ class Template
     }
 
     /**
+     * Process handlebars section style
+     *
+     * @param Context $context current context
+     * @param array   $current section node data
+     *
+     * @return mixed|string
+     */
+    private function _handlebarsStyleSection(Context $context, $current)
+    {
+        $helpers = $this->handlebars->getHelpers();
+        $sectionName = $current[Tokenizer::NAME];
+
+        if (isset($current[Tokenizer::END])) {
+            $source = substr(
+                $this->getSource(),
+                $current[Tokenizer::INDEX],
+                $current[Tokenizer::END] - $current[Tokenizer::INDEX]
+            );
+        } else {
+            $source = '';
+        }
+        $params = array(
+            $this, //First argument is this template
+            $context, //Second is current context
+            $current[Tokenizer::ARGS], //Arguments
+            $source
+        );
+
+        $return = call_user_func_array($helpers->$sectionName, $params);
+        if ($return instanceof String) {
+            return $this->handlebars->loadString($return)->render($context);
+        } else {
+            return $return;
+        }
+    }
+
+    /**
+     * Process Mustache section style
+     *
+     * @param Context $context current context
+     * @param array   $current section node data
+     *
+     * @throws \RuntimeException
+     * @return mixed|string
+     */
+    private function _mustacheStyleSection(Context $context, $current)
+    {
+        $sectionName = $current[Tokenizer::NAME];
+
+        // fallback to mustache style each/with/for just if there is
+        // no argument at all.
+        try {
+            $sectionVar = $context->get($sectionName, true);
+        } catch (\InvalidArgumentException $e) {
+            throw new \RuntimeException(
+                $sectionName . ' is not registered as a helper'
+            );
+        }
+        $buffer = '';
+        if (is_array($sectionVar) || $sectionVar instanceof \Traversable) {
+            $isList = is_array($sectionVar) &&
+                (array_keys($sectionVar) == range(0, count($sectionVar) - 1));
+            $index = 0;
+            $lastIndex = $isList ? (count($sectionVar) - 1) : false;
+
+            foreach ($sectionVar as $key => $d) {
+                $specialVariables = array(
+                    '@index' => $index,
+                    '@first' => ($index === 0),
+                    '@last' => ($index === $lastIndex),
+                );
+                if (!$isList) {
+                    $specialVariables['@key'] = $key;
+                }
+                $context->pushSpecialVariables($specialVariables);
+                $context->push($d);
+                $buffer .= $this->render($context);
+                $context->pop();
+                $context->popSpecialVariables();
+                $index++;
+            }
+        } elseif (is_object($sectionVar)) {
+            //Act like with
+            $context->push($sectionVar);
+            $buffer = $this->render($context);
+            $context->pop();
+        } elseif ($sectionVar) {
+            $buffer = $this->render($context);
+        }
+
+        return $buffer;
+    }
+
+    /**
      * Process section nodes
      *
      * @param Context $context current context
@@ -257,70 +351,9 @@ class Template
         $helpers = $this->handlebars->getHelpers();
         $sectionName = $current[Tokenizer::NAME];
         if ($helpers->has($sectionName)) {
-            if (isset($current[Tokenizer::END])) {
-                $source = substr(
-                    $this->getSource(),
-                    $current[Tokenizer::INDEX],
-                    $current[Tokenizer::END] - $current[Tokenizer::INDEX]
-                );
-            } else {
-                $source = '';
-            }
-            $params = array(
-                $this, //First argument is this template
-                $context, //Second is current context
-                $current[Tokenizer::ARGS], //Arguments
-                $source
-            );
-
-            $return = call_user_func_array($helpers->$sectionName, $params);
-            if ($return instanceof String) {
-                return $this->handlebars->loadString($return)->render($context);
-            } else {
-                return $return;
-            }
+            return $this->_handlebarsStyleSection($context, $current);
         } elseif (trim($current[Tokenizer::ARGS]) == '') {
-            // fallback to mustache style each/with/for just if there is
-            // no argument at all.
-            try {
-                $sectionVar = $context->get($sectionName, true);
-            } catch (\InvalidArgumentException $e) {
-                throw new \RuntimeException(
-                    $sectionName . ' is not registered as a helper'
-                );
-            }
-            $buffer = '';
-            if (is_array($sectionVar) || $sectionVar instanceof \Traversable) {
-                $isList = is_array($sectionVar) && (array_keys($sectionVar) == range(0, count($sectionVar) - 1));
-                $index = 0;
-                $lastIndex = $isList ? (count($sectionVar) - 1) : false;
-
-                foreach ($sectionVar as $key => $d) {
-                    $specialVariables = array(
-                        '@index' => $index,
-                        '@first' => ($index === 0),
-                        '@last' => ($index === $lastIndex),
-                    );
-                    if (!$isList) {
-                        $specialVariables['@key'] = $key;
-                    }
-                    $context->pushSpecialVariables($specialVariables);
-                    $context->push($d);
-                    $buffer .= $this->render($context);
-                    $context->pop();
-                    $context->popSpecialVariables();
-                    $index++;
-                }
-            } elseif (is_object($sectionVar)) {
-                //Act like with
-                $context->push($sectionVar);
-                $buffer = $this->render($context);
-                $context->pop();
-            } elseif ($sectionVar) {
-                $buffer = $this->render($context);
-            }
-
-            return $buffer;
+            return $this->_mustacheStyleSection($context, $current);
         } else {
             throw new \RuntimeException(
                 $sectionName . ' is not registered as a helper'
@@ -380,6 +413,7 @@ class Template
         $helpers = $this->getEngine()->getHelpers();
         // Tokenizer doesn't process the args -if any- so be aware of that
         $name = explode(' ', $current[Tokenizer::NAME], 2);
+
         return $helpers->has(reset($name));
     }
 
@@ -457,32 +491,34 @@ class Template
 
         return $value;
     }
-    
+
     /**
      * Break an argument string into an array of strings
      *
      * @param string $string Argument String as passed to a helper
      *
+     * @throws \RuntimeException
      * @return array the argument list as an array
      */
     public function parseArguments($string)
     {
         $args = array();
         preg_match_all('#(?:[^\'"\[\]\s]|\[.+?\])+|(?<!\\\\)("|\')(?:[^\\\\]|\\\\.)*?\1|\S+#s', $string, $args);
-        $args =  isset($args[0])?$args[0]:array();
-        
-        for ($x=0, $argc = count($args); $x<$argc;$x++) {
+        $args = isset($args[0]) ? $args[0] : array();
+
+        for ($x = 0, $argc = count($args); $x < $argc; $x++) {
             // check to see if argument is a quoted string literal
             if ($args[$x][0] == "'" || $args[$x][0] == '"') {
                 if ($args[$x][0] === substr($args[$x], -1)) {
                     // remove enclosing quotes and unescape
-                    $args[$x] = new \Handlebars\String(stripcslashes(substr($args[$x], 1, strlen($args[$x]) -2)));
+                    $args[$x] = new \Handlebars\String(stripcslashes(substr($args[$x], 1, strlen($args[$x]) - 2)));
                 } else {
-                    throw new \RuntimeException("Malformed string: ".$args);
+                    throw new \RuntimeException("Malformed string: " . $args);
                 }
             }
-            
+
         }
+
         return $args;
     }
 }

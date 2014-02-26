@@ -283,6 +283,22 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('<strong>Test</strong>', $engine->render('{{safeStringTest}}', array()));
     }
 
+    public function testInvalidHelperMustacheStyle()
+    {
+        $this->setExpectedException('RuntimeException');
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        $engine->render('{{#NOTVALID}}XXX{{/NOTVALID}}', array());
+    }
+
+    public function testInvalidHelper()
+    {
+        $this->setExpectedException('RuntimeException');
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        $engine->render('{{#NOTVALID argument}}XXX{{/NOTVALID}}', array());
+    }
+
     /**
      * Test mustache style loop and if
      */
@@ -412,6 +428,18 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count(glob($path . '/*')));
     }
 
+    public function testArrayLoader()
+    {
+        $loader = new \Handlebars\Loader\ArrayLoader(array('test' => 'HELLO'));
+        $loader->addTemplate('another', 'GOODBYE');
+        $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        $this->assertEquals($engine->render('test', array()), 'HELLO');
+        $this->assertEquals($engine->render('another', array()), 'GOODBYE');
+
+        $this->setExpectedException('RuntimeException');
+        $engine->render('invalid-template', array());
+    }
+
     /**
      * Test file system loader
      */
@@ -475,6 +503,29 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $engine->setPartialsLoader($partialLoader);
 
         $this->assertEquals('test', $engine->render('{{>loader}}', array()));
+    }
+
+    public function testPartial()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $partialLoader = new \Handlebars\Loader\ArrayLoader(array('test' => '{{key}}', 'bar' => 'its foo'));
+        $partialAliasses = array('foo' => 'bar');
+        $engine = new \Handlebars\Handlebars(
+            array(
+                'loader' => $loader,
+                'partials_loader' => $partialLoader,
+                'partials_alias' => $partialAliasses
+            )
+        );
+
+        $this->assertEquals('HELLO', $engine->render('{{>test parameter}}', array('parameter' => array('key' => 'HELLO'))));
+        $this->assertEquals('its foo', $engine->render('{{>foo}}', array()));
+        $engine->registerPartial('foo-again', 'bar');
+        $this->assertEquals('its foo', $engine->render('{{>foo-again}}', array()));
+        $engine->unRegisterPartial('foo-again');
+
+        $this->setExpectedException('RuntimeException');
+        $engine->render('{{>foo-again}}', array());
     }
 
     /**
@@ -588,11 +639,12 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                     array('"arg1.[value 1]" arg2', array("arg1.[value 1]", 'arg2')),
         );
     }
+
     /**
      * Test Argument Parser
      *
      * @param string $arg_string argument text
-     * @param array  $arg_ array data
+     * @param        $expected_array
      *
      * @dataProvider argumentParserProvider
      *
