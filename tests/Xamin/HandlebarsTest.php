@@ -117,6 +117,26 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array('data' => array('safe' => '<strong>Test</strong>')),
                 '<strong>Test</strong>'
             ),
+            array(
+                "\{{data}}", // is equal to \\{{data}}
+                array('data' => 'foo'),
+                '{{data}}',
+            ),
+            array(
+                '\\\\{{data}}',
+                array('data' => 'foo'),
+                '\\\\foo'
+            ),
+            array(
+                '\\\{{data}}', // is equal to \\\\{{data}} in php
+                array('data' => 'foo'),
+                '\\\\foo'
+            ),
+            array(
+                '\{{{data}}}',
+                array('data' => 'foo'),
+                '{{{data}}}'
+            ),
         );
     }
 

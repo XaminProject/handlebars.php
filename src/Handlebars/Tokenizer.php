@@ -55,6 +55,7 @@ class Tokenizer
     const T_UNESCAPED = '{';
     const T_UNESCAPED_2 = '&';
     const T_TEXT = '_t';
+    const T_ESCAPE = "\\";
 
     // Valid token types
     private static $_tagTypes = array(
@@ -122,13 +123,22 @@ class Tokenizer
 
         $len = strlen($text);
         for ($i = 0; $i < $len; $i++) {
+
+            $this->escaping = $this->tagChange(self::T_ESCAPE, $text, $i);
+
             switch ($this->state) {
             case self::IN_TEXT:
-                if ($this->tagChange($this->otag, $text, $i)) {
+                if ($this->tagChange(self::T_UNESCAPED.$this->otag, $text, $i) and $this->escaped) {
+                    $this->buffer .= "{{{";
+                    $i += 2;
+                    continue;
+                } elseif ($this->tagChange($this->otag, $text, $i) and !$this->escaped) {
                     $i--;
                     $this->flushBuffer();
                     $this->state = self::IN_TAG_TYPE;
-                } else {
+                } elseif ($this->escaped and $this->escaping) {
+                    $this->buffer .= "\\\\";
+                } elseif (!$this->escaping) {
                     if ($text[$i] == "\n") {
                         $this->filterLine();
                     } else {
@@ -212,6 +222,8 @@ class Tokenizer
                 }
                 break;
             }
+
+            $this->escaped = ($this->escaping and !$this->escaped);
         }
 
         $this->filterLine(true);
@@ -227,6 +239,8 @@ class Tokenizer
     protected function reset()
     {
         $this->state = self::IN_TEXT;
+        $this->escaped = false;
+        $this->escaping = false;
         $this->tagType = null;
         $this->tag = null;
         $this->buffer = '';
