@@ -318,49 +318,6 @@ class Template
     }
 
     /**
-     * Process handlebars subexpression
-     *
-     * @param Context $context current context
-     * @param array   $current section node data
-     *
-     * @return mixed|string
-     */
-    public function _handlebarsSubexpression(Context $context, $current)
-    {
-        $helpers = $this->handlebars->getHelpers();
-        $sectionName = $current[Tokenizer::NAME];
-
-        if (isset($current[Tokenizer::END])) {
-            $source = substr(
-                $this->getSource(),
-                $current[Tokenizer::INDEX],
-                $current[Tokenizer::END] - $current[Tokenizer::INDEX]
-            );
-        } else {
-            $source = '';
-        }
-        $params = array(
-            $this, //First argument is this template
-            $context, //Second is current context
-            $current[Tokenizer::ARGS], //Arguments
-            $source
-        );
-
-//         echo "Context: ",  "\n";
-//         print_r( $params[1] );
-        echo "arguments: ", $params[2], "\n";
-        echo "src: ", $params[3], "\n";
-
-        $return = call_user_func_array($helpers->$sectionName, $params);
-        echo "result: ", $return, "\n\n";
-        if ($return instanceof String) {
-            return $return;
-        } else {
-            return $return;
-        }
-    }
-
-    /**
      * Process Mustache section style
      *
      * @param Context $context current context
