@@ -11,6 +11,7 @@
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @author    Chris Gray <chris.w.gray@gmail.com>
  * @author    Dmitriy Simushev <simushevds@gmail.com>
+ * @author    majortom731 <majortom731@googlemail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -151,42 +152,42 @@ class Template
                 break;
             }
             switch ($current[Tokenizer::TYPE]) {
-            case Tokenizer::T_SECTION :
-                $newStack = isset($current[Tokenizer::NODES])
-                    ? $current[Tokenizer::NODES] : array();
-                array_push($this->_stack, array(0, $newStack, false));
-                $buffer .= $this->_section($context, $current);
-                array_pop($this->_stack);
-                break;
-            case Tokenizer::T_INVERTED :
-                $newStack = isset($current[Tokenizer::NODES]) ?
-                    $current[Tokenizer::NODES] : array();
-                array_push($this->_stack, array(0, $newStack, false));
-                $buffer .= $this->_inverted($context, $current);
-                array_pop($this->_stack);
-                break;
-            case Tokenizer::T_COMMENT :
-                $buffer .= '';
-                break;
-            case Tokenizer::T_PARTIAL:
-            case Tokenizer::T_PARTIAL_2:
-                $buffer .= $this->_partial($context, $current);
-                break;
-            case Tokenizer::T_UNESCAPED:
-            case Tokenizer::T_UNESCAPED_2:
-                $buffer .= $this->_get($context, $current, false);
-                break;
-            case Tokenizer::T_ESCAPED:
+                case Tokenizer::T_SECTION :
+                    $newStack = isset($current[Tokenizer::NODES])
+                        ? $current[Tokenizer::NODES] : array();
+                    array_push($this->_stack, array(0, $newStack, false));
+                    $buffer .= $this->_section($context, $current);
+                    array_pop($this->_stack);
+                    break;
+                case Tokenizer::T_INVERTED :
+                    $newStack = isset($current[Tokenizer::NODES]) ?
+                        $current[Tokenizer::NODES] : array();
+                    array_push($this->_stack, array(0, $newStack, false));
+                    $buffer .= $this->_inverted($context, $current);
+                    array_pop($this->_stack);
+                    break;
+                case Tokenizer::T_COMMENT :
+                    $buffer .= '';
+                    break;
+                case Tokenizer::T_PARTIAL:
+                case Tokenizer::T_PARTIAL_2:
+                    $buffer .= $this->_partial($context, $current);
+                    break;
+                case Tokenizer::T_UNESCAPED:
+                case Tokenizer::T_UNESCAPED_2:
+                    $buffer .= $this->_get($context, $current, false);
+                    break;
+                case Tokenizer::T_ESCAPED:
 
-                $buffer .= $this->_get($context, $current, true);
-                break;
-            case Tokenizer::T_TEXT:
-                $buffer .= $current[Tokenizer::VALUE];
-                break;
-            default:
-                throw new \RuntimeException(
-                    'Invalid node type : ' . json_encode($current)
-                );
+                    $buffer .= $this->_get($context, $current, true);
+                    break;
+                case Tokenizer::T_TEXT:
+                    $buffer .= $current[Tokenizer::VALUE];
+                    break;
+                default:
+                    throw new \RuntimeException(
+                        'Invalid node type : ' . json_encode($current)
+                    );
             }
         }
         if ($stop) {
@@ -271,6 +272,42 @@ class Template
             $current[Tokenizer::ARGS], //Arguments
             $source
         );
+
+        // subexpression parsing loop
+        $subexprs = array(); // will contain all subexpressions inside outermost brackets
+        $lvl = 0;
+        $cur_start = 0;
+        for( $i=0; $i < strlen($params[2]); $i++ ) {
+            $cur = substr( $params[2], $i, 1 );
+            if( $cur == '(' ) {
+                if( $lvl == 0 ) $cur_start = $i+1;
+                $lvl++;
+            }
+            if( $cur == ')' ) {
+                $lvl--;
+                if( $lvl == 0 ) $subexprs[] = substr( $params[2], $cur_start, $i - $cur_start);
+            }
+        }
+
+        if( ! empty( $subexprs ) ) {
+            foreach( $subexprs as $expr ) {
+                $cmd = explode( " ", $expr );
+                $name = trim( $cmd[0] );
+                // construct artificial section node
+                $section_node = array(
+                    Tokenizer::TYPE => Tokenizer::T_ESCAPED,
+                    Tokenizer::NAME => $name,
+                    Tokenizer::OTAG => $current[Tokenizer::OTAG],
+                    Tokenizer::CTAG => $current[Tokenizer::CTAG],
+                    Tokenizer::INDEX => $current[Tokenizer::INDEX],
+                    Tokenizer::ARGS => implode( " ", array_slice( $cmd, 1 ) )
+                );
+                // resolve the node recursively
+                $resolved = $this->_handlebarsStyleSection( $context, $section_node );
+                // replace original subexpression with result
+                $params[2] = str_replace( '('.$expr.')', $resolved, $params[2] );
+            }
+        }
 
         $return = call_user_func_array($helpers->$sectionName, $params);
         if ($return instanceof String) {
