@@ -774,4 +774,27 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * Helper subexpressions test
+     */
+    public function testHelperSubexpressions()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        $engine->addHelper('test', function ($template, $context, $arg) {
+            return $arg.'Test.';
+        });
+
+        // assert that nested syntax is accepted and sub-helper is run
+        $this->assertEquals('Test.Test.', $engine->render('{{test (test)}}', array()));
+
+        $engine->addHelper('add', function ($template, $context, $arg) {
+            $values = explode( " ", $arg );
+            return $values[0] + $values[1];
+        });
+
+        // assert that subexpression result is inserted correctly as argument to top level helper
+        $this->assertEquals('42', $engine->render('{{add 21 (add 10 (add 5 6))}}', array()));
+    }
+
 }
