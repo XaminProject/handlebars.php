@@ -12,6 +12,7 @@
  * @author    Chris Gray <chris.w.gray@gmail.com>
  * @author    Ulrik Lystbaek <ulrik@bettertaste.dk>
  * @author    Dmitriy Simushev <simushevds@gmail.com>
+ * @copyright 2010-2012 (c) Justin Hileman
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @copyright 2013 (c) f0ruD A
@@ -30,6 +31,7 @@ namespace Handlebars;
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @copyright 2010-2012 (c) Justin Hileman
  * @copyright 2012 (c) ParsPooyesh Co
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   Release: @package_version@
