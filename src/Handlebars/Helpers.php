@@ -88,7 +88,7 @@ class Helpers
                  * @var $args array
                  * @var $source string
                  */
-                if( is_numeric($args) ) {
+                if ( is_numeric($args) ) {
                     $tmp = $args;
                 } else {
                     $tmp = $context->get($args);
