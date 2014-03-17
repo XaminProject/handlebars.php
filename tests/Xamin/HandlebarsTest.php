@@ -795,6 +795,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
 
         // assert that subexpression result is inserted correctly as argument to top level helper
         $this->assertEquals('42', $engine->render('{{add 21 (add 10 (add 5 6))}}', array()));
+
+
+        // assert that bracketed expressions within string literals are treated correctly
+        $this->assertEquals("'(test)'Test.", $engine->render("{{test '(test)'}}", array()));
+        $this->assertEquals("')'Test.Test.", $engine->render("{{test (test ')')}}", array()));
     }
 
 }
