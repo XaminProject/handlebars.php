@@ -248,6 +248,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '{{#bindAttr data}}',
                 array(),
                 'data'
+            ),
+            array(
+                '{{#if 1}}ok{{else}}fail{{/if}}',
+                array(),
+                'ok'
+            ),
+            array(
+                '{{#if 0}}ok{{else}}fail{{/if}}',
+                array(),
+                'fail'
             )
 
         );
