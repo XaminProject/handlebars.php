@@ -275,17 +275,30 @@ class Template
 
         // subexpression parsing loop
         $subexprs = array(); // will contain all subexpressions inside outermost brackets
+        $inside_of = array( 'single' => false, 'double' => false );
         $lvl = 0;
         $cur_start = 0;
         for ($i=0; $i < strlen($params[2]); $i++) {
             $cur = substr($params[2], $i, 1);
-            if ($cur == '(') {
-                if( $lvl == 0 ) $cur_start = $i+1;
-                $lvl++;
+            if ($cur == "'" ) {
+                $inside_of['single'] = ! $inside_of['single'];
             }
-            if ($cur == ')') {
+            if ($cur == '"' ) {
+                $inside_of['double'] = ! $inside_of['double'];
+            }
+            if ($cur == '(' && ! $inside_of['single'] && ! $inside_of['double']) {
+                if ($lvl == 0) {
+                    $cur_start = $i+1;
+                }
+                $lvl++;
+                continue;
+            }
+            if ($cur == ')' && ! $inside_of['single'] && ! $inside_of['double']) {
                 $lvl--;
-                if ($lvl == 0) $subexprs[] = substr($params[2], $cur_start, $i - $cur_start);
+                if ($lvl == 0) {
+                    $subexprs[] = substr($params[2], $cur_start, $i - $cur_start);
+                }
+
             }
         }
 
@@ -300,7 +313,7 @@ class Template
                     Tokenizer::OTAG => $current[Tokenizer::OTAG],
                     Tokenizer::CTAG => $current[Tokenizer::CTAG],
                     Tokenizer::INDEX => $current[Tokenizer::INDEX],
-                    Tokenizer::ARGS => implode(" ", array_slice( $cmd, 1 ))
+                    Tokenizer::ARGS => implode(" ", array_slice($cmd, 1))
                 );
                 // resolve the node recursively
                 $resolved = $this->_handlebarsStyleSection($context, $section_node);
