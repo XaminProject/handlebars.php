@@ -277,20 +277,20 @@ class Template
         $subexprs = array(); // will contain all subexpressions inside outermost brackets
         $lvl = 0;
         $cur_start = 0;
-        for ( $i=0; $i < strlen($params[2]); $i++ ) {
+        for ($i=0; $i < strlen($params[2]); $i++) {
             $cur = substr($params[2], $i, 1);
-            if ( $cur == '(' ) {
+            if ($cur == '(') {
                 if( $lvl == 0 ) $cur_start = $i+1;
                 $lvl++;
             }
-            if ( $cur == ')' ) {
+            if ($cur == ')') {
                 $lvl--;
-                if( $lvl == 0 ) $subexprs[] = substr($params[2], $cur_start, $i - $cur_start);
+                if ($lvl == 0) $subexprs[] = substr($params[2], $cur_start, $i - $cur_start);
             }
         }
 
-        if ( ! empty( $subexprs ) ) {
-            foreach ( $subexprs as $expr ) {
+        if (! empty($subexprs)) {
+            foreach ($subexprs as $expr) {
                 $cmd = explode(" ", $expr);
                 $name = trim($cmd[0]);
                 // construct artificial section node
