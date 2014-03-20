@@ -127,7 +127,7 @@ class Tokenizer
 
             $this->escaping = $this->tagChange(self::T_ESCAPE, $text, $i);
 
-            if ( $this->escaped and $text[$i + 1] != self::T_UNESCAPED ) {
+            if ( $this->escaped and $text[$i] != self::T_UNESCAPED ) {
                 $this->buffer .= "\\";
             }
 
@@ -142,7 +142,7 @@ class Tokenizer
                     $this->flushBuffer();
                     $this->state = self::IN_TAG_TYPE;
                 } elseif ($this->escaped and $this->escaping) {
-                    $this->buffer .= "\\\\";
+                    $this->buffer .= "\\";
                 } elseif (!$this->escaping) {
                     if ($text[$i] == "\n") {
                         $this->filterLine();

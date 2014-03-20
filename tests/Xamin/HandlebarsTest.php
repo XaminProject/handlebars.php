@@ -142,6 +142,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array(),
                 '\pi'
             ),
+            array(
+                '\\\\\\\\qux',
+                array(),
+                '\\\\\\\\qux'
+            ),
         );
     }
 
