@@ -137,6 +137,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array('data' => 'foo'),
                 '{{{data}}}'
             ),
+            array(
+                '\pi',
+                array(),
+                '\pi'
+            ),
         );
     }
 

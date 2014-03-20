@@ -127,6 +127,10 @@ class Tokenizer
 
             $this->escaping = $this->tagChange(self::T_ESCAPE, $text, $i);
 
+            if ( $this->escaped and $text[$i + 1] != self::T_UNESCAPED ) {
+                $this->buffer .= "\\";
+            }
+
             switch ($this->state) {
             case self::IN_TEXT:
                 if ($this->tagChange(self::T_UNESCAPED.$this->otag, $text, $i) and $this->escaped) {
