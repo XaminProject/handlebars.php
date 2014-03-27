@@ -12,6 +12,7 @@
  * @author    Chris Gray <chris.w.gray@gmail.com>
  * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @author    majortom731 <majortom731@googlemail.com>
+ * @author    Jeff Turcotte <jeff.turcotte@gmail.com>
  * @copyright 2010-2012 (c) Justin Hileman
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
@@ -268,20 +269,14 @@ class Template
         } else {
             $source = '';
         }
-        $params = array(
-            $this, //First argument is this template
-            $context, //Second is current context
-            $current[Tokenizer::ARGS], //Arguments
-            $source
-        );
 
         // subexpression parsing loop
         $subexprs = array(); // will contain all subexpressions inside outermost brackets
         $inside_of = array( 'single' => false, 'double' => false );
         $lvl = 0;
         $cur_start = 0;
-        for ($i=0; $i < strlen($params[2]); $i++) {
-            $cur = substr($params[2], $i, 1);
+        for ($i=0; $i < strlen($current[Tokenizer::ARGS]); $i++) {
+            $cur = substr($current[Tokenizer::ARGS], $i, 1);
             if ($cur == "'" ) {
                 $inside_of['single'] = ! $inside_of['single'];
             }
@@ -298,7 +293,7 @@ class Template
             if ($cur == ')' && ! $inside_of['single'] && ! $inside_of['double']) {
                 $lvl--;
                 if ($lvl == 0) {
-                    $subexprs[] = substr($params[2], $cur_start, $i - $cur_start);
+                    $subexprs[] = substr($current[Tokenizer::ARGS], $cur_start, $i - $cur_start);
                 }
 
             }
@@ -320,11 +315,12 @@ class Template
                 // resolve the node recursively
                 $resolved = $this->_handlebarsStyleSection($context, $section_node);
                 // replace original subexpression with result
-                $params[2] = str_replace('('.$expr.')', $resolved, $params[2]);
+                $current[Tokenizer::ARGS] = str_replace('('.$expr.')', $resolved, $current[Tokenizer::ARGS]);
             }
         }
 
-        $return = call_user_func_array($helpers->$sectionName, $params);
+        $return = $helpers->call($sectionName, $this, $context, $current[Tokenizer::ARGS], $source);
+
         if ($return instanceof String) {
             return $this->handlebars->loadString($return)->render($context);
         } else {
