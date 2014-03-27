@@ -129,7 +129,7 @@ class Helpers
             );
         }
 
-        return $this->helpers[$name]($template, $context, $args, $source);
+        return call_user_func($this->helpers[$name], $template, $context, $args, $source);
     }
 
     /**
