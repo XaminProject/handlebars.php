@@ -326,6 +326,13 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             return new \Handlebars\SafeString('<strong>Test</strong>');
         });
         $this->assertEquals('<strong>Test</strong>', $engine->render('{{safeStringTest}}', array()));
+
+        $engine->addHelper('argsTest', function($template, $context, $arg) {
+            $parsed_args = $template->parseArguments($arg);
+
+            return implode(' ', $parsed_args);
+        });
+        $this->assertEquals('a \"b\" c', $engine->render('{{argsTest "a" "\"b\"" \'c\'}}', array()));
     }
 
     public function testInvalidHelperMustacheStyle()
