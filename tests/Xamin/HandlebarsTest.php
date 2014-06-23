@@ -332,7 +332,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
 
             return implode(' ', $parsed_args);
         });
-        $this->assertEquals('a \"b\" c', $engine->render('{{argsTest "a" "\"b\"" \'c\'}}', array()));
+        $this->assertEquals("a \"b\" c", $engine->render('{{{argsTest "a" "\"b\"" \'c\'}}}', array()));
     }
 
     public function testInvalidHelperMustacheStyle()

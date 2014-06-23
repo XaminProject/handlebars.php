@@ -57,6 +57,8 @@ class Tokenizer
     const T_UNESCAPED_2 = '&';
     const T_TEXT = '_t';
     const T_ESCAPE = "\\";
+    const T_SINGLE_Q = "'";
+    const T_DOUBLE_Q = "\"";
 
     // Valid token types
     private static $_tagTypes = array(
@@ -127,7 +129,7 @@ class Tokenizer
 
             $this->escaping = $this->tagChange(self::T_ESCAPE, $text, $i);
 
-            if ( $this->escaped and $text[$i] != self::T_UNESCAPED ) {
+            if ( $this->escaped and !in_array($text[$i], array(self::T_UNESCAPED, self::T_SINGLE_Q, self::T_DOUBLE_Q)) ) {
                 $this->buffer .= "\\";
             }
 
