@@ -12,6 +12,7 @@
  * @author    Justin Hileman <dontknow@example.org>
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @copyright 2010-2012 (c) Justin Hileman
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
@@ -129,7 +130,12 @@ class Tokenizer
 
             $this->escaping = $this->tagChange(self::T_ESCAPE, $text, $i);
 
-            if ( $this->escaped and !in_array($text[$i], array(self::T_UNESCAPED, self::T_SINGLE_Q, self::T_DOUBLE_Q)) ) {
+            // To play nice with helpers' arguments quote and apostrophe marks
+            // should be additionally escaped only when they are not in a tag.
+            $quote_in_tag = $this->state != self::IN_TEXT
+                && ($text[$i] == self::T_SINGLE_Q || $text[$i] == self::T_DOUBLE_Q);
+
+            if ($this->escaped && $text[$i] != self::T_UNESCAPED && !$quote_in_tag) {
                 $this->buffer .= "\\";
             }
 

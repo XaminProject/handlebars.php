@@ -147,6 +147,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array(),
                 '\\\\\\\\qux'
             ),
+            array(
+                "var jsVar = 'It\'s a phrase in apos';",
+                array(),
+                "var jsVar = 'It\'s a phrase in apos';"
+            ),
+            array(
+                'var jsVar = "A \"quoted\" text";',
+                array(),
+                'var jsVar = "A \"quoted\" text";',
+            ),
         );
     }
 
