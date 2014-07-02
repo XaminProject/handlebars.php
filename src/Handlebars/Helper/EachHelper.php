@@ -10,6 +10,7 @@
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @author    Jeff Turcotte <jeff.turcotte@gmail.com>
+ * @author    John Slegers <slegersjohn@gmail.com>
  * @copyright 2014 Authors
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
@@ -31,6 +32,7 @@ use Handlebars\Template;
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @author    Jeff Turcotte <jeff.turcotte@gmail.com>
+ * @author    John Slegers <slegersjohn@gmail.com>
  * @copyright 2014 Authors
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   Release: @package_version@
