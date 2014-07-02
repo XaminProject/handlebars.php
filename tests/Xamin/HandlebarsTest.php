@@ -210,6 +210,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '1234'
             ),
             array(
+                '{{#each data}}{{@key}}{{/each}}',
+                array('data' => array('the_only_key' => 1)),
+                'the_only_key'
+            ),
+            array(
                 '{{#each data}}{{@key}}=>{{this}}{{/each}}',
                 array('data' => array('key1' => 1, 'key2' => 2,)),
                 'key1=>1key2=>2'
