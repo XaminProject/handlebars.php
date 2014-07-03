@@ -13,6 +13,7 @@
  * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @author    majortom731 <majortom731@googlemail.com>
  * @author    Jeff Turcotte <jeff.turcotte@gmail.com>
+ * @author    John Slegers <slegersjohn@gmail.com>
  * @copyright 2010-2012 (c) Justin Hileman
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
@@ -353,7 +354,7 @@ class Template
         $buffer = '';
         if (is_array($sectionVar) || $sectionVar instanceof \Traversable) {
             $isList = is_array($sectionVar) &&
-                (array_keys($sectionVar) == range(0, count($sectionVar) - 1));
+                (array_keys($sectionVar) === range(0, count($sectionVar) - 1));
             $index = 0;
             $lastIndex = $isList ? (count($sectionVar) - 1) : false;
 
