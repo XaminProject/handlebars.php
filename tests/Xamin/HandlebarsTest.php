@@ -379,6 +379,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('1234', $engine->render('{{#x}}{{this}}{{/x}}', array('x' => array(1, 2, 3, 4))));
         $this->assertEquals('012', $engine->render('{{#x}}{{@index}}{{/x}}', array('x' => array('a', 'b', 'c'))));
         $this->assertEquals('abc', $engine->render('{{#x}}{{@key}}{{/x}}', array('x' => array('a' => 1, 'b' => 2, 'c' => 3))));
+        $this->assertEquals('the_only_key', $engine->render('{{#x}}{{@key}}{{/x}}', array('x' => array('the_only_key' => 1))));
         $std = new stdClass();
         $std->value = 1;
         $this->assertEquals('1', $engine->render('{{#x}}{{value}}{{/x}}', array('x' => $std)));
