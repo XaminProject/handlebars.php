@@ -115,6 +115,7 @@ class Helpers
      * @param array                $args     The arguments passed the the helper
      * @param string               $source   The source
      *
+     * @throws \InvalidArgumentException
      * @return mixed The helper return value
      */
     public function call($name, Template $template, Context $context, $args, $source)

@@ -60,6 +60,7 @@ class Tokenizer
     const T_ESCAPE = "\\";
     const T_SINGLE_Q = "'";
     const T_DOUBLE_Q = "\"";
+    const T_TRIM = "~";
 
     // Valid token types
     private static $_tagTypes = array(
@@ -93,6 +94,8 @@ class Tokenizer
     const NODES = 'nodes';
     const VALUE = 'value';
     const ARGS = 'args';
+    const TRIM_LEFT = 'tleft';
+    const TRIM_RIGHT = 'rleft';
 
     protected $state;
     protected $tagType;
@@ -103,6 +106,10 @@ class Tokenizer
     protected $lineStart;
     protected $otag;
     protected $ctag;
+    protected $escaped;
+    protected $escaping;
+    protected $trimLeft;
+    protected $trimRight;
 
     /**
      * Scan and tokenize template source.
@@ -132,10 +139,10 @@ class Tokenizer
 
             // To play nice with helpers' arguments quote and apostrophe marks
             // should be additionally escaped only when they are not in a tag.
-            $quote_in_tag = $this->state != self::IN_TEXT
+            $quoteInTag = $this->state != self::IN_TEXT
                 && ($text[$i] == self::T_SINGLE_Q || $text[$i] == self::T_DOUBLE_Q);
 
-            if ($this->escaped && $text[$i] != self::T_UNESCAPED && !$quote_in_tag) {
+            if ($this->escaped && $text[$i] != self::T_UNESCAPED && !$quoteInTag) {
                 $this->buffer .= "\\";
             }
 
@@ -145,6 +152,10 @@ class Tokenizer
                     $this->buffer .= "{{{";
                     $i += 2;
                     continue;
+                } elseif ($this->tagChange($this->otag. self::T_TRIM, $text, $i) and !$this->escaped) {
+                    $this->flushBuffer();
+                    $this->state = self::IN_TAG_TYPE;
+                    $this->trimLeft = true;
                 } elseif ($this->tagChange($this->otag, $text, $i) and !$this->escaped) {
                     $i--;
                     $this->flushBuffer();
@@ -184,6 +195,10 @@ class Tokenizer
                 break;
 
             default:
+                if ($this->tagChange(self::T_TRIM . $this->ctag, $text, $i)) {
+                    $this->trimRight = true;
+                    continue;
+                }
                 if ($this->tagChange($this->ctag, $text, $i)) {
                     // Sections (Helpers) can accept parameters
                     // Same thing for Partials (little known fact)
@@ -206,6 +221,8 @@ class Tokenizer
                         self::INDEX => ($this->tagType == self::T_END_SECTION) ?
                             $this->seenTag - strlen($this->otag) :
                             $i + strlen($this->ctag),
+                        self::TRIM_LEFT => $this->trimLeft,
+                        self::TRIM_RIGHT => $this->trimRight
                     );
                     if (isset($args)) {
                         $t[self::ARGS] = $args;
@@ -214,6 +231,8 @@ class Tokenizer
                     unset($t);
                     unset($args);
                     $this->buffer = '';
+                    $this->trimLeft = false;
+                    $this->trimRight = false;
                     $i += strlen($this->ctag) - 1;
                     $this->state = self::IN_TEXT;
                     if ($this->tagType == self::T_UNESCAPED) {
@@ -262,6 +281,8 @@ class Tokenizer
         $this->lineStart = 0;
         $this->otag = '{{';
         $this->ctag = '}}';
+        $this->trimLeft = false;
+        $this->trimRight = false;
     }
 
     /**
@@ -337,7 +358,7 @@ class Tokenizer
     }
 
     /**
-     * Change the current Mustache delimiters. Set new `otag` and `ctag` values.
+     * Change the current Handlebars delimiters. Set new `otag` and `ctag` values.
      *
      * @param string $text  Mustache template source
      * @param int    $index Current tokenizer index
@@ -364,7 +385,7 @@ class Tokenizer
      * Test whether it's time to change tags.
      *
      * @param string $tag   Current tag name
-     * @param string $text  Mustache template source
+     * @param string $text  Handlebars template source
      * @param int    $index Current tokenizer index
      *
      * @return boolean True if this is a closing section tag

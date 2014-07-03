@@ -145,6 +145,7 @@ class Template
         list($index, $tree, $stop) = $topTree;
 
         $buffer = '';
+        $rTrim = false;
         while (array_key_exists($index, $tree)) {
             $current = $tree[$index];
             $index++;
@@ -155,44 +156,60 @@ class Template
             ) {
                 break;
             }
+            if (isset($current[Tokenizer::TRIM_LEFT]) && $current[Tokenizer::TRIM_LEFT]) {
+                $buffer = rtrim($buffer);
+            }
+
+            $tmp = '';
             switch ($current[Tokenizer::TYPE]) {
+            case Tokenizer::T_END_SECTION:
+                break; // Its here just for handling whitespace trim.
             case Tokenizer::T_SECTION :
                 $newStack = isset($current[Tokenizer::NODES])
                     ? $current[Tokenizer::NODES] : array();
                 array_push($this->_stack, array(0, $newStack, false));
-                $buffer .= $this->_section($context, $current);
+                $tmp = $this->_section($context, $current);
                 array_pop($this->_stack);
                 break;
             case Tokenizer::T_INVERTED :
                 $newStack = isset($current[Tokenizer::NODES]) ?
                     $current[Tokenizer::NODES] : array();
                 array_push($this->_stack, array(0, $newStack, false));
-                $buffer .= $this->_inverted($context, $current);
+                $tmp = $this->_inverted($context, $current);
                 array_pop($this->_stack);
                 break;
             case Tokenizer::T_COMMENT :
-                $buffer .= '';
+                $tmp = '';
                 break;
             case Tokenizer::T_PARTIAL:
             case Tokenizer::T_PARTIAL_2:
-                $buffer .= $this->_partial($context, $current);
+                $tmp = $this->_partial($context, $current);
                 break;
             case Tokenizer::T_UNESCAPED:
             case Tokenizer::T_UNESCAPED_2:
-                $buffer .= $this->_get($context, $current, false);
+                $tmp = $this->_get($context, $current, false);
                 break;
             case Tokenizer::T_ESCAPED:
-
-                $buffer .= $this->_get($context, $current, true);
+                $tmp = $this->_get($context, $current, true);
                 break;
             case Tokenizer::T_TEXT:
-                $buffer .= $current[Tokenizer::VALUE];
+                $tmp = $current[Tokenizer::VALUE];
                 break;
             default:
                 throw new \RuntimeException(
                     'Invalid node type : ' . json_encode($current)
                 );
             }
+            if ($rTrim) {
+                 $tmp = ltrim($tmp);
+            }
+
+            $buffer .= $tmp;
+            // Some time, there is more than one string token (first is empty),
+            //so we need to trim all of them in one shot
+
+            $rTrim = (empty($tmp) && $rTrim) ||
+                isset($current[Tokenizer::TRIM_RIGHT]) && $current[Tokenizer::TRIM_RIGHT];
         }
         if ($stop) {
             //Ok break here, the helper should be aware of this.
@@ -273,25 +290,25 @@ class Template
 
         // subexpression parsing loop
         $subexprs = array(); // will contain all subexpressions inside outermost brackets
-        $inside_of = array( 'single' => false, 'double' => false );
+        $insideOf = array( 'single' => false, 'double' => false );
         $lvl = 0;
         $cur_start = 0;
         for ($i=0; $i < strlen($current[Tokenizer::ARGS]); $i++) {
             $cur = substr($current[Tokenizer::ARGS], $i, 1);
             if ($cur == "'" ) {
-                $inside_of['single'] = ! $inside_of['single'];
+                $insideOf['single'] = ! $insideOf['single'];
             }
             if ($cur == '"' ) {
-                $inside_of['double'] = ! $inside_of['double'];
+                $insideOf['double'] = ! $insideOf['double'];
             }
-            if ($cur == '(' && ! $inside_of['single'] && ! $inside_of['double']) {
+            if ($cur == '(' && ! $insideOf['single'] && ! $insideOf['double']) {
                 if ($lvl == 0) {
                     $cur_start = $i+1;
                 }
                 $lvl++;
                 continue;
             }
-            if ($cur == ')' && ! $inside_of['single'] && ! $inside_of['double']) {
+            if ($cur == ')' && ! $insideOf['single'] && ! $insideOf['double']) {
                 $lvl--;
                 if ($lvl == 0) {
                     $subexprs[] = substr($current[Tokenizer::ARGS], $cur_start, $i - $cur_start);

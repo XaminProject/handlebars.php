@@ -92,7 +92,7 @@ class Parser
                             array_unshift($newNodes, $result);
                         }
                     } while (true);
-                    break;
+                    // There is no break here, since we need the end token to handle the whitespace trim
                 default:
                     array_push($stack, $token);
                 }
@@ -101,7 +101,6 @@ class Parser
         } while ($tokens->valid());
 
         return $stack;
-
     }
 
 }

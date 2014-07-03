@@ -283,8 +283,32 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '{{#if 0}}ok{{else}}fail{{/if}}',
                 array(),
                 'fail'
-            )
+            ),
+            array (
+                '  {{~#if 1}}OK   {{~else~}} NO {{~/if~}} END',
+                array(),
+                'OKEND'
+            ),
+            array(
+                'XX {{~#bindAttr data}} XX',
+                array(),
+                'XXdata XX'
+            ),
+            array(
+                '{{#each data}}{{#if @last}}the last is
+                {{~this}}{{/if}}{{/each}}',
+                array('data' => array('one', 'two', 'three')),
+                'the last isthree'
+            ),
+            array(
+                '{{#with data}}
 
+                {{~key~}}
+
+                {{/with}}',
+                array('data' => array('key' => 'result')),
+                'result'
+            ),
         );
     }
 
