@@ -192,7 +192,7 @@ class Template
      *
      * @return string
      */
-    protected function _renderInternal($current, $context)
+    private function _renderInternal($current, $context)
     {
         $result = '';
         switch ($current[Tokenizer::TYPE]) {

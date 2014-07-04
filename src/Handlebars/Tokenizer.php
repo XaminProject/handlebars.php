@@ -114,7 +114,8 @@ class Tokenizer
     /**
      * Scan and tokenize template source.
      *
-     * @param string $text       Mustache template source to tokenize
+     * @param string $text Mustache template source to tokenize
+     *
      * @internal string $delimiters Optional, pass opening and closing delimiters
      *
      * @return array Set of Mustache tokens
