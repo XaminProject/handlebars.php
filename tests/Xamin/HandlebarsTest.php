@@ -160,7 +160,6 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-
     /**
      * Test helpers (internal helpers)
      *
@@ -284,7 +283,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array(),
                 'fail'
             ),
-            array (
+            array(
                 '  {{~#if 1}}OK   {{~else~}} NO {{~/if~}} END',
                 array(),
                 'OKEND'
@@ -309,6 +308,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array('data' => array('key' => 'result')),
                 'result'
             ),
+            array(
+                '{{= (( )) =}}((#if 1))OK((else))NO((/if))',
+                array(),
+                'OK'
+            )
         );
     }
 
@@ -366,12 +370,43 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         });
         $this->assertEquals('<strong>Test</strong>', $engine->render('{{safeStringTest}}', array()));
 
-        $engine->addHelper('argsTest', function($template, $context, $arg) {
-            $parsed_args = $template->parseArguments($arg);
+        $engine->addHelper('argsTest', function ($template, $context, $arg) {
+            $parsedArgs = $template->parseArguments($arg);
 
-            return implode(' ', $parsed_args);
+            return implode(' ', $parsedArgs);
         });
         $this->assertEquals("a \"b\" c", $engine->render('{{{argsTest "a" "\"b\"" \'c\'}}}', array()));
+
+        // This is just a fun thing to do :)
+        $that = $this;
+        $engine->addHelper('stopToken',
+            function ($template, $context, $arg) use ($that) {
+                /** @var $template \Handlebars\Template */
+                $parsedArgs = $template->parseArguments($arg);
+                $first = array_shift($parsedArgs);
+                $last = array_shift($parsedArgs);
+                if ($last == 'yes') {
+                    $template->setStopToken($first);
+                    $that->assertEquals($first, $template->getStopToken());
+                    $buffer = $template->render($context);
+                    $template->setStopToken(false);
+                    $template->discard($context);
+                } else {
+                    $template->setStopToken($first);
+                    $that->assertEquals($first, $template->getStopToken());
+                    $template->discard($context);
+                    $template->setStopToken(false);
+                    $buffer = $template->render($context);
+                }
+
+                return $buffer;
+            });
+
+        $this->assertEquals("Used", $engine->render('{{# stopToken fun no}}Not used{{ fun }}Used{{/stopToken }}', array()));
+        $this->assertEquals("Not used", $engine->render('{{# stopToken any yes}}Not used{{ any }}Used{{/stopToken }}', array()));
+
+        $this->setExpectedException('InvalidArgumentException');
+        $engine->getHelpers()->call('invalid', $engine->loadTemplate(''), new \Handlebars\Context(), '', '');
     }
 
     public function testInvalidHelperMustacheStyle()
@@ -400,6 +435,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('yes', $engine->render('{{#x}}yes{{/x}}', array('x' => true)));
         $this->assertEquals('', $engine->render('{{#x}}yes{{/x}}', array('x' => false)));
         $this->assertEquals('yes', $engine->render('{{^x}}yes{{/x}}', array('x' => false)));
+        $this->assertEquals('', $engine->render('{{^x}}yes{{/x}}', array('x' => true)));
         $this->assertEquals('1234', $engine->render('{{#x}}{{this}}{{/x}}', array('x' => array(1, 2, 3, 4))));
         $this->assertEquals('012', $engine->render('{{#x}}{{@index}}{{/x}}', array('x' => array('a', 'b', 'c'))));
         $this->assertEquals('abc', $engine->render('{{#x}}{{@key}}{{/x}}', array('x' => array('a' => 1, 'b' => 2, 'c' => 3))));
@@ -649,9 +685,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $obj = new DateTime();
         $time = $obj->getTimestamp();
         $this->assertEquals($time, $engine->render('{{time.getTimestamp}}', array('time' => $obj)));
-
     }
-
 
     public function testContext()
     {
@@ -760,7 +794,6 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             return (string)$a;
         }, $args);
         $this->assertEquals($args, $expected_array);
-
     }
 
     public function stringLiteralInCustomHelperProvider()
@@ -828,7 +861,6 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 $this->assertInstanceOf("InvalidArgumentException", $e);
             }
         }
-
     }
 
     /**
@@ -839,24 +871,32 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $loader = new \Handlebars\Loader\StringLoader();
         $engine = new \Handlebars\Handlebars(array('loader' => $loader));
         $engine->addHelper('test', function ($template, $context, $arg) {
-            return $arg.'Test.';
+            return $arg . 'Test.';
         });
 
         // assert that nested syntax is accepted and sub-helper is run
         $this->assertEquals('Test.Test.', $engine->render('{{test (test)}}', array()));
 
         $engine->addHelper('add', function ($template, $context, $arg) {
-            $values = explode( " ", $arg );
+            $values = explode(" ", $arg);
+
             return $values[0] + $values[1];
         });
 
         // assert that subexpression result is inserted correctly as argument to top level helper
         $this->assertEquals('42', $engine->render('{{add 21 (add 10 (add 5 6))}}', array()));
 
-
         // assert that bracketed expressions within string literals are treated correctly
         $this->assertEquals("'(test)'Test.", $engine->render("{{test '(test)'}}", array()));
         $this->assertEquals("')'Test.Test.", $engine->render("{{test (test ')')}}", array()));
     }
 
+    /**
+     * Delimiter change test
+     */
+    public function testDelimiterChange()
+    {
+        $engine = new \Handlebars\Handlebars();
+        //$engine->set
+    }
 }

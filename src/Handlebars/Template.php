@@ -160,46 +160,8 @@ class Template
                 $buffer = rtrim($buffer);
             }
 
-            $tmp = '';
-            switch ($current[Tokenizer::TYPE]) {
-            case Tokenizer::T_END_SECTION:
-                break; // Its here just for handling whitespace trim.
-            case Tokenizer::T_SECTION :
-                $newStack = isset($current[Tokenizer::NODES])
-                    ? $current[Tokenizer::NODES] : array();
-                array_push($this->_stack, array(0, $newStack, false));
-                $tmp = $this->_section($context, $current);
-                array_pop($this->_stack);
-                break;
-            case Tokenizer::T_INVERTED :
-                $newStack = isset($current[Tokenizer::NODES]) ?
-                    $current[Tokenizer::NODES] : array();
-                array_push($this->_stack, array(0, $newStack, false));
-                $tmp = $this->_inverted($context, $current);
-                array_pop($this->_stack);
-                break;
-            case Tokenizer::T_COMMENT :
-                $tmp = '';
-                break;
-            case Tokenizer::T_PARTIAL:
-            case Tokenizer::T_PARTIAL_2:
-                $tmp = $this->_partial($context, $current);
-                break;
-            case Tokenizer::T_UNESCAPED:
-            case Tokenizer::T_UNESCAPED_2:
-                $tmp = $this->_get($context, $current, false);
-                break;
-            case Tokenizer::T_ESCAPED:
-                $tmp = $this->_get($context, $current, true);
-                break;
-            case Tokenizer::T_TEXT:
-                $tmp = $current[Tokenizer::VALUE];
-                break;
-            default:
-                throw new \RuntimeException(
-                    'Invalid node type : ' . json_encode($current)
-                );
-            }
+            $tmp = $this->_renderInternal($current, $context);
+
             if ($rTrim) {
                  $tmp = ltrim($tmp);
             }
@@ -220,6 +182,63 @@ class Template
         }
 
         return $buffer;
+    }
+
+    /**
+     * Render tokens base on type of tokens
+     *
+     * @param array $current current token
+     * @param mixed $context current context
+     *
+     * @return string
+     */
+    protected function _renderInternal($current, $context)
+    {
+        $result = '';
+        switch ($current[Tokenizer::TYPE]) {
+        case Tokenizer::T_END_SECTION:
+            break; // Its here just for handling whitespace trim.
+        case Tokenizer::T_SECTION :
+            $newStack = isset($current[Tokenizer::NODES])
+                ? $current[Tokenizer::NODES] : array();
+            array_push($this->_stack, array(0, $newStack, false));
+            $result = $this->_section($context, $current);
+            array_pop($this->_stack);
+            break;
+        case Tokenizer::T_INVERTED :
+            $newStack = isset($current[Tokenizer::NODES]) ?
+                $current[Tokenizer::NODES] : array();
+            array_push($this->_stack, array(0, $newStack, false));
+            $result = $this->_inverted($context, $current);
+            array_pop($this->_stack);
+            break;
+        case Tokenizer::T_COMMENT :
+            $result = '';
+            break;
+        case Tokenizer::T_PARTIAL:
+        case Tokenizer::T_PARTIAL_2:
+            $result = $this->_partial($context, $current);
+            break;
+        case Tokenizer::T_UNESCAPED:
+        case Tokenizer::T_UNESCAPED_2:
+            $result = $this->_get($context, $current, false);
+            break;
+        case Tokenizer::T_ESCAPED:
+            $result = $this->_get($context, $current, true);
+            break;
+        case Tokenizer::T_TEXT:
+            $result = $current[Tokenizer::VALUE];
+            break;
+            /* How we could have another type of token? this part of code
+            is not used at all.
+            default:
+                throw new \RuntimeException(
+                    'Invalid node type : ' . json_encode($current)
+                );
+            */
+        }
+
+        return $result;
     }
 
     /**

@@ -115,23 +115,24 @@ class Tokenizer
      * Scan and tokenize template source.
      *
      * @param string $text       Mustache template source to tokenize
-     * @param string $delimiters Optional, pass opening and closing delimiters
+     * @internal string $delimiters Optional, pass opening and closing delimiters
      *
      * @return array Set of Mustache tokens
      */
-    public function scan($text, $delimiters = null)
+    public function scan($text/*, $delimiters = null*/)
     {
         if ($text instanceof String) {
             $text = $text->getString();
         }
         $this->reset();
 
+        /* Actually we not support this. so this code is not used at all, yet.
         if ($delimiters = trim($delimiters)) {
             list($otag, $ctag) = explode(' ', $delimiters);
             $this->otag = $otag;
             $this->ctag = $ctag;
         }
-
+        */
         $len = strlen($text);
         for ($i = 0; $i < $len; $i++) {
 
@@ -148,14 +149,14 @@ class Tokenizer
 
             switch ($this->state) {
             case self::IN_TEXT:
-                if ($this->tagChange(self::T_UNESCAPED.$this->otag, $text, $i) and $this->escaped) {
-                    $this->buffer .= "{{{";
-                    $i += 2;
-                    continue;
-                } elseif ($this->tagChange($this->otag. self::T_TRIM, $text, $i) and !$this->escaped) {
+                if ($this->tagChange($this->otag. self::T_TRIM, $text, $i) and !$this->escaped) {
                     $this->flushBuffer();
                     $this->state = self::IN_TAG_TYPE;
                     $this->trimLeft = true;
+                } elseif ($this->tagChange(self::T_UNESCAPED.$this->otag, $text, $i) and $this->escaped) {
+                    $this->buffer .= "{{{";
+                    $i += 2;
+                    continue;
                 } elseif ($this->tagChange($this->otag, $text, $i) and !$this->escaped) {
                     $i--;
                     $this->flushBuffer();
@@ -238,7 +239,7 @@ class Tokenizer
                     if ($this->tagType == self::T_UNESCAPED) {
                         if ($this->ctag == '}}') {
                             $i++;
-                        } else {
+                        } /* else { // I can't remember why this part is here! the ctag is always }} and
                             // Clean up `{{{ tripleStache }}}` style tokens.
                             $lastIndex = count($this->tokens) - 1;
                             $lastName = $this->tokens[$lastIndex][self::NAME];
@@ -247,7 +248,7 @@ class Tokenizer
                                     substr($lastName, 0, -1)
                                 );
                             }
-                        }
+                        } */
                     }
                 } else {
                     $this->buffer .= $text[$i];
