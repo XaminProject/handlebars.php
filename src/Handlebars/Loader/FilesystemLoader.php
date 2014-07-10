@@ -41,7 +41,7 @@ use Handlebars\String;
 class FilesystemLoader implements Loader
 {
     private $_baseDir;
-    private $_extension = '.handlebars';
+    private $_extension = '.html.handlebars';
     private $_prefix = '';
     private $_templates = array();
 
