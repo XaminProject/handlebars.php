@@ -157,6 +157,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array(),
                 'var jsVar = "A \"quoted\" text";',
             ),
+            array(
+                '{{#if first}}The first{{else}}{{#if second}}The second{{/if}}{{/if}}',
+                array('first' => false, 'second' => true),
+                'The second'
+            )
         );
     }
 
@@ -284,7 +289,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 'fail'
             ),
             array(
-                '  {{~#if 1}}OK   {{~else~}} NO {{~/if~}} END',
+                '  {{~#if 1}}OK   {{~else~}} NO {{~/if~}}  END',
                 array(),
                 'OKEND'
             ),
@@ -312,6 +317,25 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '{{= (( )) =}}((#if 1))OK((else))NO((/if))',
                 array(),
                 'OK'
+            ),
+            array(
+                '{{#each data~}}    {{this}}    {{~/each}}',
+                array('data' => array(1, 2, 3, 4)),
+                '1234'
+            ),
+            array(
+                '{{#each data}}{{this}}    {{~/each}}',
+                array('data' => array(1, 2, 3, 4)),
+                '1234'
+            ),
+            array(
+                '{{#each data~}}    {{this}}{{/each}}',
+                array('data' => array(1, 2, 3, 4)),
+                '1234'
+            ),
+            array( '{{#if first}}The first{{else}}{{#if second}}The second{{/if}}{{/if}}',
+                array('first' => false, 'second' => true),
+                'The second'
             )
         );
     }

@@ -95,7 +95,7 @@ class Tokenizer
     const VALUE = 'value';
     const ARGS = 'args';
     const TRIM_LEFT = 'tleft';
-    const TRIM_RIGHT = 'rleft';
+    const TRIM_RIGHT = 'tright';
 
     protected $state;
     protected $tagType;

@@ -162,8 +162,12 @@ class Template
 
             $tmp = $this->_renderInternal($current, $context);
 
-            if ($rTrim) {
-                 $tmp = ltrim($tmp);
+            if (isset($current[Tokenizer::TRIM_LEFT]) && $current[Tokenizer::TRIM_LEFT]) {
+                $tmp = rtrim($tmp);
+            }
+
+            if ($rTrim  || (isset($current[Tokenizer::TRIM_RIGHT]) && $current[Tokenizer::TRIM_RIGHT])) {
+                $tmp = ltrim($tmp);
             }
 
             $buffer .= $tmp;
