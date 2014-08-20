@@ -100,7 +100,7 @@ class Tokenizer
     protected $state;
     protected $tagType;
     protected $tag;
-    protected $buffer;
+    protected $buffer = '';
     protected $tokens;
     protected $seenTag;
     protected $lineStart;
@@ -294,7 +294,7 @@ class Tokenizer
      */
     protected function flushBuffer()
     {
-        if (!empty($this->buffer) or $this->buffer === '0') {
+        if ($this->buffer !== '') {
             $this->tokens[] = array(
                 self::TYPE => self::T_TEXT,
                 self::VALUE => $this->buffer
