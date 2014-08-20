@@ -198,6 +198,12 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array('data' => true),
                 'Yes'
             ),
+            # see the issue #76
+            array(
+                '{{#if data}}0{{/if}}',
+                array('data' => true),
+                '0'
+            ),
             array(
                 '{{#if data}}Yes{{/if}}',
                 array('data' => false),

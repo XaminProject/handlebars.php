@@ -294,7 +294,7 @@ class Tokenizer
      */
     protected function flushBuffer()
     {
-        if (!empty($this->buffer)) {
+        if (!empty($this->buffer) or $this->buffer === '0') {
             $this->tokens[] = array(
                 self::TYPE => self::T_TEXT,
                 self::VALUE => $this->buffer
