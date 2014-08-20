@@ -826,6 +826,38 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($args, $expected_array);
     }
 
+    public function namedArgumentParserProvider()
+    {
+        return array(
+            array('arg1="value" arg2="value 2"', array('arg1' => 'value', 'arg2' => 'value 2')),
+            array('arg1=var1', array('arg1' => 'var1')),
+            array('[arg "1"]="arg number 1"', array('arg "1"' => "arg number 1")),
+            array('arg1 =   "value"', array('arg1' => "value")),
+        );
+    }
+
+    /**
+     * Test Named Argument Parser
+     *
+     * @param string $arg_string argument text
+     * @param        $expected_array
+     *
+     * @dataProvider namedArgumentParserProvider
+     *
+     * @return void
+     */
+    public function testNamedArgumentsParser($arg_string, $expected_array)
+    {
+        $engine = new \Handlebars\Handlebars();
+        $template = new \Handlebars\Template($engine, null, null);
+        // get the string version of the arguments array
+        $args = $template->parseNamedArguments($arg_string);
+        $args = array_map(function ($a) {
+            return (string)$a;
+        }, $args);
+        $this->assertEquals($args, $expected_array);
+    }
+
     public function stringLiteralInCustomHelperProvider()
     {
         return array(
