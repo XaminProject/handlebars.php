@@ -57,15 +57,23 @@ class IfHelper implements Helper
         }
 
         if ($tmp) {
+            $context->push($context->last());
+            
             $template->setStopToken('else');
             $buffer = $template->render($context);
             $template->setStopToken(false);
             $template->discard($context);
+            
+            $context->pop();
         } else {
+            $context->push($context->last());
+            
             $template->setStopToken('else');
             $template->discard($context);
             $template->setStopToken(false);
             $buffer = $template->render($context);
+            
+            $context->pop();
         }
 
         return $buffer;
