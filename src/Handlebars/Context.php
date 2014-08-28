@@ -253,7 +253,7 @@ class Context
      */
     private function _findVariableInContext($variable, $inside, $strict = false)
     {
-        $value = '';
+        $value = null;
         if (($inside !== '0' && empty($inside)) || ($inside == 'this')) {
             return $variable;
         } elseif (is_array($variable)) {
