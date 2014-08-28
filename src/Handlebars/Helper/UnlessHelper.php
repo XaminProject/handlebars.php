@@ -52,6 +52,8 @@ class UnlessHelper implements Helper
     {
         $tmp = $context->get($args);
 
+        $context->push($context->last());
+
         if (!$tmp) {
             $template->setStopToken('else');
             $buffer = $template->render($context);
@@ -62,6 +64,8 @@ class UnlessHelper implements Helper
             $template->setStopToken(false);
             $buffer = $template->render($context);
         }
+        
+        $context->pop();
 
         return $buffer;
     }
