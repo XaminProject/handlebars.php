@@ -952,11 +952,15 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("'(test)'Test.", $engine->render("{{test '(test)'}}", array()));
         $this->assertEquals("')'Test.Test.", $engine->render("{{test (test ')')}}", array()));
 
-        $engine->addHelper('concat', function($template, $context, $args) {
+        $engine->addHelper('concat', function(\Handlebars\Template $template,\Handlebars\Context $context, $args) {
             $result = '';
 
             foreach($template->parseArguments($args) as $arg) {
-                $result .= $context->get($arg);
+                if (($trnaslated = $context->get($arg)) !== null ) {
+                    $result .= $trnaslated;
+                } else {
+                    $result .= $arg;
+                }
             }
 
             return $result;
@@ -965,7 +969,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('ACB', $engine->render('{{concat a (concat c b)}}', array('a' => 'A', 'b' => 'B', 'c' => 'C')));
         $this->assertEquals('ACB', $engine->render('{{concat (concat a c) b}}', array('a' => 'A', 'b' => 'B', 'c' => 'C')));
         $this->assertEquals('A-B', $engine->render('{{concat (concat a "-") b}}', array('a' => 'A', 'b' => 'B')));
-        $this->assertEquals('A-B', $engine->render('{{concat (concat a "-") b}}', array('a' => 'A', 'b' => 'B', 'A-' => '!')));
+        $this->assertEquals('!B', $engine->render('{{concat (concat a "-") b}}', array('a' => 'A', 'b' => 'B', 'A-' => '!')));
     }
 
     /**
