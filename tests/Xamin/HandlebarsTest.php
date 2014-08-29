@@ -952,4 +952,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("'(test)'Test.", $engine->render("{{test '(test)'}}", array()));
         $this->assertEquals("')'Test.Test.", $engine->render("{{test (test ')')}}", array()));
     }
+
+    /**
+     * Test if and unless adding an extra layer when accessing parent
+     */
+    public function testIfUnlessExtraLayer()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        
+        $this->assertEquals('good', $engine->render('{{#with b}}{{#if this}}{{../../a}}{{/if}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
+        $this->assertEquals('good', $engine->render('{{#with b}}{{#if unless}}{{else}}{{../../a}}{{/if}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
+    }
 }
