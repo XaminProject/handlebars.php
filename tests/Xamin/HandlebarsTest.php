@@ -951,6 +951,21 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         // assert that bracketed expressions within string literals are treated correctly
         $this->assertEquals("'(test)'Test.", $engine->render("{{test '(test)'}}", array()));
         $this->assertEquals("')'Test.Test.", $engine->render("{{test (test ')')}}", array()));
+
+        $engine->addHelper('concat', function($template, $context, $args) {
+            $result = '';
+
+            foreach($template->parseArguments($args) as $arg) {
+                $result .= $context->get($arg);
+            }
+
+            return $result;
+        });
+
+        $this->assertEquals('ACB', $engine->render('{{concat a (concat c b)}}', array('a' => 'A', 'b' => 'B', 'c' => 'C')));
+        $this->assertEquals('ACB', $engine->render('{{concat (concat a c) b}}', array('a' => 'A', 'b' => 'B', 'c' => 'C')));
+        $this->assertEquals('A-B', $engine->render('{{concat (concat a "-") b}}', array('a' => 'A', 'b' => 'B')));
+        $this->assertEquals('A-B', $engine->render('{{concat (concat a "-") b}}', array('a' => 'A', 'b' => 'B', 'A-' => '!')));
     }
 
     /**
