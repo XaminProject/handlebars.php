@@ -952,13 +952,4 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("'(test)'Test.", $engine->render("{{test '(test)'}}", array()));
         $this->assertEquals("')'Test.Test.", $engine->render("{{test (test ')')}}", array()));
     }
-
-    /**
-     * Delimiter change test
-     */
-    public function testDelimiterChange()
-    {
-        $engine = new \Handlebars\Handlebars();
-        //$engine->set
-    }
 }
