@@ -111,10 +111,12 @@ class Arguments
 
         $name_chunk = '(?:[^' . $bad_chars . '\s]+)|(?:\[[^' . $bad_seg_chars . ']+\])';
         $variable_name = '(?:\.\.\/)*(?:(?:' . $name_chunk . ')[\.\/])*(?:' . $name_chunk  . ')\.?';
+        $special_variable_name = '@[a-z]+';
         $escaped_value = '(?:(?<!\\\\)".*?(?<!\\\\)"|(?<!\\\\)\'.*?(?<!\\\\)\')';
         $argument_name = $name_chunk;
-        $positional_argument = '#^(' . $variable_name . '|' . $escaped_value . ')#';
-        $named_argument = '#^(' . $argument_name . ')\s*=\s*(' . $escaped_value . '|' . $variable_name . ')#';
+        $argument_value = $variable_name . '|' . $escaped_value . '|' . $special_variable_name;
+        $positional_argument = '#^(' . $argument_value . ')#';
+        $named_argument = '#^(' . $argument_name . ')\s*=\s*(' . $argument_value . ')#';
 
         $current_str = trim($args_string);
 
