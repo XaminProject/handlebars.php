@@ -983,4 +983,14 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('good', $engine->render('{{#with b}}{{#if this}}{{../../a}}{{/if}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
         $this->assertEquals('good', $engine->render('{{#with b}}{{#unless false}}{{../../a}}{{/unless}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
     }
+
+    /**
+     * Test of Arguments to string conversion.
+     */
+    public function testArgumentsString()
+    {
+        $argsString = 'foo bar [foo bar] baz="value"';
+        $args = new \Handlebars\Arguments($argsString);
+        $this->assertEquals($argsString, (string)$args);
+    }
 }
