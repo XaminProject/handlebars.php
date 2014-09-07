@@ -858,6 +858,85 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($args, $expected_array);
     }
 
+    /**
+     * Test Combined Arguments Parser
+     *
+     * @param string $arg_string argument text
+     * @param        $positional_args
+     * @param        $named_args
+     *
+     * @dataProvider combinedArgumentsParserProvider
+     *
+     * @return void
+     */
+    public function testCombinedArgumentsParser($arg_string, $positional_args, $named_args)
+    {
+        $args = new \Handlebars\Arguments($arg_string);
+
+        // Get the string version of the arguments array
+        $stringify = function ($a) {
+            return (string)$a;
+        };
+
+        if ($positional_args !== false) {
+            $this->assertEquals(
+                array_map($stringify, $args->getPositionalArguments()),
+                $positional_args
+            );
+        }
+        if ($named_args !== false) {
+            $this->assertEquals(
+                array_map($stringify, $args->getNamedArguments()),
+                $named_args
+            );
+        }
+    }
+
+    public function combinedArgumentsParserProvider()
+    {
+        $result = array();
+
+        // Use data provider for positional arguments parser
+        foreach ($this->argumentParserProvider() as $dataSet) {
+            $result[] = array(
+                $dataSet[0],
+                $dataSet[1],
+                false,
+            );
+        }
+
+        // Use data provider for named arguments parser
+        foreach ($this->namedArgumentParserProvider() as $dataSet) {
+            $result[] = array(
+                $dataSet[0],
+                false,
+                $dataSet[1],
+            );
+        }
+
+        // Add test cases with combined arguments
+        return array_merge(
+            $result,
+            array(
+                array(
+                    'arg1 arg2 arg3=value1 arg4="value2"',
+                    array('arg1', 'arg2'),
+                    array('arg3' => 'value1', 'arg4' => 'value2')
+                ),
+                array(
+                    '@first arg=@last',
+                    array('@first'),
+                    array('arg' => '@last')
+                ),
+                array(
+                    '[seg arg1] [seg arg2] = [seg value "1"]',
+                    array('[seg arg1]'),
+                    array('seg arg2' => '[seg value "1"]')
+                )
+            )
+        );
+    }
+
     public function stringLiteralInCustomHelperProvider()
     {
         return array(
@@ -982,5 +1061,15 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         
         $this->assertEquals('good', $engine->render('{{#with b}}{{#if this}}{{../../a}}{{/if}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
         $this->assertEquals('good', $engine->render('{{#with b}}{{#unless false}}{{../../a}}{{/unless}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
+    }
+
+    /**
+     * Test of Arguments to string conversion.
+     */
+    public function testArgumentsString()
+    {
+        $argsString = 'foo bar [foo bar] baz="value"';
+        $args = new \Handlebars\Arguments($argsString);
+        $this->assertEquals($argsString, (string)$args);
     }
 }

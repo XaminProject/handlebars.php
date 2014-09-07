@@ -590,38 +590,14 @@ class Template
      */
     public function parseNamedArguments($string)
     {
-        $variableName = '(?:(?:[^\'"\[\]\s]|\[.+?\])+)';
-        $escapedValue = '(?:(?<!\\\\)".*?(?<!\\\\)"|(?<!\\\\)\'.*?(?<!\\\\)\')';
-
-        // Get list of named arguemnts
-        $matches = array();
-        preg_match_all(
-            '#(' . $variableName . ')\s*=\s*(' . $escapedValue . '|' . $variableName . ')#',
-            $string,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        $args = array();
-        for ($x = 0, $c = count($matches); $x < $c; $x++) {
-            $name = $matches[$x][1];
-            $value = $matches[$x][2];
-
-            // Check if argument's name is a segment
-            if ($name[0] == '[') {
-                $name = substr($name, 1, -1);
-            }
-
-            // Check if argument's value is a quoted string literal
-            if ($value[0] == "'" || $value[0] == '"') {
-                // Remove enclosing quotes and unescape
-                $value = new \Handlebars\String(stripcslashes(substr($value, 1, -1)));
-            }
-
-            $args[$name] = $value;
+        if ($string instanceof Arguments) {
+            // This code is needed only for backward compatibility
+            $args = $string;
+        } else {
+            $args = new Arguments($string);
         }
 
-        return $args;
+        return $args->getNamedArguments();
     }
 
     /**
@@ -634,23 +610,13 @@ class Template
      */
     public function parseArguments($string)
     {
-        $args = array();
-        preg_match_all('#(?:[^\'"\[\]\s]|\[.+?\])+|(?<!\\\\)("|\')(?:[^\\\\]|\\\\.)*?\1|\S+#s', $string, $args);
-        $args = isset($args[0]) ? $args[0] : array();
-
-        for ($x = 0, $argc = count($args); $x < $argc; $x++) {
-            // check to see if argument is a quoted string literal
-            if ($args[$x][0] == "'" || $args[$x][0] == '"') {
-                if ($args[$x][0] === substr($args[$x], -1)) {
-                    // remove enclosing quotes and unescape
-                    $args[$x] = new \Handlebars\String(stripcslashes(substr($args[$x], 1, strlen($args[$x]) - 2)));
-                } else {
-                    throw new \RuntimeException("Malformed string: " . $args);
-                }
-            }
-
+        if ($string instanceof Arguments) {
+            // This code is needed only for backward compatibility
+            $args = $string;
+        } else {
+            $args = new Arguments($string);
         }
 
-        return $args;
+        return $args->getPositionalArguments();
     }
 }
