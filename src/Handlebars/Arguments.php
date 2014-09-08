@@ -56,9 +56,9 @@ class Arguments
      */
     public function __construct($args_string = false)
     {
-        $this->originalString = $args_string;
+        $this->originalString = (string)$args_string;
 
-        if ($args_string) {
+        if ($this->originalString !== '') {
             $this->parse($args_string);
         }
     }

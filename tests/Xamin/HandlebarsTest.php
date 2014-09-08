@@ -801,6 +801,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             array('arg1 "arg\"2" "\\\'arg3\\\'"', array("arg1", 'arg"2', "'arg3'")),
             array('arg1 arg2.[value\'s "segment"].val', array("arg1", 'arg2.[value\'s "segment"].val')),
             array('"arg1.[value 1]" arg2', array("arg1.[value 1]", 'arg2')),
+            array('0', array('0')),
         );
     }
 
