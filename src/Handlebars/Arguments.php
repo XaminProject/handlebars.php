@@ -162,7 +162,14 @@ class Arguments
         // Check if argument's value is a quoted string literal
         if ($value[0] == "'" || $value[0] == '"') {
             // Remove enclosing quotes and unescape
-            $value = new String(stripcslashes(substr($value, 1, -1)));
+            return new String(stripcslashes(substr($value, 1, -1)));
+        }
+
+        // Check if the value is an integer literal
+        if (preg_match("/^-?\d+$/", $value)) {
+            // Wrap the value into the String class to tell the Context that
+            // it's a value and not a variable name.
+            return new String($value);
         }
 
         return $value;
