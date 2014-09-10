@@ -747,6 +747,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $context->pop();
         $this->assertEquals('value', $context->get('value'));
         $this->assertEquals('value', $context->get('value', true));
+        // Check that integers are returned from the context as is.
+        $this->assertEquals(-15, $context->get(-15));
+        $this->assertEquals(0, $context->get(0));
+        $this->assertEquals(10, $context->get(10));
+        $this->assertEquals(123, $context->get('123'));
     }
 
     /**

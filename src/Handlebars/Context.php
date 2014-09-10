@@ -188,6 +188,11 @@ class Context
         if ($variableName instanceof \Handlebars\String) {
             return (string)$variableName;
         }
+        if (preg_match("/^-?\d+$/", $variableName)) {
+            // Real variable name cannot contain only numbers, thus an integer
+            // value is found.
+            return intval($variableName);
+        }
         $variableName = trim($variableName);
         $level = 0;
         while (substr($variableName, 0, 3) == '../') {
