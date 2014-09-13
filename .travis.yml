@@ -7,5 +7,5 @@ php:
 branches:
   except:
     - php-52
-before_script: composer install
-script: "./vendor/bin/phpunit && ./vendor/bin/phpcs -n src/"
+before_script: composer install && wget https://scrutinizer-ci.com/ocular.phar
+script: "./vendor/bin/phpunit --coverage-clover=coverage.clover && php ocular.phar code-coverage:upload --format=php-clover coverage.clover && ./vendor/bin/phpcs -n src/"
