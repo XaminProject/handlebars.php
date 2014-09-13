@@ -974,6 +974,43 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($res, $results);
     }
 
+    public function integerLiteralInCustomHelperProvider()
+    {
+        return array(
+            array('{{test -5}}', array(), '-5'),
+            array('{{test 0}}', array(), '0'),
+            array('{{test 12}}', array(), '12'),
+            array('{{test 12 [12]}}', array('12' => 'foo'), '12:foo'),
+        );
+    }
+
+    /**
+     * Test integer literals in the context of a helper
+     *
+     * @param string $template template text
+     * @param array  $data     context data
+     * @param string $results  The Expected Results
+     *
+     * @dataProvider integerLiteralInCustomHelperProvider
+     *
+     * @return void
+     */
+    public function testIntegerLiteralInCustomHelper($template, $data, $results)
+    {
+        $engine = new \Handlebars\Handlebars();
+        $engine->addHelper('test', function ($template, $context, $args) {
+            $args = $template->parseArguments($args);
+
+            $args = array_map(function ($a) use ($context) {
+                return $context->get($a);
+            }, $args);
+
+            return implode(':', $args);
+        });
+        $res = $engine->render($template, $data);
+        $this->assertEquals($res, $results);
+    }
+
     public function testString()
     {
         $string = new \Handlebars\String("Hello World");
