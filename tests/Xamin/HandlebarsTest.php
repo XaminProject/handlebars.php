@@ -1049,35 +1049,37 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     {
         $loader = new \Handlebars\Loader\StringLoader();
         $engine = new \Handlebars\Handlebars(array('loader' => $loader));
-        $engine->addHelper('test', function ($template, $context, $arg) {
-            return $arg . 'Test.';
+        $engine->addHelper('test', function ($template, $context, $args) {
+            $parsedArgs = $template->parseArguments($args);
+
+            return (count($parsedArgs) ? $context->get($parsedArgs[0]) : '') . 'Test.';
         });
 
         // assert that nested syntax is accepted and sub-helper is run
         $this->assertEquals('Test.Test.', $engine->render('{{test (test)}}', array()));
 
-        $engine->addHelper('add', function ($template, $context, $arg) {
-            $values = explode(" ", $arg);
+        $engine->addHelper('add', function ($template, $context, $args) {
+            $sum = 0;
 
-            return $values[0] + $values[1];
+            foreach ($template->parseArguments($args) as $value) {
+                $sum += intval($context->get($value));
+            }
+
+            return $sum;
         });
 
         // assert that subexpression result is inserted correctly as argument to top level helper
         $this->assertEquals('42', $engine->render('{{add 21 (add 10 (add 5 6))}}', array()));
 
         // assert that bracketed expressions within string literals are treated correctly
-        $this->assertEquals("'(test)'Test.", $engine->render("{{test '(test)'}}", array()));
-        $this->assertEquals("')'Test.Test.", $engine->render("{{test (test ')')}}", array()));
+        $this->assertEquals("(test)Test.", $engine->render("{{test '(test)'}}", array()));
+        $this->assertEquals(")Test.Test.", $engine->render("{{test (test ')')}}", array()));
 
         $engine->addHelper('concat', function(\Handlebars\Template $template,\Handlebars\Context $context, $args) {
             $result = '';
 
             foreach($template->parseArguments($args) as $arg) {
-                if (($trnaslated = $context->get($arg)) !== null ) {
-                    $result .= $trnaslated;
-                } else {
-                    $result .= $arg;
-                }
+                $result .= $context->get($arg);
             }
 
             return $result;
@@ -1086,7 +1088,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('ACB', $engine->render('{{concat a (concat c b)}}', array('a' => 'A', 'b' => 'B', 'c' => 'C')));
         $this->assertEquals('ACB', $engine->render('{{concat (concat a c) b}}', array('a' => 'A', 'b' => 'B', 'c' => 'C')));
         $this->assertEquals('A-B', $engine->render('{{concat (concat a "-") b}}', array('a' => 'A', 'b' => 'B')));
-        $this->assertEquals('!B', $engine->render('{{concat (concat a "-") b}}', array('a' => 'A', 'b' => 'B', 'A-' => '!')));
+        $this->assertEquals('A-B', $engine->render('{{concat (concat a "-") b}}', array('a' => 'A', 'b' => 'B', 'A-' => '!')));
     }
 
     /**

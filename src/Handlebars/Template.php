@@ -354,9 +354,9 @@ class Template
                     Tokenizer::ARGS => implode(" ", array_slice($cmd, 1))
                 );
                 // resolve the node recursively
-                $resolved = $this->_handlebarsStyleSection($context, $section_node);
+                $resolved = addcslashes($this->_handlebarsStyleSection($context, $section_node), '"');
                 // replace original subexpression with result
-                $current[Tokenizer::ARGS] = str_replace('('.$expr.')', $resolved, $current[Tokenizer::ARGS]);
+                $current[Tokenizer::ARGS] = str_replace('('.$expr.')', '"' . $resolved . '"', $current[Tokenizer::ARGS]);
             }
         }
 
