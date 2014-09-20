@@ -41,10 +41,10 @@ class BindAttrHelper implements Helper
     /**
      * Execute the helper
      *
-     * @param \Handlebars\Template $template The template instance
-     * @param \Handlebars\Context  $context  The current context
-     * @param array                $args     The arguments passed the the helper
-     * @param string               $source   The source
+     * @param \Handlebars\Template  $template The template instance
+     * @param \Handlebars\Context   $context  The current context
+     * @param \Handlebars\Arguments $args     The arguments passed the the helper
+     * @param string                $source   The source
      *
      * @return mixed
      */
