@@ -124,13 +124,14 @@ class Helpers
             throw new \InvalidArgumentException('Unknown helper: ' . $name);
         }
 
+        $parsedArgs = new Arguments($args);
         if ($this->helpers[$name] instanceof Helper) {
             return $this->helpers[$name]->execute(
-                $template, $context, $args, $source
+                $template, $context, $parsedArgs, $source
             );
         }
 
-        return call_user_func($this->helpers[$name], $template, $context, $args, $source);
+        return call_user_func($this->helpers[$name], $template, $context, $parsedArgs, $source);
     }
 
     /**
