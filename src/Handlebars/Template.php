@@ -129,6 +129,18 @@ class Template
     }
 
     /**
+     * Get the current token's tree
+     *
+     * @return array
+     */
+    public function getCurrentTokenTree()
+    {
+        $topStack = end($this->_stack);
+
+        return $topStack[1];
+    }
+
+    /**
      * Render top tree
      *
      * @param mixed $context current context
