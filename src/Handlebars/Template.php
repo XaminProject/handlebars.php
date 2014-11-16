@@ -581,7 +581,7 @@ class Template
     {
         $name = $current[Tokenizer::NAME];
         $value = $context->get($name);
-        if (is_array($value)){
+        if (is_array($value)) {
             return 'Array';
         }
         if ($escaped) {
