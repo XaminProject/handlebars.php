@@ -581,6 +581,9 @@ class Template
     {
         $name = $current[Tokenizer::NAME];
         $value = $context->get($name);
+        if (is_array($value)){
+            return 'Array';
+        }
         if ($escaped) {
             $args = $this->handlebars->getEscapeArgs();
             array_unshift($args, $value);
