@@ -711,6 +711,8 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('var-y-z', $engine->render('{{var.y.z}}', array('var' => $var)));
         // Access parent context in with helper
         $this->assertEquals('var-x', $engine->render('{{#with var.y}}{{../var.x}}{{/with}}', array('var' => $var)));
+        // Reference array as string
+        $this->assertEquals('Array', $engine->render('{{var}}', array('var' => array('test'))));
 
         $obj = new DateTime();
         $time = $obj->getTimestamp();
