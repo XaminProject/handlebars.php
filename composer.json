@@ -20,8 +20,8 @@
 
     },
     "require-dev": {
-        "phpunit/phpunit": "@stable",
-        "squizlabs/php_codesniffer": "@stable"
+        "phpunit/phpunit": "~4.4",
+        "squizlabs/php_codesniffer": "~1.5"
     },
     "autoload": {
         "psr-0": {
