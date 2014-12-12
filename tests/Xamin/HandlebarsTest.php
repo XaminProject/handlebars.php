@@ -487,7 +487,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test add/get/has/clear functions on helper class
+     * Test add/addHelpers/get/getAll/has/clear functions on helper class
      */
     public function testHelpersClass()
     {
@@ -509,6 +509,14 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($helpers->has('test'));
         $this->assertFalse(isset($helpers->test));
         $this->assertTrue($helpers->isEmpty());
+        $helpers->add('test', function() {});
+        $this->assertCount(0, array_diff(array_keys($helpers->getAll()), array('test')));
+        $extraHelpers = new \Handlebars\Helpers();
+        $extraHelpers->add('test', function() {});
+        $extraHelpers->add('test2', function() {});
+        $helpers->addHelpers($extraHelpers);
+        $this->assertTrue($helpers->has('test2'));
+        $this->assertEquals($helpers->test, $extraHelpers->test);
     }
 
     /**
