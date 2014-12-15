@@ -107,6 +107,21 @@ class Helpers
     }
 
     /**
+     * Add all helpers from the specified collection to the current one.
+     *
+     * The method will override helpers from the current collections with same
+     * named helpers from the specified collection.
+     *
+     * @param Helpers $helpers A collection which helpers should be added.
+     *
+     * @return void
+     */
+    public function addHelpers(Helpers $helpers)
+    {
+        $this->helpers = $helpers->getAll() + $this->helpers;
+    }
+
+    /**
      * Calls a helper, whether it be a Closure or Helper instance
      *
      * @param string               $name     The name of the helper
@@ -237,5 +252,16 @@ class Helpers
     public function isEmpty()
     {
         return empty($this->helpers);
+    }
+
+    /**
+     * Returns all helpers from the collection.
+     *
+     * @return array Associative array of helpers which keys are helpers names
+     * and the values are the helpers.
+     */
+    public function getAll()
+    {
+        return $this->helpers;
     }
 }
