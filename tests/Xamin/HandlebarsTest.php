@@ -780,6 +780,39 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+
+    /**
+     * Test invalid custom template class
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidCustomTemplateClass()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array(
+            'loader' => $loader,
+            'template_class' => 'stdclass'
+        ));
+    }
+
+    /**
+     * Test custom template class
+     */
+    public function testValidCustomTemplateClass()
+    {
+        Handlebars\Autoloader::register(realpath(__DIR__ . '/../fixture/'));
+
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array(
+            'loader' => $loader,
+            'template_class' => 'Handlebars\CustomTemplate'
+        ));
+
+        $render = $engine->render('Original Template', array());
+
+        $this->assertEquals($render, 'Altered Template');
+    }
+
     /**
      * Test for proper handling of the length property
      **/
