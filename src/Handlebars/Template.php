@@ -45,9 +45,14 @@ class Template
      */
     protected $handlebars;
 
-
+    /**
+     * @var array The tokenized tree
+     */
     protected $tree = array();
 
+    /**
+     * @var string The template source
+     */
     protected $source = '';
 
     /**
