@@ -620,6 +620,23 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test inline loader
+     */
+    public function testInlineLoader()
+    {
+        $loader = new \Handlebars\Loader\InlineLoader(__FILE__, __COMPILER_HALT_OFFSET__);
+        $this->assertEquals('This is a inline template.', $loader->load('template1'));
+
+        $expected = <<<EOM
+a
+b
+c
+d
+EOM;
+        $this->assertEquals($expected, $loader->load('template2'));
+    }
+
+    /**
      * Test file system loader
      */
     public function testFileSystemLoaderMultipleFolder()
@@ -1141,7 +1158,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     {
         $loader = new \Handlebars\Loader\StringLoader();
         $engine = new \Handlebars\Handlebars(array('loader' => $loader));
-        
+
         $this->assertEquals('good', $engine->render('{{#with b}}{{#if this}}{{../../a}}{{/if}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
         $this->assertEquals('good', $engine->render('{{#with b}}{{#unless false}}{{../../a}}{{/unless}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
     }
@@ -1156,3 +1173,17 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($argsString, (string)$args);
     }
 }
+
+/**
+ * Testcase for testInlineLoader
+ *
+ */
+__halt_compiler();
+@@ template1
+This is a inline template.
+
+@@ template2
+a
+b
+c
+d
