@@ -18,18 +18,38 @@
  *     Goodbye, cruel {{ planet }}
  *
  * Templates are deliniated by lines containing only `@@ name`.
+ *
+ * @category  Xamin
+ * @package   Handlebars
+ * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @copyright 2010-2015 (c) Justin Hileman
+ * @copyright 2015 (c) fzerorubigd
+ * @license   MIT <http://opensource.org/licenses/MIT>
+ * @version   Release: @package_version@
+ * @link      http://xamin.ir
  */
 
 namespace Handlebars\Loader;
 
 use Handlebars\Loader;
-use Handlebars\String;
 
+/**
+ * The inline loader
+ *
+ * @category  Xamin
+ * @package   Handlebars
+ * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @copyright 2010-2015 (c) Justin Hileman
+ * @copyright 2015 (c) fzerorubigd
+ * @license   MIT <http://opensource.org/licenses/MIT>
+ * @version   Release: @package_version@
+ * @link      http://xamin.ir *
+ */
 class InlineLoader implements Loader
 {
-    protected $_fileName;
-    protected $_offset;
-    protected $_templates;
+    protected $fileName;
+    protected $offset;
+    protected $templates;
 
     /**
      * The InlineLoader requires a filename and offset to process templates.
@@ -57,43 +77,45 @@ class InlineLoader implements Loader
             throw new \InvalidArgumentException('InlineLoader expects a valid file offset.');
         }
 
-        $this->_fileName = $fileName;
-        $this->_offset   = $offset;
+        $this->fileName = $fileName;
+        $this->offset = $offset;
     }
 
     /**
      * Load a Template by name.
      *
-     * @param string $name
+     * @param string $name template name
      *
-     * @return string Mustache Template source
+     * @return string Handlebars Template source
      */
     public function load($name)
     {
         $this->loadTemplates();
 
-        if (!array_key_exists($name, $this->_templates)) {
+        if (!array_key_exists($name, $this->templates)) {
             throw new \InvalidArgumentException("Template {$name} not found.");
         }
 
-        return $this->_templates[$name];
+        return $this->templates[$name];
     }
 
     /**
      * Parse and load templates from the end of a source file.
+     *
+     * @return void
      */
     protected function loadTemplates()
     {
-        if (!is_null($this->_templates)) {
+        if (!is_null($this->templates)) {
             return;
         }
 
-        $this->_templates = array();
-        $data = file_get_contents($this->_fileName, false, null, $this->_offset);
+        $this->templates = array();
+        $data = file_get_contents($this->fileName, false, null, $this->offset);
         foreach (preg_split('/^@@(?= [\w\d\.]+$)/m', $data, -1) as $chunk) {
             if (trim($chunk)) {
-                list($name, $content)         = explode("\n", $chunk, 2);
-                $this->_templates[trim($name)] = trim($content);
+                list($name, $content) = explode("\n", $chunk, 2);
+                $this->templates[trim($name)] = trim($content);
             }
         }
     }
