@@ -50,15 +50,8 @@ class UnlessHelper implements Helper
      */
     public function execute(Template $template, Context $context, $args, $source)
     {
-    	if (is_numeric($args)) {
-            $tmp = $args;
-        } elseif(preg_match('/^\'.*\'$/', trim($args))) {
-        	$tmp = preg_replace('/^\'(.*)\'$/', '$1', trim($args));
-        } elseif(preg_match('/^".*"$/', trim($args))) {
-        	$tmp = preg_replace('/^"(.*)"$/', '$1', trim($args));
-		} else {
-            $tmp = $context->get($args);
-        }
+    	$parsedArgs = $template->parseArguments($args);
+		$tmp = $context->get($parsedArgs[0]);
 
         $context->push($context->last());
 
