@@ -16,7 +16,7 @@
  */
 
 /**
- * Class AutoloaderTest
+ * Class HandlebarsTest
  */
 class HandlebarsTest extends \PHPUnit_Framework_TestCase
 {
@@ -339,7 +339,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array('data' => array(1, 2, 3, 4)),
                 '1234'
             ),
-            array( '{{#if first}}The first{{else}}{{#if second}}The second{{/if}}{{/if}}',
+            array('{{#if first}}The first{{else}}{{#if second}}The second{{/if}}{{/if}}',
                 array('first' => false, 'second' => true),
                 'The second'
             )
@@ -352,7 +352,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     public function testHelpersManagement()
     {
         $helpers = new \Handlebars\Helpers(array('test' => function () {
-            }), false);
+        }), false);
         $engine = new \Handlebars\Handlebars(array('helpers' => $helpers));
         $this->assertTrue(is_callable($engine->getHelper('test')));
         $this->assertTrue($engine->hasHelper('test'));
@@ -509,11 +509,14 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($helpers->has('test'));
         $this->assertFalse(isset($helpers->test));
         $this->assertTrue($helpers->isEmpty());
-        $helpers->add('test', function() {});
+        $helpers->add('test', function () {
+        });
         $this->assertCount(0, array_diff(array_keys($helpers->getAll()), array('test')));
         $extraHelpers = new \Handlebars\Helpers();
-        $extraHelpers->add('test', function() {});
-        $extraHelpers->add('test2', function() {});
+        $extraHelpers->add('test', function () {
+        });
+        $extraHelpers->add('test2', function () {
+        });
         $helpers->addHelpers($extraHelpers);
         $this->assertTrue($helpers->has('test2'));
         $this->assertEquals($helpers->test, $extraHelpers->test);
@@ -617,6 +620,24 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $engine = new \Handlebars\Handlebars();
         $engine->setLoader($loader);
         $this->assertEquals('test', $engine->render('loader', array()));
+    }
+
+    /**
+     * Test inline loader
+     */
+    public function testInlineLoader()
+    {
+        $file = dirname(__DIR__) . '/fixture/Inlineloader.php';
+        $loader = include($file);
+        $this->assertEquals('This is a inline template.', $loader->load('template1'));
+
+        $expected = <<<EOM
+a
+b
+c
+d
+EOM;
+        $this->assertEquals($expected, $loader->load('template2'));
     }
 
     /**
@@ -1118,10 +1139,10 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("(test)Test.", $engine->render("{{test '(test)'}}", array()));
         $this->assertEquals(")Test.Test.", $engine->render("{{test (test ')')}}", array()));
 
-        $engine->addHelper('concat', function(\Handlebars\Template $template,\Handlebars\Context $context, $args) {
+        $engine->addHelper('concat', function (\Handlebars\Template $template, \Handlebars\Context $context, $args) {
             $result = '';
 
-            foreach($template->parseArguments($args) as $arg) {
+            foreach ($template->parseArguments($args) as $arg) {
                 $result .= $context->get($arg);
             }
 
@@ -1141,7 +1162,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     {
         $loader = new \Handlebars\Loader\StringLoader();
         $engine = new \Handlebars\Handlebars(array('loader' => $loader));
-        
+
         $this->assertEquals('good', $engine->render('{{#with b}}{{#if this}}{{../../a}}{{/if}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
         $this->assertEquals('good', $engine->render('{{#with b}}{{#unless false}}{{../../a}}{{/unless}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
     }
@@ -1155,4 +1176,55 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $args = new \Handlebars\Arguments($argsString);
         $this->assertEquals($argsString, (string)$args);
     }
+
+
+    public function stringLiteralsInIfAndUnlessHelpersProvider()
+    {
+        return array(
+            // IfHelper
+            array('{{#if "truthyString"}}true{{else}}false{{/if}}', array(), "true"),
+            array("{{#if 'truthyStringSingleQuotes'}}true{{else}}false{{/if}}", array(), "true"),
+            array("{{#if ''}}true{{else}}false{{/if}}", array(), "false"),
+            array("{{#if '0'}}true{{else}}false{{/if}}", array(), "false"),
+            array("{{#if (add 0 1)}}true{{else}}false{{/if}}", array(), "true"),
+            array("{{#if (add 1 -1)}}true{{else}}false{{/if}}", array(), "false"),
+            // UnlessHelper
+            array('{{#unless "truthyString"}}true{{else}}false{{/unless}}', array(), "false"),
+            array("{{#unless 'truthyStringSingleQuotes'}}true{{else}}false{{/unless}}", array(), "false"),
+            array("{{#unless ''}}true{{else}}false{{/unless}}", array(), "true"),
+            array("{{#unless '0'}}true{{else}}false{{/unless}}", array(), "true"),
+            array("{{#unless (add 0 1)}}true{{else}}false{{/unless}}", array(), "false"),
+            array("{{#unless (add 1 -1)}}true{{else}}false{{/unless}}", array(), "true"),
+        );
+    }
+
+    /**
+     * Test integer literals in the context of if and unless helpers
+     *
+     * @param string $template template text
+     * @param array  $data     context data
+     * @param string $results  The Expected Results
+     *
+     * @dataProvider stringLiteralsInIfAndUnlessHelpersProvider
+     *
+     * @return void
+     */
+    public function testStringLiteralsInIfAndUnlessHelpers($template, $data, $results)
+    {
+        $engine = new \Handlebars\Handlebars();
+
+        $engine->addHelper('add', function ($template, $context, $args) {
+            $sum = 0;
+
+            foreach ($template->parseArguments($args) as $value) {
+                $sum += intval($context->get($value));
+            }
+
+            return $sum;
+        });
+
+        $res = $engine->render($template, $data);
+        $this->assertEquals($res, $results);
+    }
+
 }

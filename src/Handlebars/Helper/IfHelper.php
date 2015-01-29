@@ -52,6 +52,10 @@ class IfHelper implements Helper
     {
         if (is_numeric($args)) {
             $tmp = $args;
+        } elseif (preg_match('/^\'.*\'$/', trim($args))) {
+            $tmp = preg_replace('/^\'(.*)\'$/', '$1', trim($args));
+        } elseif (preg_match('/^".*"$/', trim($args))) {
+            $tmp = preg_replace('/^"(.*)"$/', '$1', trim($args));
         } else {
             $tmp = $context->get($args);
         }
