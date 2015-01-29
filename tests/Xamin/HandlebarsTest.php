@@ -1155,4 +1155,54 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $args = new \Handlebars\Arguments($argsString);
         $this->assertEquals($argsString, (string)$args);
     }
+    
+    
+    public function stringLiteralsInIfAndUnlessHelpersProvider() {
+    	return array(
+            // IfHelper
+    		array('{{#if "truthyString"}}true{{else}}false{{/if}}', array(), "true"),
+            array("{{#if 'truthyStringSingleQuotes'}}true{{else}}false{{/if}}", array(), "true"),
+            array("{{#if ''}}true{{else}}false{{/if}}", array(), "false"),  
+            array("{{#if '0'}}true{{else}}false{{/if}}", array(), "false"),
+            array("{{#if (add 0 1)}}true{{else}}false{{/if}}", array(), "true"),
+            array("{{#if (add 1 -1)}}true{{else}}false{{/if}}", array(), "false"),
+			// UnlessHelper
+    		array('{{#unless "truthyString"}}true{{else}}false{{/unless}}', array(), "false"),
+            array("{{#unless 'truthyStringSingleQuotes'}}true{{else}}false{{/unless}}", array(), "false"),
+            array("{{#unless ''}}true{{else}}false{{/unless}}", array(), "true"),  
+            array("{{#unless '0'}}true{{else}}false{{/unless}}", array(), "true"),
+            array("{{#unless (add 0 1)}}true{{else}}false{{/unless}}", array(), "false"),
+            array("{{#unless (add 1 -1)}}true{{else}}false{{/unless}}", array(), "true"),
+        );
+    }
+    
+   /**
+     * Test integer literals in the context of if and unless helpers
+     *
+     * @param string $template template text
+     * @param array  $data     context data
+     * @param string $results  The Expected Results
+     *
+     * @dataProvider stringLiteralsInIfAndUnlessHelpersProvider
+     *
+     * @return void
+     */
+    public function testStringLiteralsInIfAndUnlessHelpers($template, $data, $results)
+    {
+        $engine = new \Handlebars\Handlebars();
+        
+        $engine->addHelper('add', function ($template, $context, $args) {
+        	$sum = 0;
+        
+        	foreach ($template->parseArguments($args) as $value) {
+        		$sum += intval($context->get($value));
+        	}
+        
+        	return $sum;
+        });
+        
+        $res = $engine->render($template, $data);
+        $this->assertEquals($res, $results);
+    }
+    
 }
