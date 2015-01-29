@@ -50,13 +50,13 @@ class UnlessHelper implements Helper
      */
     public function execute(Template $template, Context $context, $args, $source)
     {
-    	if (is_numeric($args)) {
+        if (is_numeric($args)) {
             $tmp = $args;
-        } elseif(preg_match('/^\'.*\'$/', trim($args))) {
-        	$tmp = preg_replace('/^\'(.*)\'$/', '$1', trim($args));
-        } elseif(preg_match('/^".*"$/', trim($args))) {
-        	$tmp = preg_replace('/^"(.*)"$/', '$1', trim($args));
-		} else {
+        } elseif (preg_match('/^\'.*\'$/', trim($args))) {
+            $tmp = preg_replace('/^\'(.*)\'$/', '$1', trim($args));
+        } elseif (preg_match('/^".*"$/', trim($args))) {
+            $tmp = preg_replace('/^"(.*)"$/', '$1', trim($args));
+        } else {
             $tmp = $context->get($args);
         }
 
@@ -72,7 +72,7 @@ class UnlessHelper implements Helper
             $template->setStopToken(false);
             $buffer = $template->render($context);
         }
-        
+
         $context->pop();
 
         return $buffer;
