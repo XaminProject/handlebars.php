@@ -1177,7 +1177,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     }
     
    /**
-     * Test integer literals in the context of if and unless helpers
+     * Test string literals in the context of if and unless helpers
      *
      * @param string $template template text
      * @param array  $data     context data
