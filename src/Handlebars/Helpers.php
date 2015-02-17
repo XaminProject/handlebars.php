@@ -106,7 +106,13 @@ class Handlebars_Helpers
 		if (is_array($tmp) || $tmp instanceof Traversable) {
 			$islist = ( array_keys($tmp) == range(0, count($tmp) - 1) );
 
+			$index = 0;
 			foreach ($tmp as $key => $var) {
+
+				$var['@first'] = (!array_key_exists('@first', $var)) ? ($index === 0) : $var['@first'];
+				$var['@last']  = (!array_key_exists('@last', $var))  ? ($index === count($tmp)-1) : $var['@last'];
+				$index++;
+
 				if( $islist ) {
 					$context->pushIndex($key);
 				} else {
