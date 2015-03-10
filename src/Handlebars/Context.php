@@ -203,6 +203,10 @@ class Context
 
             return '';
         }
+        if (substr($variableName, 0, 6) == '@root.') {
+            $variableName = trim(substr($variableName, 6));
+            $level = count($this->stack)-1;
+        }
         end($this->stack);
         while ($level) {
             prev($this->stack);

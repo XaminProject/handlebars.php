@@ -1226,6 +1226,33 @@ EOM;
         $this->assertEquals($res, $results);
     }
 
+    public function rootSpecialVariableProvider()
+    {
+        return array(
+            array('{{foo}} {{ @root.foo }}', array( 'foo' => 'bar' ), "bar bar"),
+            array('{{@root.foo}} {{#each arr}}{{ @root.foo }}{{/each}}', array( 'foo' => 'bar', 'arr' => array( '1' ) ), "bar bar"),
+        );
+    }
+
+    /**
+     * Test 'root' special variable
+     *
+     * @param string $template template text
+     * @param array  $data     context data
+     * @param string $results  The Expected Results
+     *
+     * @dataProvider rootSpecialVariableProvider
+     *
+     * @return void
+     */
+    public function testRootSpecialVariableHelpers($template, $data, $results)
+    {
+        $engine = new \Handlebars\Handlebars();
+
+        $res = $engine->render($template, $data);
+        $this->assertEquals($res, $results);
+    }
+
 }
 
 /**
