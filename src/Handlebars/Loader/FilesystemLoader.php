@@ -12,6 +12,7 @@
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @author    Craig Bass <craig@clearbooks.co.uk>
  * @author    ^^         <craig@devls.co.uk>
+ * @author    Dave Stein <be.davestein@gmail.com>
  * @copyright 2010-2012 (c) Justin Hileman
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
@@ -40,7 +41,7 @@ use Handlebars\String;
 
 class FilesystemLoader implements Loader
 {
-    private $_baseDir;
+    protected $baseDir;
     private $_extension = '.handlebars';
     private $_prefix = '';
     private $_templates = array();
@@ -62,32 +63,8 @@ class FilesystemLoader implements Loader
      */
     public function __construct($baseDirs, array $options = array())
     {
-        if (is_string($baseDirs)) {
-            $baseDirs = array(rtrim(realpath($baseDirs), '/'));
-        } else {
-            foreach ($baseDirs as &$dir) {
-                $dir = rtrim(realpath($dir), '/');
-            }
-            unset($dir);
-        }
-
-        $this->_baseDir = $baseDirs;
-
-        foreach ($this->_baseDir as $dir) {
-            if (!is_dir($dir)) {
-                throw new \RuntimeException(
-                    'FilesystemLoader baseDir must be a directory: ' . $dir
-                );
-            }
-        }
-
-        if (isset($options['extension'])) {
-            $this->_extension = '.' . ltrim($options['extension'], '.');
-        }
-
-        if (isset($options['prefix'])) {
-            $this->_prefix = $options['prefix'];
-        }
+        $this->setBaseDir($baseDirs);
+        $this->handleOptions($options);
     }
 
     /**
@@ -108,6 +85,65 @@ class FilesystemLoader implements Loader
         }
 
         return new String($this->_templates[$name]);
+    }
+
+    /**
+     * Sets directories to load templates from
+     *
+     * @param string|array $baseDirs A path contain template files or array of paths
+     *
+     * @return void
+     */
+    protected function setBaseDir($baseDirs)
+    {
+        if (is_string($baseDirs)) {
+            $baseDirs = array($this->sanitizeDirectory($baseDirs));
+        } else {
+            foreach ($baseDirs as &$dir) {
+                $dir = $this->sanitizeDirectory($dir);
+            }
+            unset($dir);
+        }
+
+        foreach ($baseDirs as $dir) {
+            if (!is_dir($dir)) {
+                throw new \RuntimeException(
+                    'FilesystemLoader baseDir must be a directory: ' . $dir
+                );
+            }
+        }
+
+        $this->baseDir = $baseDirs;
+    }
+
+    /**
+     * Puts directory into standardized format
+     *
+     * @param String $dir The directory to sanitize
+     *
+     * @return String
+     */
+    protected function sanitizeDirectory($dir)
+    {
+        return rtrim(realpath($dir), '/');
+    }
+
+    /**
+     * Sets properties based on options
+     *
+     * @param array $options Array of Loader options (default: array())
+     *
+     * @return void
+     */
+    protected function handleOptions(array $options = array())
+    {
+        if (isset($options['extension'])) {
+            $this->_extension = '.' . ltrim($options['extension'], '.');
+        }
+
+        if (isset($options['prefix'])) {
+            $this->_prefix = $options['prefix'];
+        }
     }
 
     /**
@@ -138,7 +174,7 @@ class FilesystemLoader implements Loader
      */
     protected function getFileName($name)
     {
-        foreach ($this->_baseDir as $baseDir) {
+        foreach ($this->baseDir as $baseDir) {
             $fileName = $baseDir . '/';
             $fileParts = explode('/', $name);
             $file = array_pop($fileParts);
