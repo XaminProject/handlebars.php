@@ -118,32 +118,37 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '<strong>Test</strong>'
             ),
             array(
-                "\{{data}}", // is equal to \\{{data}}
+                "\\{{data}}", // is equal to \{{data}} in template file
                 array('data' => 'foo'),
                 '{{data}}',
             ),
             array(
-                '\\\\{{data}}',
+                '\\\\{{data}}', // is equal to \\{{data}} in template file
                 array('data' => 'foo'),
-                '\\\\foo'
+                '\\foo' // is equals to \foo in output
             ),
             array(
-                '\\\{{data}}', // is equal to \\\\{{data}} in php
-                array('data' => 'foo'),
-                '\\\\foo'
-            ),
-            array(
-                '\{{{data}}}',
+                '\{{{data}}}', // is equal to \{{{data}}} in template file
                 array('data' => 'foo'),
                 '{{{data}}}'
             ),
             array(
-                '\pi',
+                '\pi', // is equal to \pi in template
                 array(),
                 '\pi'
             ),
             array(
-                '\\\\\\\\qux',
+                '\\\\foo', // is equal to \\foo in template
+                array(),
+                '\\\\foo'
+            ),
+            array(
+                '\\\\\\bar', // is equal to \\\bar in template
+                array(),
+                '\\\\\\bar'
+            ),
+            array(
+                '\\\\\\\\qux', // is equal to \\\\qux in template file
                 array(),
                 '\\\\\\\\qux'
             ),

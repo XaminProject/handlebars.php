@@ -136,7 +136,6 @@ class Tokenizer
         */
         $len = strlen($text);
         for ($i = 0; $i < $len; $i++) {
-
             $this->escaping = $this->tagChange(self::T_ESCAPE, $text, $i);
 
             // To play nice with helpers' arguments quote and apostrophe marks
@@ -144,7 +143,7 @@ class Tokenizer
             $quoteInTag = $this->state != self::IN_TEXT
                 && ($text[$i] == self::T_SINGLE_Q || $text[$i] == self::T_DOUBLE_Q);
 
-            if ($this->escaped && $text[$i] != self::T_UNESCAPED && !$quoteInTag) {
+            if ($this->escaped && !$this->tagChange($this->otag, $text, $i) && !$quoteInTag) {
                 $this->buffer .= "\\";
             }
 
@@ -163,7 +162,11 @@ class Tokenizer
                     $this->flushBuffer();
                     $this->state = self::IN_TAG_TYPE;
                 } elseif ($this->escaped and $this->escaping) {
-                    $this->buffer .= "\\";
+                    // We should not add extra slash before opening tag because
+                    // doubled slash where should be transformed to single one
+                    if (($i + 1) < $len && !$this->tagChange($this->otag, $text, $i + 1)) {
+                        $this->buffer .= "\\";
+                    }
                 } elseif (!$this->escaping) {
                     if ($text[$i] == "\n") {
                         $this->filterLine();
