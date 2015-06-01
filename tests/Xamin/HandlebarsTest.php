@@ -128,6 +128,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '\\foo' // is equals to \foo in output
             ),
             array(
+                '\\\\\\{{data}}', // is equal to \\\{{data}} in template file
+                array('data' => 'foo'),
+                '\\\\foo' // is equals to \\foo in output
+            ),
+            array(
+                '\\\\\\\\{{data}}', // is equal to \\\\{{data}} in template file
+                array('data' => 'foo'),
+                '\\\\\\foo' // is equals to \\\foo in output
+            ),
+            array(
                 '\{{{data}}}', // is equal to \{{{data}}} in template file
                 array('data' => 'foo'),
                 '{{{data}}}'

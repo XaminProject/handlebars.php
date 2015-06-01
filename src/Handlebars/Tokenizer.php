@@ -149,7 +149,15 @@ class Tokenizer
 
             switch ($this->state) {
             case self::IN_TEXT:
-                if ($this->tagChange($this->otag. self::T_TRIM, $text, $i) and !$this->escaped) {
+                // Handlebars.js does not think that openning curly brace in
+                // "\\\{{data}}" template is escaped. Instead it removes one
+                // slash and leaves others "as is". To emulate similar behavior
+                // we have to check the last character in the buffer. If it's a
+                // slash we actually does not need to escape openning curly
+                // brace.
+                $prev_slash = substr($this->buffer, -1) == '\\';
+
+                if ($this->tagChange($this->otag. self::T_TRIM, $text, $i) and (!$this->escaped || $prev_slash)) {
                     $this->flushBuffer();
                     $this->state = self::IN_TAG_TYPE;
                     $this->trimLeft = true;
@@ -157,7 +165,7 @@ class Tokenizer
                     $this->buffer .= "{{{";
                     $i += 2;
                     continue;
-                } elseif ($this->tagChange($this->otag, $text, $i) and !$this->escaped) {
+                } elseif ($this->tagChange($this->otag, $text, $i) and (!$this->escaped || $prev_slash)) {
                     $i--;
                     $this->flushBuffer();
                     $this->state = self::IN_TAG_TYPE;
