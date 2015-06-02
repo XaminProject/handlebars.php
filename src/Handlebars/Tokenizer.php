@@ -136,7 +136,6 @@ class Tokenizer
         */
         $len = strlen($text);
         for ($i = 0; $i < $len; $i++) {
-
             $this->escaping = $this->tagChange(self::T_ESCAPE, $text, $i);
 
             // To play nice with helpers' arguments quote and apostrophe marks
@@ -144,13 +143,21 @@ class Tokenizer
             $quoteInTag = $this->state != self::IN_TEXT
                 && ($text[$i] == self::T_SINGLE_Q || $text[$i] == self::T_DOUBLE_Q);
 
-            if ($this->escaped && $text[$i] != self::T_UNESCAPED && !$quoteInTag) {
+            if ($this->escaped && !$this->tagChange($this->otag, $text, $i) && !$quoteInTag) {
                 $this->buffer .= "\\";
             }
 
             switch ($this->state) {
             case self::IN_TEXT:
-                if ($this->tagChange($this->otag. self::T_TRIM, $text, $i) and !$this->escaped) {
+                // Handlebars.js does not think that openning curly brace in
+                // "\\\{{data}}" template is escaped. Instead it removes one
+                // slash and leaves others "as is". To emulate similar behavior
+                // we have to check the last character in the buffer. If it's a
+                // slash we actually does not need to escape openning curly
+                // brace.
+                $prev_slash = substr($this->buffer, -1) == '\\';
+
+                if ($this->tagChange($this->otag. self::T_TRIM, $text, $i) and (!$this->escaped || $prev_slash)) {
                     $this->flushBuffer();
                     $this->state = self::IN_TAG_TYPE;
                     $this->trimLeft = true;
@@ -158,12 +165,16 @@ class Tokenizer
                     $this->buffer .= "{{{";
                     $i += 2;
                     continue;
-                } elseif ($this->tagChange($this->otag, $text, $i) and !$this->escaped) {
+                } elseif ($this->tagChange($this->otag, $text, $i) and (!$this->escaped || $prev_slash)) {
                     $i--;
                     $this->flushBuffer();
                     $this->state = self::IN_TAG_TYPE;
                 } elseif ($this->escaped and $this->escaping) {
-                    $this->buffer .= "\\";
+                    // We should not add extra slash before opening tag because
+                    // doubled slash where should be transformed to single one
+                    if (($i + 1) < $len && !$this->tagChange($this->otag, $text, $i + 1)) {
+                        $this->buffer .= "\\";
+                    }
                 } elseif (!$this->escaping) {
                     if ($text[$i] == "\n") {
                         $this->filterLine();
