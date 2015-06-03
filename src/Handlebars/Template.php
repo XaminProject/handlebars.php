@@ -591,14 +591,14 @@ class Template
         }
         if ($escaped) {
             $args = $this->handlebars->getEscapeArgs();
-            array_unshift($args, $value);
+            array_unshift($args, "$value");
             $value = call_user_func_array(
                 $this->handlebars->getEscape(),
                 array_values($args)
             );
         }
 
-        return $value;
+        return "$value";
     }
 
     /**
