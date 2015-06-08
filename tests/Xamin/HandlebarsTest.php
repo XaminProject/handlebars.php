@@ -757,6 +757,9 @@ EOM;
         // Reference array as string
         $this->assertEquals('Array', $engine->render('{{var}}', array('var' => array('test'))));
 
+        // Test class with __toString method
+        $this->assertEquals('test', $engine->render('{{var}}', array('var' => new TestClassWithToStringMethod())));
+
         $obj = new DateTime();
         $time = $obj->getTimestamp();
         $this->assertEquals($time, $engine->render('{{time.getTimestamp}}', array('time' => $obj)));
@@ -1268,6 +1271,12 @@ EOM;
         $this->assertEquals($res, $results);
     }
 
+}
+
+class TestClassWithToStringMethod {
+    public function __toString() {
+        return 'test';
+    }
 }
 
 /**
