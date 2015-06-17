@@ -99,10 +99,12 @@ class Helpers
     public function add($name, $helper)
     {
         if (!is_callable($helper) && ! $helper instanceof Helper) {
-            throw new \InvalidArgumentException(sprintf(
-                "%s Helper is not a callable or doesn't implement the Helper interface.",
-                var_export($name, true)
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "%s Helper is not a callable or doesn't implement the Helper interface.",
+                    var_export($name, true)
+                )
+            );
         }
         $this->helpers[$name] = $helper;
     }
@@ -137,10 +139,12 @@ class Helpers
     public function call($name, Template $template, Context $context, $args, $source)
     {
         if (!$this->has($name)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Unknown helper: "%s"',
-                var_export($name, true)
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Unknown helper: "%s"',
+                    var_export($name, true)
+                )
+            );
         }
 
         if ($this->helpers[$name] instanceof Helper) {
@@ -175,10 +179,12 @@ class Helpers
     public function __get($name)
     {
         if (!$this->has($name)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Unknown helper: "%s"',
-                var_export($name, true)
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Unknown helper: "%s"',
+                    var_export($name, true)
+                )
+            );
         }
 
         return $this->helpers[$name];
@@ -233,10 +239,12 @@ class Helpers
     public function remove($name)
     {
         if (!$this->has($name)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Unknown helper: "%s"',
-                var_export($name, true)
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Unknown helper: "%s"',
+                    var_export($name, true)
+                )
+            );
         }
 
         unset($this->helpers[$name]);

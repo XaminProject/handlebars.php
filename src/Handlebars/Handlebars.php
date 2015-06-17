@@ -459,10 +459,12 @@ class Handlebars
     public function setTemplateClass($class)
     {
         if (!is_a($class, 'Handlebars\\Template', true)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Custom template class "%s" must extend Template',
-                var_export($class, true)
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Custom template class "%s" must extend Template',
+                    var_export($class, true)
+                )
+            );
         }
 
         $this->_templateClass = $class;

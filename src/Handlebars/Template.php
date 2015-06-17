@@ -30,7 +30,8 @@ namespace Handlebars;
  *
  * @category  Xamin
  * @package   Handlebars
- * @author    fzerorubigd <fzerorubigd@gmail.com>, Pascal Thormeier <pascal.thormeier@gmail.com>
+ * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    Pascal Thormeier <pascal.thormeier@gmail.com>
  * @copyright 2010-2012 (c) Justin Hileman
  * @copyright 2012 (c) ParsPooyesh Co
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -404,10 +405,12 @@ class Template
         try {
             $sectionVar = $context->get($sectionName, true);
         } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException(sprintf(
-                '"%s" is not registered as a helper',
-                var_export($sectionName, true)
-            ));
+            throw new \RuntimeException(
+                sprintf(
+                    '"%s" is not registered as a helper',
+                    var_export($sectionName, true)
+                )
+            );
         }
         $buffer = '';
         if (is_array($sectionVar) || $sectionVar instanceof \Traversable) {
@@ -462,10 +465,12 @@ class Template
         } elseif (trim($current[Tokenizer::ARGS]) == '') {
             return $this->_mustacheStyleSection($context, $current);
         } else {
-            throw new \RuntimeException(sprintf(
-                '"%s"" is not registered as a helper',
-                var_export($sectionName, true)
-            ));
+            throw new \RuntimeException(
+                sprintf(
+                    '"%s"" is not registered as a helper',
+                    var_export($sectionName, true)
+                )
+            );
         }
     }
 
@@ -508,7 +513,7 @@ class Template
                 $args
             );
 
-            $context = new Context($this->_getPartialArguments($context, $args[0]));
+            $context = new Context($this->_getPartialArgumentsValues($context, $args[0]));
         }
 
         return $partial->render($context);
@@ -517,12 +522,12 @@ class Template
     /**
      * Prepare the arguments of a partial to actual array values to be used in a new context
      *
-     * @param Context $context
-     * @param array   $args
+     * @param Context $context Current context
+     * @param array   $args    Arguments given by tokenizer, splitted to key=>value pairs
      *
      * @return array
      */
-    private function _getPartialArguments(Context $context, array $args)
+    private function _getPartialArgumentsValues(Context $context, array $args)
     {
         $partialArgs = array();
 

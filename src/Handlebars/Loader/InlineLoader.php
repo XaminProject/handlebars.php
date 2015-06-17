@@ -75,17 +75,21 @@ class InlineLoader implements Loader
     public function __construct($fileName, $offset)
     {
         if (!is_file($fileName)) {
-            throw new \InvalidArgumentException(sprintf(
-                'InlineLoader expects a valid filename, "%s" given.',
-                $fileName
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'InlineLoader expects a valid filename, "%s" given.',
+                    $fileName
+                )
+            );
         }
 
         if (!is_int($offset) || $offset < 0) {
-            throw new \InvalidArgumentException(sprintf(
-                'InlineLoader expects a valid file offset, "%s" given.',
-                $offset
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'InlineLoader expects a valid file offset, "%s" given.',
+                    $offset
+                )
+            );
         }
 
         $this->fileName = $fileName;

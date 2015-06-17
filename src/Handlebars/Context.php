@@ -196,10 +196,12 @@ class Context
         }
         if (count($this->stack) < $level) {
             if ($strict) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Can not find variable in context: "%s"',
-                    var_export($variableName, true)
-                ));
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        'Can not find variable in context: "%s"',
+                        var_export($variableName, true)
+                    )
+                );
             }
 
             return '';
@@ -216,10 +218,12 @@ class Context
         $current = current($this->stack);
         if (!$variableName) {
             if ($strict) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Can not find variable in context: "%s"',
-                    var_export($variableName, true)
-                ));
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        'Can not find variable in context: "%s"',
+                        var_export($variableName, true)
+                    )
+                );
             }
 
             return '';
@@ -230,10 +234,12 @@ class Context
             if (isset($specialVariables[$variableName])) {
                 return $specialVariables[$variableName];
             } elseif ($strict) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Can not find variable in context: "%s"',
-                    var_export($variableName, true)
-                ));
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        'Can not find variable in context: "%s"',
+                        var_export($variableName, true)
+                    )
+                );
             } else {
                 return '';
             }
@@ -279,10 +285,12 @@ class Context
         }
 
         if ($strict) {
-            throw new \InvalidArgumentException(sprintf(
-                'Can not find variable in context: "%s"',
-                var_export($variable, true)
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Can not find variable in context: "%s"',
+                    var_export($variable, true)
+                )
+            );
         }
 
         return $value;
@@ -306,10 +314,12 @@ class Context
         $get_pattern = "/(?:" . $name_pattern . ")/";
 
         if (!preg_match($check_pattern, $variableName)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Variable name is invalid: "%s"',
-                $variableName
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Variable name is invalid: "%s"',
+                    $variableName
+                )
+            );
         }
 
         preg_match_all($get_pattern, $variableName, $matches);
