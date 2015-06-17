@@ -404,9 +404,10 @@ class Template
         try {
             $sectionVar = $context->get($sectionName, true);
         } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException(
-                $sectionName . ' is not registered as a helper'
-            );
+            throw new \RuntimeException(sprintf(
+                '"%s" is not registered as a helper',
+                $sectionName
+            ));
         }
         $buffer = '';
         if (is_array($sectionVar) || $sectionVar instanceof \Traversable) {
@@ -461,9 +462,10 @@ class Template
         } elseif (trim($current[Tokenizer::ARGS]) == '') {
             return $this->_mustacheStyleSection($context, $current);
         } else {
-            throw new \RuntimeException(
-                $sectionName . ' is not registered as a helper'
-            );
+            throw new \RuntimeException(sprintf(
+                '"%s"" is not registered as a helper',
+                $sectionName
+            ));
         }
     }
 

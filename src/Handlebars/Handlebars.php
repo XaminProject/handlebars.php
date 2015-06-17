@@ -460,7 +460,8 @@ class Handlebars
     {
         if (!is_a($class, 'Handlebars\\Template', true)) {
             throw new \InvalidArgumentException(
-                'Custom template class must extend Template'
+                'Custom template class "%s" must extend Template',
+                $class
             );
         }
 

@@ -75,11 +75,17 @@ class InlineLoader implements Loader
     public function __construct($fileName, $offset)
     {
         if (!is_file($fileName)) {
-            throw new \InvalidArgumentException('InlineLoader expects a valid filename.');
+            throw new \InvalidArgumentException(sprintf(
+                'InlineLoader expects a valid filename, "%s" given.',
+                $fileName
+            ));
         }
 
         if (!is_int($offset) || $offset < 0) {
-            throw new \InvalidArgumentException('InlineLoader expects a valid file offset.');
+            throw new \InvalidArgumentException(sprintf(
+                'InlineLoader expects a valid file offset, "%s" given.',
+                $offset
+            ));
         }
 
         $this->fileName = $fileName;
@@ -98,7 +104,7 @@ class InlineLoader implements Loader
         $this->loadTemplates();
 
         if (!array_key_exists($name, $this->templates)) {
-            throw new \InvalidArgumentException("Template {$name} not found.");
+            throw new \InvalidArgumentException("Template $name not found.");
         }
 
         return $this->templates[$name];

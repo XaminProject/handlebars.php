@@ -142,7 +142,10 @@ class Arguments
                 // Remove found argument from arguments string.
                 $current_str = ltrim(substr($current_str, strlen($matches[0])));
             } else {
-                throw new \InvalidArgumentException('Malformed arguments string');
+                throw new \InvalidArgumentException(sprintf(
+                    'Malformed arguments string: "%s"',
+                    $args_string
+                ));
             }
         }
     }
