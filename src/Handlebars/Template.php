@@ -30,7 +30,7 @@ namespace Handlebars;
  *
  * @category  Xamin
  * @package   Handlebars
- * @author    fzerorubigd <fzerorubigd@gmail.com>
+ * @author    fzerorubigd <fzerorubigd@gmail.com>, Pascal Thormeier <pascal.thormeier@gmail.com>
  * @copyright 2010-2012 (c) Justin Hileman
  * @copyright 2012 (c) ParsPooyesh Co
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -502,7 +502,19 @@ class Template
         $partial = $this->handlebars->loadPartial($current[Tokenizer::NAME]);
 
         if ($current[Tokenizer::ARGS]) {
-            $context = $context->get($current[Tokenizer::ARGS]);
+            preg_match_all(
+                '/(\w+\=["|\'][^"\']+["|\']|\w+\=[a-zA-Z0-9\.\=]+)+/m',
+                $current[Tokenizer::ARGS],
+                $args
+            );
+
+            $partialArgs = array();
+            foreach ($args[0] as $arg) {
+                list($key, $value) = explode('=', $arg, 2);
+                $partialArgs[$key] = strpos($value, '"') === false ? $context->get($value) : trim('"', $value);
+            }
+
+            $context = new Context($partialArgs);
         }
 
         return $partial->render($context);
