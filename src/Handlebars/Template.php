@@ -23,6 +23,7 @@
  */
 
 namespace Handlebars;
+use Handlebars\Arguments;
 
 /**
  * Handlebars base template
@@ -507,13 +508,9 @@ class Template
         $partial = $this->handlebars->loadPartial($current[Tokenizer::NAME]);
 
         if ($current[Tokenizer::ARGS]) {
-            preg_match_all(
-                '/(\w+\=["|\'][^"\']+["|\']|\w+\=[a-zA-Z0-9\.\=]+|[a-zA-Z0-9\.]+)+/m',
-                $current[Tokenizer::ARGS],
-                $args
-            );
+            $arguments = new Arguments($current[Tokenizer::ARGS]);
 
-            $context = new Context($this->_getPartialArgumentsValues($context, $args[0]));
+            $context = new Context($this->_preparePartialArguments($context, $arguments));
         }
 
         return $partial->render($context);
@@ -522,34 +519,26 @@ class Template
     /**
      * Prepare the arguments of a partial to actual array values to be used in a new context
      *
-     * @param Context $context Current context
-     * @param array   $args    Arguments given by tokenizer, splitted to key=>value pairs
+     * @param Context   $context   Current context
+     * @param Arguments $arguments Arguments for partial
      *
      * @return array
      */
-    private function _getPartialArgumentsValues(Context $context, array $args)
+    private function _preparePartialArguments(Context $context, Arguments $arguments)
     {
-        $partialArgs = array();
-
-        foreach ($args as $arg) {
-            $parts = explode('=', $arg, 2);
-
-            $key = $parts[0];
-            if (false === isset($parts[1])) {
-                $value = $context->get($parts[0]);
-                if (is_array($value)) {
-                    foreach ($value as $varKey => $varValue) {
-                        $partialArgs[$varKey] = $varValue;
-                    }
-                } else {
-                    $partialArgs[$key] = $value;
+        $positionalArgs = array();
+        foreach ($arguments->getPositionalArguments() as $positionalArg) {
+            $contextArg = $context->get($positionalArg);
+            if (is_array($contextArg)) {
+                foreach ($contextArg as $key => $value) {
+                    $positionalArgs[$key] = $value;
                 }
             } else {
-                $partialArgs[$key] = strpos($parts[1], '"') === false ? $context->get($parts[1]) : trim('"', $parts[1]);
+                $positionalArgs[$positionalArg] = $contextArg;
             }
         }
 
-        return $partialArgs;
+        return array_merge($positionalArgs, $arguments->getNamedArguments());
     }
 
 
