@@ -80,7 +80,7 @@ class Parser
                         if ($result === null) {
                             throw new \LogicException(sprintf(
                                 'Unexpected closing tag: /%s',
-                                $token[Tokenizer::NAME]
+                                var_export($token[Tokenizer::NAME], true)
                             ));
                         }
 

@@ -101,7 +101,7 @@ class Helpers
         if (!is_callable($helper) && ! $helper instanceof Helper) {
             throw new \InvalidArgumentException(sprintf(
                 "%s Helper is not a callable or doesn't implement the Helper interface.",
-                $name
+                var_export($name, true)
             ));
         }
         $this->helpers[$name] = $helper;
@@ -139,7 +139,7 @@ class Helpers
         if (!$this->has($name)) {
             throw new \InvalidArgumentException(sprintf(
                 'Unknown helper: "%s"',
-                $name
+                var_export($name, true)
             ));
         }
 
@@ -177,7 +177,7 @@ class Helpers
         if (!$this->has($name)) {
             throw new \InvalidArgumentException(sprintf(
                 'Unknown helper: "%s"',
-                $name
+                var_export($name, true)
             ));
         }
 
@@ -235,7 +235,7 @@ class Helpers
         if (!$this->has($name)) {
             throw new \InvalidArgumentException(sprintf(
                 'Unknown helper: "%s"',
-                $name
+                var_export($name, true)
             ));
         }
 

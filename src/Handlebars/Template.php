@@ -406,7 +406,7 @@ class Template
         } catch (\InvalidArgumentException $e) {
             throw new \RuntimeException(sprintf(
                 '"%s" is not registered as a helper',
-                $sectionName
+                var_export($sectionName, true)
             ));
         }
         $buffer = '';
@@ -464,7 +464,7 @@ class Template
         } else {
             throw new \RuntimeException(sprintf(
                 '"%s"" is not registered as a helper',
-                $sectionName
+                var_export($sectionName, true)
             ));
         }
     }
@@ -503,21 +503,48 @@ class Template
 
         if ($current[Tokenizer::ARGS]) {
             preg_match_all(
-                '/(\w+\=["|\'][^"\']+["|\']|\w+\=[a-zA-Z0-9\.\=]+)+/m',
+                '/(\w+\=["|\'][^"\']+["|\']|\w+\=[a-zA-Z0-9\.\=]+|[a-zA-Z0-9\.]+)+/m',
                 $current[Tokenizer::ARGS],
                 $args
             );
 
-            $partialArgs = array();
-            foreach ($args[0] as $arg) {
-                list($key, $value) = explode('=', $arg, 2);
-                $partialArgs[$key] = strpos($value, '"') === false ? $context->get($value) : trim('"', $value);
-            }
-
-            $context = new Context($partialArgs);
+            $context = new Context($this->_getPartialArguments($context, $args[0]));
         }
 
         return $partial->render($context);
+    }
+
+    /**
+     * Prepare the arguments of a partial to actual array values to be used in a new context
+     *
+     * @param Context $context
+     * @param array   $args
+     *
+     * @return array
+     */
+    private function _getPartialArguments(Context $context, array $args)
+    {
+        $partialArgs = array();
+
+        foreach ($args as $arg) {
+            $parts = explode('=', $arg, 2);
+
+            $key = $parts[0];
+            if (false === isset($parts[1])) {
+                $value = $context->get($parts[0]);
+                if (is_array($value)) {
+                    foreach ($value as $varKey => $varValue) {
+                        $partialArgs[$varKey] = $varValue;
+                    }
+                } else {
+                    $partialArgs[$key] = $value;
+                }
+            } else {
+                $partialArgs[$key] = strpos($parts[1], '"') === false ? $context->get($parts[1]) : trim('"', $parts[1]);
+            }
+        }
+
+        return $partialArgs;
     }
 
 
