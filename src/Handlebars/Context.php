@@ -199,7 +199,7 @@ class Context
                 throw new \InvalidArgumentException(
                     sprintf(
                         'Can not find variable in context: "%s"',
-                        var_export($variableName, true)
+                        $variableName
                     )
                 );
             }
@@ -221,7 +221,7 @@ class Context
                 throw new \InvalidArgumentException(
                     sprintf(
                         'Can not find variable in context: "%s"',
-                        var_export($variableName, true)
+                        $variableName
                     )
                 );
             }
@@ -237,7 +237,7 @@ class Context
                 throw new \InvalidArgumentException(
                     sprintf(
                         'Can not find variable in context: "%s"',
-                        var_export($variableName, true)
+                        $variableName
                     )
                 );
             } else {

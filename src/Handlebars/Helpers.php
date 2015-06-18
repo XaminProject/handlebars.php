@@ -102,7 +102,7 @@ class Helpers
             throw new \InvalidArgumentException(
                 sprintf(
                     "%s Helper is not a callable or doesn't implement the Helper interface.",
-                    var_export($name, true)
+                    $name
                 )
             );
         }
@@ -142,7 +142,7 @@ class Helpers
             throw new \InvalidArgumentException(
                 sprintf(
                     'Unknown helper: "%s"',
-                    var_export($name, true)
+                    $name
                 )
             );
         }
@@ -182,7 +182,7 @@ class Helpers
             throw new \InvalidArgumentException(
                 sprintf(
                     'Unknown helper: "%s"',
-                    var_export($name, true)
+                    $name
                 )
             );
         }
@@ -242,7 +242,7 @@ class Helpers
             throw new \InvalidArgumentException(
                 sprintf(
                     'Unknown helper: "%s"',
-                    var_export($name, true)
+                    $name
                 )
             );
         }

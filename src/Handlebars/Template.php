@@ -409,7 +409,7 @@ class Template
             throw new \RuntimeException(
                 sprintf(
                     '"%s" is not registered as a helper',
-                    var_export($sectionName, true)
+                    $sectionName
                 )
             );
         }
@@ -469,7 +469,7 @@ class Template
             throw new \RuntimeException(
                 sprintf(
                     '"%s"" is not registered as a helper',
-                    var_export($sectionName, true)
+                    $sectionName
                 )
             );
         }

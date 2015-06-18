@@ -462,7 +462,7 @@ class Handlebars
             throw new \InvalidArgumentException(
                 sprintf(
                     'Custom template class "%s" must extend Template',
-                    var_export($class, true)
+                    $class
                 )
             );
         }
