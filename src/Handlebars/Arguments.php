@@ -145,7 +145,7 @@ class Arguments
                 throw new \InvalidArgumentException(
                     sprintf(
                         'Malformed arguments string: "%s"',
-                        var_export($args_string, true)
+                        $args_string
                     )
                 );
             }

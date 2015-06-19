@@ -81,7 +81,7 @@ class Parser
                             throw new \LogicException(
                                 sprintf(
                                     'Unexpected closing tag: /%s',
-                                    var_export($token[Tokenizer::NAME], true)
+                                    $token[Tokenizer::NAME]
                                 )
                             );
                         }
