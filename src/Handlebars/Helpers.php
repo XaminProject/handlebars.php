@@ -100,7 +100,10 @@ class Helpers
     {
         if (!is_callable($helper) && ! $helper instanceof Helper) {
             throw new \InvalidArgumentException(
-                "$name Helper is not a callable or doesn't implement the Helper interface."
+                sprintf(
+                    "%s Helper is not a callable or doesn't implement the Helper interface.",
+                    $name
+                )
             );
         }
         $this->helpers[$name] = $helper;
@@ -136,7 +139,12 @@ class Helpers
     public function call($name, Template $template, Context $context, $args, $source)
     {
         if (!$this->has($name)) {
-            throw new \InvalidArgumentException('Unknown helper: ' . $name);
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Unknown helper: "%s"',
+                    $name
+                )
+            );
         }
 
         if ($this->helpers[$name] instanceof Helper) {
@@ -171,7 +179,12 @@ class Helpers
     public function __get($name)
     {
         if (!$this->has($name)) {
-            throw new \InvalidArgumentException('Unknown helper :' . $name);
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Unknown helper: "%s"',
+                    $name
+                )
+            );
         }
 
         return $this->helpers[$name];
@@ -226,7 +239,12 @@ class Helpers
     public function remove($name)
     {
         if (!$this->has($name)) {
-            throw new \InvalidArgumentException('Unknown helper: ' . $name);
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Unknown helper: "%s"',
+                    $name
+                )
+            );
         }
 
         unset($this->helpers[$name]);

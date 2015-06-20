@@ -176,7 +176,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 '{{#if first}}The first{{else}}{{#if second}}The second{{/if}}{{/if}}',
                 array('first' => false, 'second' => true),
                 'The second'
-            )
+            ),
         );
     }
 
@@ -715,7 +715,11 @@ EOM;
     public function testPartial()
     {
         $loader = new \Handlebars\Loader\StringLoader();
-        $partialLoader = new \Handlebars\Loader\ArrayLoader(array('test' => '{{key}}', 'bar' => 'its foo'));
+        $partialLoader = new \Handlebars\Loader\ArrayLoader(array(
+            'test' => '{{key}}',
+            'bar' => 'its foo',
+            'presetVariables' => '{{myVar}}',
+        ));
         $partialAliasses = array('foo' => 'bar');
         $engine = new \Handlebars\Handlebars(
             array(
@@ -733,6 +737,9 @@ EOM;
 
         $this->setExpectedException('RuntimeException');
         $engine->render('{{>foo-again}}', array());
+
+        $this->assertEquals('foobar', $engine->render("{{>presetVariables myVar='foobar'}}", array()));
+        $this->assertEquals('foobar=barbaz', $engine->render("{{>presetVariables myVar='foobar=barbaz'}}", array()));
     }
 
     /**

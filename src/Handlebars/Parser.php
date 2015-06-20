@@ -79,7 +79,10 @@ class Parser
                         $result = array_pop($stack);
                         if ($result === null) {
                             throw new \LogicException(
-                                'Unexpected closing tag: /' . $token[Tokenizer::NAME]
+                                sprintf(
+                                    'Unexpected closing tag: /%s',
+                                    $token[Tokenizer::NAME]
+                                )
                             );
                         }
 

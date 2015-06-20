@@ -197,7 +197,10 @@ class Context
         if (count($this->stack) < $level) {
             if ($strict) {
                 throw new \InvalidArgumentException(
-                    'can not find variable in context'
+                    sprintf(
+                        'Can not find variable in context: "%s"',
+                        $variableName
+                    )
                 );
             }
 
@@ -216,9 +219,13 @@ class Context
         if (!$variableName) {
             if ($strict) {
                 throw new \InvalidArgumentException(
-                    'can not find variable in context'
+                    sprintf(
+                        'Can not find variable in context: "%s"',
+                        $variableName
+                    )
                 );
             }
+
             return '';
         } elseif ($variableName == '.' || $variableName == 'this') {
             return $current;
@@ -228,7 +235,10 @@ class Context
                 return $specialVariables[$variableName];
             } elseif ($strict) {
                 throw new \InvalidArgumentException(
-                    'can not find variable in context'
+                    sprintf(
+                        'Can not find variable in context: "%s"',
+                        $variableName
+                    )
                 );
             } else {
                 return '';
@@ -275,7 +285,12 @@ class Context
         }
 
         if ($strict) {
-            throw new \InvalidArgumentException('can not find variable in context');
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Can not find variable in context: "%s"',
+                    var_export($variable, true)
+                )
+            );
         }
 
         return $value;
@@ -299,7 +314,12 @@ class Context
         $get_pattern = "/(?:" . $name_pattern . ")/";
 
         if (!preg_match($check_pattern, $variableName)) {
-            throw new \InvalidArgumentException('variable name is invalid');
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Variable name is invalid: "%s"',
+                    $variableName
+                )
+            );
         }
 
         preg_match_all($get_pattern, $variableName, $matches);
