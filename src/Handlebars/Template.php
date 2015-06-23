@@ -404,7 +404,7 @@ class Template
         // fallback to mustache style each/with/for just if there is
         // no argument at all.
         try {
-            $sectionVar = $context->get($sectionName, true);
+            $sectionVar = $context->get($sectionName, false);
         } catch (\InvalidArgumentException $e) {
             throw new \RuntimeException(
                 sprintf(
