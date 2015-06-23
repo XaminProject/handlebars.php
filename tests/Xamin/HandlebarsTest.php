@@ -471,6 +471,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $engine = new \Handlebars\Handlebars(array('loader' => $loader));
         $this->assertEquals('yes', $engine->render('{{#x}}yes{{/x}}', array('x' => true)));
         $this->assertEquals('', $engine->render('{{#x}}yes{{/x}}', array('x' => false)));
+        $this->assertEquals('', $engine->render('{{#NOTVALID}}XXX{{/NOTVALID}}', array()));
         $this->assertEquals('yes', $engine->render('{{^x}}yes{{/x}}', array('x' => false)));
         $this->assertEquals('', $engine->render('{{^x}}yes{{/x}}', array('x' => true)));
         $this->assertEquals('1234', $engine->render('{{#x}}{{this}}{{/x}}', array('x' => array(1, 2, 3, 4))));
