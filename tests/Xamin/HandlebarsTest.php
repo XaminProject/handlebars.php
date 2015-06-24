@@ -454,6 +454,13 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $engine->getHelpers()->call('invalid', $engine->loadTemplate(''), new \Handlebars\Context(), '', '');
     }
 
+    public function testInvalidHelperMustacheStyle()
+    {
+        $loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        $this->assertEquals("", $engine->render('{{#NOTVALID}}XXX{{/NOTVALID}}', array()));
+    }
+
     public function testInvalidHelper()
     {
         $this->setExpectedException('RuntimeException');
