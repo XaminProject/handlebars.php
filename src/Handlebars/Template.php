@@ -540,11 +540,7 @@ class Template
 
         $namedArguments = array();
         foreach ($arguments->getNamedArguments() as $key => $value) {
-            if (false === $value instanceof String) {
-                $value = $context->get($value);
-            }
-
-            $namedArguments[$key] = $value;
+            $namedArguments[$key] = $context->get($value);
         }
 
         return array_merge($positionalArgs, $namedArguments);
