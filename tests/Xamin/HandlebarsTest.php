@@ -722,6 +722,11 @@ EOM;
             )
         );
 
+        $this->assertEquals('foobar', $engine->render("{{>presetVariables myVar='foobar'}}", array()));
+        $this->assertEquals('foobar=barbaz', $engine->render("{{>presetVariables myVar='foobar=barbaz'}}", array()));
+        $this->assertEquals('qux', $engine->render("{{>presetVariables myVar=foo}}", array('foo' => 'qux')));
+        $this->assertEquals('qux', $engine->render("{{>presetVariables myVar=foo.bar}}", array('foo' => array('bar' => 'qux'))));
+
         $this->assertEquals('HELLO', $engine->render('{{>test parameter}}', array('parameter' => array('key' => 'HELLO'))));
         $this->assertEquals('its foo', $engine->render('{{>foo}}', array()));
         $engine->registerPartial('foo-again', 'bar');
@@ -730,9 +735,6 @@ EOM;
 
         $this->setExpectedException('RuntimeException');
         $engine->render('{{>foo-again}}', array());
-
-        $this->assertEquals('foobar', $engine->render("{{>presetVariables myVar='foobar'}}", array()));
-        $this->assertEquals('foobar=barbaz', $engine->render("{{>presetVariables myVar='foobar=barbaz'}}", array()));
     }
 
     /**

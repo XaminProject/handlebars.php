@@ -538,7 +538,12 @@ class Template
             }
         }
 
-        return array_merge($positionalArgs, $arguments->getNamedArguments());
+        $namedArguments = array();
+        foreach ($arguments->getNamedArguments() as $key => $value) {
+            $namedArguments[$key] = $context->get($value);
+        }
+
+        return array_merge($positionalArgs, $namedArguments);
     }
 
 
