@@ -288,7 +288,7 @@ class Context
             throw new \InvalidArgumentException(
                 sprintf(
                     'Can not find variable in context: "%s"',
-                    var_export($variable, true)
+                    $inside
                 )
             );
         }
