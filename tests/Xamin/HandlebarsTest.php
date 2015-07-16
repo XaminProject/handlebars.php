@@ -1251,6 +1251,7 @@ EOM;
         return array(
             array('{{foo}} {{ @root.foo }}', array( 'foo' => 'bar' ), "bar bar"),
             array('{{@root.foo}} {{#each arr}}{{ @root.foo }}{{/each}}', array( 'foo' => 'bar', 'arr' => array( '1' ) ), "bar bar"),
+            array('{{add @root.one @root.two}}', array( 'one' => '1', 'two' => '2' ), "3"),
         );
     }
 
@@ -1268,6 +1269,15 @@ EOM;
     public function testRootSpecialVariableHelpers($template, $data, $results)
     {
         $engine = new \Handlebars\Handlebars();
+        $engine->addHelper('add', function ($template, $context, $args) {
+            $sum = 0;
+
+            foreach ($template->parseArguments($args) as $value) {
+                $sum += intval($context->get($value));
+            }
+
+            return $sum;
+        });
 
         $res = $engine->render($template, $data);
         $this->assertEquals($res, $results);
