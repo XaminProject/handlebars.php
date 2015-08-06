@@ -381,7 +381,7 @@ class Template
 
         $return = $helpers->call($sectionName, $this, $context, $current[Tokenizer::ARGS], $source);
 
-        if ($return instanceof String) {
+        if ($return instanceof StringWrapper) {
             return $this->handlebars->loadString($return)->render($context);
         } else {
             return $return;

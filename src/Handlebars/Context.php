@@ -185,7 +185,7 @@ class Context
      */
     public function get($variableName, $strict = false)
     {
-        if ($variableName instanceof \Handlebars\String) {
+        if ($variableName instanceof \Handlebars\StringWrapper) {
             return (string)$variableName;
         }
         $variableName = trim($variableName);
