@@ -395,7 +395,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Test helper is called with a b c', $engine->render('{{test2 a b c}}', array()));
 
         $engine->addHelper('renderme', function () {
-            return new \Handlebars\String("{{test}}");
+            return new \Handlebars\StringWrapper("{{test}}");
         });
         $this->assertEquals('Test helper is called', $engine->render('{{#renderme}}', array()));
 
@@ -568,9 +568,9 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     /**
      * test String class
      */
-    public function testStringClass()
+    public function testStringWrapperClass()
     {
-        $string = new \Handlebars\String('test');
+        $string = new \Handlebars\StringWrapper('test');
         $this->assertEquals('test', $string->getString());
         $string->setString('new');
         $this->assertEquals('new', $string->getString());
@@ -1096,7 +1096,7 @@ EOM;
 
     public function testString()
     {
-        $string = new \Handlebars\String("Hello World");
+        $string = new \Handlebars\StringWrapper("Hello World");
         $this->assertEquals((string)$string, "Hello World");
     }
 

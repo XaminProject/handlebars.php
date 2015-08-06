@@ -155,26 +155,26 @@ class Arguments
     /**
      * Prepares argument's value to add to arguments list.
      *
-     * The method unescapes value and wrap it into \Handlebars\String class if
-     * needed.
+     * The method unescapes value and wrap it into \Handlebars\StringWrapper
+     * class if needed.
      *
      * @param string $value Argument's value
      *
-     * @return string|\Handlebars\String
+     * @return string|\Handlebars\StringWrapper
      */
     protected function prepareArgumentValue($value)
     {
         // Check if argument's value is a quoted string literal
         if ($value[0] == "'" || $value[0] == '"') {
             // Remove enclosing quotes and unescape
-            return new String(stripcslashes(substr($value, 1, -1)));
+            return new StringWrapper(stripcslashes(substr($value, 1, -1)));
         }
 
         // Check if the value is an integer literal
         if (preg_match("/^-?\d+$/", $value)) {
             // Wrap the value into the String class to tell the Context that
             // it's a value and not a variable name.
-            return new String($value);
+            return new StringWrapper($value);
         }
 
         return $value;
