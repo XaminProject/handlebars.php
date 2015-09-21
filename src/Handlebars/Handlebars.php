@@ -235,6 +235,111 @@ class Handlebars
     {
         return $this->getHelpers()->has($name);
     }
+	
+	 /**
+     * Add a new helper.
+     *
+     * @param string $name   helper name
+     * @param mixed  $helper helper callable
+     *
+     * @return void
+     */
+    public function registerHelper($name, $helper)
+    {
+        $this->addHelper($name, function($template, $context, $arg) use ($helper)
+		{
+			$args 	= $template->parseArguments($arg);
+			$named 	= $template->parseNamedArguments($arg);
+			
+			foreach($args as $i => $arg) {
+				//if it's literally string
+				if($arg instanceof StringWrapper) {
+					//we have no problems here
+					$args[$i] = (string) $arg;
+					continue;
+				}
+				
+				//not sure what to do if it's not a string or StringWrapper
+				if(!is_string($arg)) {
+					continue;
+				}
+				
+				//it's a variable and we need to figure out the value of it
+				$args[$i] = $context->get($arg);
+			}
+			
+			//push the options	
+			$args[] = array(
+				//special fields
+				'data' => array(
+					'index' => $context->get('@index'),
+					'key' => $context->get('@key'),
+					'first' => $context->get('@first'),
+					'last' => $context->get('@last')),
+				// Named arguments
+				'hash' => $named,
+				// A renderer for block helper
+				'fn' => function($inContext = null) use($context, $template) 
+				{
+					$defined = !!$inContext;
+					
+					if(!$defined) {
+						$inContext = $context;
+						$inContext->push($inContext->last());
+					} else if (!$inContext instanceof Context) {
+						$inContext = new ChildContext($inContext);
+						$inContext->setParent($context);
+					}
+					
+					$template->setStopToken('else');
+					$buffer = $template->render($inContext);
+					$template->setStopToken(false);
+					//what if it's a loop ?
+					$template->rewind();
+					//What's the point of this again?
+					//I mean in this context (literally)
+					//$template->discard($inContext);
+					
+					if($defined) {
+						$inContext->pop();
+					}
+					
+					return $buffer;
+				},
+				
+				// A render for the else block
+				'inverse' => function($inContext = null) use($context, $template) 
+				{
+					$defined = !!$inContext;
+					
+					if(!$defined) {
+						$inContext = $context;
+						$inContext->push($inContext->last());
+					} else if (!$inContext instanceof Context) {
+						$inContext = new ChildContext($inContext);
+						$inContext->setParent($context);
+					}
+					
+					$template->setStopToken('else');
+					$template->discard($inContext);
+					$template->setStopToken(false);
+					$buffer = $template->render($inContext);
+					
+					if($defined) {
+						$inContext->pop();
+					}
+					
+					return $buffer;
+				},
+				
+				// The current context.
+				'context' => $context,
+				// The current template
+				'template' => $template);
+			
+			return call_user_func_array($helper, $args);
+		});
+    }
 
     /**
      * Remove a helper by name.
