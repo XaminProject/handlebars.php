@@ -61,7 +61,6 @@ class Parser
      * @throws \LogicException when nesting errors or mismatched section tags
      * are encountered.
      * @return array Token parse tree
-     *
      */
     private function _buildTree(\ArrayIterator $tokens)
     {
@@ -87,14 +86,20 @@ class Parser
                             && isset($result[Tokenizer::NAME])
                             && $result[Tokenizer::NAME] == $token[Tokenizer::NAME]
                         ) {
-                            if (isset($result[Tokenizer::TRIM_RIGHT]) && $result[Tokenizer::TRIM_RIGHT]) {
-                                // If the start node has trim right, then its equal with the first item in the loop with
+                            if (isset($result[Tokenizer::TRIM_RIGHT]) 
+                                && $result[Tokenizer::TRIM_RIGHT]
+                            ) {
+                                // If the start node has trim right, then its equal 
+                                //with the first item in the loop with
                                 // Trim left
                                 $newNodes[0][Tokenizer::TRIM_LEFT] = true;
                             }
 
-                            if (isset($token[Tokenizer::TRIM_RIGHT]) && $token[Tokenizer::TRIM_RIGHT]) {
-                                //OK, if we have trim right here, we should pass it to the upper level.
+                            if (isset($token[Tokenizer::TRIM_RIGHT]) 
+                                && $token[Tokenizer::TRIM_RIGHT]
+                            ) {
+                                //OK, if we have trim right here, we should 
+                                //pass it to the upper level.
                                 $result[Tokenizer::TRIM_RIGHT] = true;
                             }
 

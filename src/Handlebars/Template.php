@@ -41,6 +41,8 @@ namespace Handlebars;
 class Template
 {
     /**
+     * Handlebars instance
+     *
      * @var Handlebars
      */
     protected $handlebars;
@@ -51,6 +53,8 @@ class Template
     protected $source = '';
 
     /**
+     * Run stack
+     *
      * @var array Run stack
      */
     private $_stack = array();
@@ -101,13 +105,12 @@ class Template
     }
 
     /**
-     * set stop token for render and discard method
+     * Set stop token for render and discard method
      *
      * @param string $token token to set as stop token or false to remove
      *
      * @return void
      */
-
     public function setStopToken($token)
     {
         $topStack = array_pop($this->_stack);
@@ -116,11 +119,10 @@ class Template
     }
 
     /**
-     * get current stop token
+     * Get current stop token
      *
      * @return string|bool
      */
-
     public function getStopToken()
     {
         $topStack = end($this->_stack);
@@ -156,26 +158,35 @@ class Template
             ) {
                 break;
             }
-            if (isset($current[Tokenizer::TRIM_LEFT]) && $current[Tokenizer::TRIM_LEFT]) {
+            if (isset($current[Tokenizer::TRIM_LEFT]) 
+                && $current[Tokenizer::TRIM_LEFT]
+            ) {
                 $buffer = rtrim($buffer);
             }
 
             $tmp = $this->_renderInternal($current, $context);
 
-            if (isset($current[Tokenizer::TRIM_LEFT]) && $current[Tokenizer::TRIM_LEFT]) {
+            if (isset($current[Tokenizer::TRIM_LEFT]) 
+                && $current[Tokenizer::TRIM_LEFT]
+            ) {
                 $tmp = rtrim($tmp);
             }
 
-            if ($rTrim  || (isset($current[Tokenizer::TRIM_RIGHT]) && $current[Tokenizer::TRIM_RIGHT])) {
+            if ($rTrim  
+                || (isset($current[Tokenizer::TRIM_RIGHT]) 
+                && $current[Tokenizer::TRIM_RIGHT])
+            ) {
                 $tmp = ltrim($tmp);
             }
 
             $buffer .= $tmp;
-            // Some time, there is more than one string token (first is empty),
+            // Some time, there is more than 
+            //one string token (first is empty),
             //so we need to trim all of them in one shot
 
             $rTrim = (empty($tmp) && $rTrim) ||
-                isset($current[Tokenizer::TRIM_RIGHT]) && $current[Tokenizer::TRIM_RIGHT];
+                isset($current[Tokenizer::TRIM_RIGHT]) 
+                && $current[Tokenizer::TRIM_RIGHT];
         }
         if ($stop) {
             //Ok break here, the helper should be aware of this.
@@ -312,7 +323,9 @@ class Template
         }
 
         // subexpression parsing loop
-        $subexprs = array(); // will contain all subexpressions inside outermost brackets
+        // will contain all subexpressions 
+        // inside outermost brackets
+        $subexprs = array();
         $insideOf = array( 'single' => false, 'double' => false );
         $lvl = 0;
         $cur_start = 0;
@@ -334,7 +347,11 @@ class Template
             if ($cur == ')' && ! $insideOf['single'] && ! $insideOf['double']) {
                 $lvl--;
                 if ($lvl == 0) {
-                    $subexprs[] = substr($current[Tokenizer::ARGS], $cur_start, $i - $cur_start);
+                    $subexprs[] = substr(
+                        $current[Tokenizer::ARGS], 
+                        $cur_start, 
+                        $i - $cur_start
+                    );
                 }
 
             }
@@ -353,14 +370,30 @@ class Template
                     Tokenizer::INDEX => $current[Tokenizer::INDEX],
                     Tokenizer::ARGS => implode(" ", array_slice($cmd, 1))
                 );
+                
                 // resolve the node recursively
-                $resolved = addcslashes($this->_handlebarsStyleSection($context, $section_node), '"');
+                $resolved = $this->_handlebarsStyleSection(
+                    $context, 
+                    $section_node
+                );
+                
+                $resolved = addcslashes($resolved, '"');
                 // replace original subexpression with result
-                $current[Tokenizer::ARGS] = str_replace('('.$expr.')', '"' . $resolved . '"', $current[Tokenizer::ARGS]);
+                $current[Tokenizer::ARGS] = str_replace(
+                    '('.$expr.')', 
+                    '"' . $resolved . '"', 
+                    $current[Tokenizer::ARGS]
+                );
             }
         }
 
-        $return = $helpers->call($sectionName, $this, $context, $current[Tokenizer::ARGS], $source);
+        $return = $helpers->call(
+            $sectionName, 
+            $this, 
+            $context, 
+            $current[Tokenizer::ARGS], 
+            $source
+        );
 
         if ($return instanceof String) {
             return $this->handlebars->loadString($return)->render($context);
@@ -507,9 +540,9 @@ class Template
     }
 
     /**
-     * get replacing value of a tag
+     * Get replacing value of a tag
      *
-     * will process the tag as section, if a helper with the same name could be
+     * Will process the tag as section, if a helper with the same name could be
      * found, so {{helper arg}} can be used instead of {{#helper arg}}.
      *
      * @param Context $context current context

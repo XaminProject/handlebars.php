@@ -23,7 +23,7 @@ namespace Handlebars;
 /**
  * Handlebars helpers
  *
- * a collection of helper function. normally a function like
+ * A collection of helper function. normally a function like
  * function ($sender, $name, $arguments) $arguments is unscaped arguments and
  * is a string, not array
  *
@@ -35,10 +35,11 @@ namespace Handlebars;
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-
 class Helpers
 {
     /**
+     * Raw helper array
+     *
      * @var array array of helpers
      */
     protected $helpers = array();
@@ -100,7 +101,8 @@ class Helpers
     {
         if (!is_callable($helper) && ! $helper instanceof Helper) {
             throw new \InvalidArgumentException(
-                "$name Helper is not a callable or doesn't implement the Helper interface."
+                "$name Helper is not a callable or ".
+                "doesn't implement the Helper interface."
             );
         }
         $this->helpers[$name] = $helper;
@@ -131,7 +133,13 @@ class Helpers
             );
         }
 
-        return call_user_func($this->helpers[$name], $template, $context, $parsedArgs, $source);
+        return call_user_func(
+            $this->helpers[$name], 
+            $template, 
+            $context, 
+            $parsedArgs, 
+            $source
+        );
     }
 
     /**
@@ -169,7 +177,7 @@ class Helpers
      * @param string $name helper name
      *
      * @return boolean
-     * @see Handlebras_Helpers::has
+     * @see    Handlebras_Helpers::has
      */
     public function __isset($name)
     {
