@@ -438,6 +438,30 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('InvalidArgumentException');
         $engine->getHelpers()->call('invalid', $engine->loadTemplate(''), new \Handlebars\Context(), '', '');
     }
+	
+	public function testRegisterHelper()
+    {
+        $template = '{{#grand test "test2"}}  In 1: {{test4}} {{#grand ../test \'test3\'}} In 2: {{test5}}{{#parent}}  In 3: {{test6}}  {{../../../test}}{{/parent}}{{/grand}}{{/grand}}';
+        $vars = array('test' => 'Hello World');
+        $expected = '  In 1: Hello World  In 2: This is Test 5  In 3: This is Test 6  Hello World';
+		
+		$loader = new \Handlebars\Loader\StringLoader();
+        $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        
+		$engine->registerHelper('grand', function($test1, $test2, $options) {
+			return $options['fn'](array(
+				'test4' => $test1,
+				'test5' => 'This is Test 5'
+			));
+		});
+		
+		$engine->registerHelper('parent', function($options) {
+			return $options['fn'](array('test6' => 'This is Test 6'));
+		});
+		
+		
+        $this->assertEquals($expected, $engine->render($template, $vars));
+    }
 
     public function testInvalidHelperMustacheStyle()
     {
