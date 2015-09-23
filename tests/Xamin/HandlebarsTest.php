@@ -601,22 +601,22 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         
         //NEXT UP: some practical case studies
         
-        //case 1
+        //case 1 - i18n
         $variable1 = array();
-        $template1 = "{{_ 'hello'}}, {{_ 'my name is %s' 'Foo'}}! {{_ 'how are your %s kids and %s' '6' 'dog'}}?";
+        $template1 = "{{_ 'hello'}}, {{_ 'my name is %s' 'Foo'}}! {{_ 'how are your %s kids and %s' 6 'dog'}}?";
         $expected1 = 'bonjour, mon nom est Foo! comment sont les enfants de votre 6 et dog?';
         
-        //case 2
+        //case 2 - when
         $variable2 = array('gender' => 'female');
         $template2 = "Hello {{#when gender '===' 'male'}}sir{{else}}maam{{/when}}";
         $expected2 = 'Hello maam';
         
-        //case 3
+        //case 3 - when else
         $variable3 = array('gender' => 'male');
         $template3 = "Hello {{#when gender '===' 'male'}}sir{{else}}maam{{/when}}";
         $expected3 = 'Hello sir';
         
-        //case 4
+        //case 4 - loop
         $variable4 = array(
             'rows' => array(
                 array(
@@ -632,20 +632,20 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $template4 = "{{#loop rows}}<li>{{value.profile_name}} - {{date value.profile_created 'M d'}}</li>{{/loop}}";
         $expected4 = '<li>Jane Doe - Apr 04</li><li>John Doe - Jan 21</li>';
         
-        //case 5
+        //case 5 - array in
         $variable5 = $variable4;
         $variable5['me'] = 'Jack Doe';
         $variable5['admins'] = array('Jane Doe', 'John Doe');
         $template5 = "{{#in admins me}}<ul>".$template4."</ul>{{else}}No Access{{/in}}";
         $expected5 = 'No Access';
         
-        //case 6
+        //case 6 - array in else
         $variable6 = $variable5;
         $variable6['me'] = 'Jane Doe';
         $template6 = $template5;
         $expected6 = '<ul><li>Jane Doe - Apr 04</li><li>John Doe - Jan 21</li></ul>';
         
-        //case 7
+        //case 7 - nested templates and parent-grand variables
         $variable7 = array('test' => 'Hello World');
         $template7 = '{{#nested1 test "test2"}}  '
             .'In 1: {{test4}} {{#nested1 ../test \'test3\'}} '
