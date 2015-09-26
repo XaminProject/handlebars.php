@@ -268,7 +268,7 @@ class Handlebars
             
             foreach ($args as $i => $arg) {
                 //if it's literally string
-                if ($arg instanceof StringWrapper) {
+                if ($arg instanceof BaseString) {
                     //we have no problems here
                     $args[$i] = (string) $arg;
                     continue;

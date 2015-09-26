@@ -485,21 +485,6 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         
         //create a better if helper
         $engine->registerHelper('when', function($value1, $operator, $value2, $options) {
-            //make sure value 1 is scalar 
-            if(is_object($value1) && method_exists($value1, '__toString')) {
-                $value1 = (string) $value1;
-            }
-            
-            //make sure operator is scalar 
-            if(is_object($operator) && method_exists($operator, '__toString')) {
-                $operator = (string) $operator;
-            }
-            
-            //make sure value 2 is scalar 
-            if(is_object($value2) && method_exists($value2, '__toString')) {
-                $value2 = (string) $value2;
-            }
-            
             $valid = false;
             //the amazing reverse switch!
             switch (true) {
@@ -560,11 +545,6 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         
         //array in
         $engine->registerHelper('in', function(array $array, $key, $options) {
-            //make sure key is scalar 
-            if(is_object($key) && method_exists($key, '__toString')) {
-                $key = (string) $key;
-            }
-            
             if(in_array($key, $array)) {
                 return $options['fn']();
             }
@@ -574,16 +554,6 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         
         //converts date formats to other formats
         $engine->registerHelper('date', function($time, $format, $options) {
-            //make sure time is scalar 
-            if(is_object($time) && method_exists($time, '__toString')) {
-                $time = (string) $time;
-            }
-            
-            //make sure format is scalar 
-            if(is_object($format) && method_exists($format, '__toString')) {
-                $format = (string) $format;
-            }
-            
             return date($format, strtotime($time));
         });
         
