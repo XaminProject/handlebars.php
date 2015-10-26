@@ -53,8 +53,6 @@ class UnlessHelper implements Helper
         $parsedArgs = $template->parseArguments($args);
         $tmp = $context->get($parsedArgs[0]);
 
-        $context->push($context->last());
-
         if (!$tmp) {
             $template->setStopToken('else');
             $buffer = $template->render($context);
@@ -65,8 +63,6 @@ class UnlessHelper implements Helper
             $template->setStopToken(false);
             $buffer = $template->render($context);
         }
-
-        $context->pop();
 
         return $buffer;
     }

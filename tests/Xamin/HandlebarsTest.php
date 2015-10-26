@@ -1174,16 +1174,34 @@ EOM;
         $this->assertEquals('A-B', $engine->render('{{concat (concat a "-") b}}', array('a' => 'A', 'b' => 'B', 'A-' => '!')));
     }
 
+    public function ifUnlessDepthDoesntChangeProvider()
+    {
+        return [[
+            '{{#with b}}{{#if this}}{{../a}}{{/if}}{{/with}}',
+            ['a' => 'good', 'b' => 'stump'],
+            'good',
+        ], [
+            '{{#with b}}{{#unless false}}{{../a}}{{/unless}}{{/with}}',
+            ['a' => 'good', 'b' => 'stump'],
+            'good',
+        ], [
+            '{{#with foo}}{{#if goodbye}}GOODBYE cruel {{../world}}!{{/if}}{{/with}}',
+            ['foo' => ['goodbye' => true], 'world' => 'world'],
+            'GOODBYE cruel world!',
+        ]];
+    }
+
     /**
-     * Test if and unless adding an extra layer when accessing parent
+     * Test if and unless do not add an extra layer when accessing parent
+     *
+     * @dataProvider ifUnlessDepthDoesntChangeProvider
      */
-    public function testIfUnlessExtraLayer()
+    public function testIfUnlessDepthDoesntChange($template, $data, $expected)
     {
         $loader = new \Handlebars\Loader\StringLoader();
         $engine = new \Handlebars\Handlebars(array('loader' => $loader));
 
-        $this->assertEquals('good', $engine->render('{{#with b}}{{#if this}}{{../../a}}{{/if}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
-        $this->assertEquals('good', $engine->render('{{#with b}}{{#unless false}}{{../../a}}{{/unless}}{{/with}}', array('a' => 'good', 'b' => 'stump')));
+        $this->assertEquals($expected, $engine->render($template, $data));
     }
 
     /**
