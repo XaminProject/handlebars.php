@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    Joey Baker <joey@byjoeybaker.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Mária Šormanová <maria.sormanova@gmail.com>
  * @copyright 2013 (c) Meraki, LLP
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -50,11 +51,12 @@ class APC implements Cache
     }
 
     /**
-     * Get cache for $name if exist.
+     * Get cache for $name if exist
+     * and if the cache is not older than defined TTL.
      *
      * @param string $name Cache id
      *
-     * @return mixed data on hit, boolean false on cache not found
+     * @return mixed data on hit, boolean false on cache not found/expired
      */
     public function get($name)
     {
@@ -66,16 +68,19 @@ class APC implements Cache
     }
 
     /**
-     * Set a cache
+     * Set a cache with $ttl, if present
+     * If $ttl set to -1, the cache expires immediately
+     * If $ttl set to 0 (default), cache is never purged
      *
      * @param string $name  cache id
      * @param mixed  $value data to store
+     * @param int    $ttl   time to live in seconds
      *
      * @return void
      */
-    public function set($name, $value)
+    public function set($name, $value, $ttl = 0)
     {
-        apc_store($this->_getKey($name), $value);
+        apc_store($this->_getKey($name), $value, $ttl);
     }
 
     /**

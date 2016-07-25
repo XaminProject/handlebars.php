@@ -10,6 +10,7 @@
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @author    Jeff Turcotte <jeff.turcotte@gmail.com>
+ * @author    Mária Šormanová <maria.sormanova@gmail.com>
  * @copyright 2010-2012 (c) Justin Hileman
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
@@ -86,6 +87,13 @@ class Handlebars
     private $_cache;
 
     /**
+     * @var int time to live parameter in seconds for the cache usage
+     *          default set to 0 which means that entries stay in cache
+     *          forever and are never purged
+     */
+    private $_ttl = 0;
+
+    /**
      * @var string the class to use for the template
      */
     private $_templateClass = 'Handlebars\\Template';
@@ -136,6 +144,10 @@ class Handlebars
 
         if (isset($options['cache'])) {
             $this->setCache($options['cache']);
+        }
+
+        if (isset($options['ttl'])) {
+            $this->setTtl($options['ttl']);
         }
 
         if (isset($options['template_class'])) {
@@ -335,6 +347,28 @@ class Handlebars
         }
 
         return $this->_cache;
+    }
+
+    /**
+     * Set time to live for the used cache
+     *
+     * @param int $ttl time to live in seconds
+     *
+     * @return void
+     */
+    public function setTtl($ttl)
+    {
+        $this->_ttl = $ttl;
+    }
+
+    /**
+     * Get ttl
+     *
+     * @return int
+     */
+    public function getTtl()
+    {
+        return $this->_ttl;
     }
 
     /**
@@ -545,7 +579,7 @@ class Handlebars
     }
 
     /**
-     * try to tokenize source, or get them from cache if available
+     * Try to tokenize source, or get them from cache if available
      *
      * @param string $source handlebars source code
      *
@@ -558,7 +592,7 @@ class Handlebars
         if ($tree === false) {
             $tokens = $this->getTokenizer()->scan($source);
             $tree = $this->getParser()->parse($tokens);
-            $this->getCache()->set($hash, $tree);
+            $this->getCache()->set($hash, $tree, $this->_ttl);
         }
 
         return $tree;

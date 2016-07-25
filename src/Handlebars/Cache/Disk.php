@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    Alex Soncodi <alex@brokerloop.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Mária Šormanová <maria.sormanova@gmail.com>
  * @copyright 2013 (c) Brokerloop, Inc.
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -25,6 +26,7 @@ use Handlebars\Cache;
  * @category  Xamin
  * @package   Handlebars
  * @author    Alex Soncodi <alex@brokerloop.com>
+ * @author    Mária Šormanová <maria.sormanova@gmail.com>
  * @copyright 2013 (c) Brokerloop, Inc.
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   Release: @package_version@
@@ -81,33 +83,49 @@ class Disk implements Cache
     }
 
     /**
-     * Get cache for $name if it exists.
+     * Get cache for $name if it exists
+     * and if the cache is not older than defined TTL.
      *
      * @param string $name Cache id
      *
-     * @return mixed data on hit, boolean false on cache not found
+     * @return mixed data on hit, boolean false on cache not found/expired
      */
     public function get($name)
     {
         $path = $this->_getPath($name);
-
-        return (file_exists($path)) ?
-            unserialize(file_get_contents($path)) : false;
+        $output = false;
+        if (file_exists($path)) {
+            $file = fopen($path, "r");
+            $ttl = fgets($file);
+            $ctime = filectime($path);
+            $time = time();
+            if ($ttl == -1 || ($ttl > 0 && $time - $ctime > $ttl)) {
+                unlink($path);
+            } else {
+                $serialized_data = fread($file, filesize($path));
+                $output = unserialize($serialized_data);
+            }
+            fclose($file);
+        }
+        return $output;
     }
 
     /**
-     * Set a cache
+     * Set a cache with $ttl, if present
+     * If $ttl set to -1, the cache expires immediately
+     * If $ttl set to 0 (default), cache is never purged
      *
      * @param string $name  cache id
      * @param mixed  $value data to store
+     * @param int    $ttl   time to live in seconds
      *
      * @return void
      */
-    public function set($name, $value)
+    public function set($name, $value, $ttl = 0)
     {
         $path = $this->_getPath($name);
 
-        file_put_contents($path, serialize($value));
+        file_put_contents($path, $ttl.PHP_EOL.serialize($value));
     }
 
     /**
