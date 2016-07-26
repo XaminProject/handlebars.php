@@ -38,7 +38,7 @@ use Handlebars\Cache\Dummy;
 class Handlebars
 {
     private static $_instance = false;
-    const VERSION = '1.0.0';
+    const VERSION = '1.1.0';
 
     /**
      * factory method
