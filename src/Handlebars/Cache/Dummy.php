@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Mária Šormanová <maria.sormanova@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -55,10 +56,14 @@ class Dummy implements Cache
      *
      * @param string $name  cache id
      * @param mixed  $value data to store
+     * @param int    $ttl   time to live in seconds
+     *
+     * $ttl is ignored since the cache is implemented
+     * by an array and lives only inside one request
      *
      * @return void
      */
-    public function set($name, $value)
+    public function set($name, $value, $ttl = 0)
     {
         $this->_cache[$name] = $value;
     }

@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Dmitriy Simushev <simushevds@gmail.com>
+ * @author    Mária Šormanová <maria.sormanova@gmail.com>
  * @copyright 2013 (c) f0ruD A
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
@@ -92,9 +93,26 @@ class APCTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(20, $driver->get('foo'));
 
         $driver->set('foo', array(22));
+
         $this->assertEquals(array(22), $driver->get('foo'));
 
         $driver->remove('foo');
         $this->assertEquals(false, $driver->get('foo'));
+    }
+
+    /**
+     * Test ttl
+     *
+     * @return void
+     */
+    public function testTtl()
+    {
+        $driver = $this->_getCacheDriver();
+
+        $driver->set('foo', 10, -1);
+        $this->assertEquals(false, $driver->get('foo'));
+
+        $driver->set('foo', 20, 3600);
+        $this->assertEquals(20, $driver->get('foo'));
     }
 }

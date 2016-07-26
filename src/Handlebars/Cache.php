@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
+ * @author    Mária Šormanová <maria.sormanova@gmail.com>
  * @copyright 2012 (c) ParsPooyesh Co
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -46,14 +47,17 @@ interface Cache
     public function get($name);
 
     /**
-     * Set a cache
+     * Set a cache with $ttl, if present
+     * If $ttl set to -1, the cache expires immediately
+     * If $ttl set to 0 (default), cache is never purged
      *
      * @param string $name  cache id
      * @param mixed  $value data to store
+     * @param int    $ttl   time to live in seconds
      *
      * @return void
      */
-    public function set($name, $value);
+    public function set($name, $value, $ttl = 0);
 
     /**
      * Remove cache
