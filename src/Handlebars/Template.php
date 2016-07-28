@@ -629,7 +629,7 @@ class Template
         if (is_array($value)) {
             return 'Array';
         }
-        if ($escaped) {
+        if ($escaped && !($value instanceof SafeString) {
             $args = $this->handlebars->getEscapeArgs();
             array_unshift($args, (string)$value);
             $value = call_user_func_array(
