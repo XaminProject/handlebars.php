@@ -577,6 +577,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * test SafeString class
+     */
+    public function testSafeStringClass()
+    {
+        $this->assertEquals('<strong>Test</strong>', $engine->render('{{string}}', array(
+            'string' => new \Handlebars\SafeString('<strong>Test</strong>')
+        )));
+    }
+
+    /**
      * @param $dir
      *
      * @return bool
