@@ -40,7 +40,6 @@ namespace Handlebars;
 
 class Context
 {
-
     /**
      * List of charcters that cannot be used in identifiers.
      */
@@ -53,22 +52,30 @@ class Context
     const NOT_VALID_SEGMENT_NAME_CHARS = "]";
 
     /**
+     * Context stack
+     *
      * @var array stack for context only top stack is available
      */
     protected $stack = array();
 
     /**
+     * Section stack index
+     *
      * @var array index stack for sections
      */
     protected $index = array();
 
     /**
+     * Object stack keys
+     *
      * @var array key stack for objects
      */
     protected $key = array();
 
     /**
-     * @var array Special variables stack for sections. Each stack element can
+     * Special variables stack for sections. 
+     *
+     * @var array Each stack element can
      * contain elements with "@index", "@key", "@first" and "@last" keys.
      */
     protected $specialVariables = array();
@@ -290,8 +297,18 @@ class Context
         $bad_chars = preg_quote(self::NOT_VALID_NAME_CHARS, '/');
         $bad_seg_chars = preg_quote(self::NOT_VALID_SEGMENT_NAME_CHARS, '/');
 
-        $name_pattern = "(?:[^" . $bad_chars . "\s]+)|(?:\[[^" . $bad_seg_chars . "]+\])";
-        $check_pattern = "/^((" . $name_pattern . ")\.)*(" . $name_pattern  . ")\.?$/";
+        $name_pattern = "(?:[^" 
+            . $bad_chars 
+            . "\s]+)|(?:\[[^" 
+            . $bad_seg_chars 
+            . "]+\])";
+        
+        $check_pattern = "/^((" 
+            . $name_pattern 
+            . ")\.)*(" 
+            . $name_pattern  
+            . ")\.?$/";
+        
         $get_pattern = "/(?:" . $name_pattern . ")/";
 
         if (!preg_match($check_pattern, $variableName)) {
