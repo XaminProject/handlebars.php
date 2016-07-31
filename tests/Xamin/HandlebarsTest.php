@@ -1385,19 +1385,19 @@ EOM;
 
     public function ifUnlessDepthDoesntChangeProvider()
     {
-        return [[
+        return array(array(
             '{{#with b}}{{#if this}}{{../a}}{{/if}}{{/with}}',
             ['a' => 'good', 'b' => 'stump'],
             'good',
-        ], [
+        ), array(
             '{{#with b}}{{#unless false}}{{../a}}{{/unless}}{{/with}}',
             ['a' => 'good', 'b' => 'stump'],
             'good',
-        ], [
+        ), array(
             '{{#with foo}}{{#if goodbye}}GOODBYE cruel {{../world}}!{{/if}}{{/with}}',
             ['foo' => ['goodbye' => true], 'world' => 'world'],
             'GOODBYE cruel world!',
-        ]];
+        ));
     }
 
     /**
