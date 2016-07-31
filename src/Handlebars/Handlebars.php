@@ -41,7 +41,7 @@ class Handlebars
     const VERSION = '1.1.0';
 
     /**
-     * factory method
+     * Factory method
      *
      * @param array $options see __construct's options parameter
      *
@@ -57,31 +57,43 @@ class Handlebars
     }
 
     /**
+     * Current tokenizer instance
+     *
      * @var Tokenizer
      */
     private $_tokenizer;
 
     /**
+     * Current parser instance
+     *
      * @var Parser
      */
     private $_parser;
 
     /**
+     * Current helper list
+     *
      * @var Helpers
      */
     private $_helpers;
 
     /**
+     * Current loader instance
+     *
      * @var Loader
      */
     private $_loader;
 
     /**
+     * Current partial loader instance
+     *
      * @var Loader
      */
     private $_partialsLoader;
 
     /**
+     * Current cache instance
+     *
      * @var Cache
      */
     private $_cache;
@@ -104,6 +116,8 @@ class Handlebars
     private $_escape = 'htmlspecialchars';
 
     /**
+     * Parameters for the escpae method above
+     *
      * @var array parametes to pass to escape function
      */
     private $_escapeArgs = array(
@@ -188,8 +202,8 @@ class Handlebars
      * @param mixed  $data     data to use as context
      *
      * @return string Rendered template
-     * @see Handlebars::loadTemplate
-     * @see Template::render
+     * @see    Handlebars::loadTemplate
+     * @see    Template::render
      */
     public function render($template, $data)
     {
@@ -258,6 +272,110 @@ class Handlebars
     {
         return $this->getHelpers()->has($name);
     }
+    
+     /**
+     * Add a new helper.
+     *
+     * @param string $name   helper name
+     * @param mixed  $helper helper callable
+     *
+     * @return void
+     */
+    public function registerHelper($name, $helper)
+    {    
+        $callback = function ($template, $context, $arg) use ($helper) {
+            $args = $template->parseArguments($arg);
+            $named = $template->parseNamedArguments($arg);
+            
+            foreach ($args as $i => $arg) {
+                //if it's literally string
+                if ($arg instanceof BaseString) {
+                    //we have no problems here
+                    $args[$i] = (string) $arg;
+                    continue;
+                }
+                
+                //not sure what to do if it's not a string or StringWrapper
+                if (!is_string($arg)) {
+                    continue;
+                }
+                
+                //it's a variable and we need to figure out the value of it
+                $args[$i] = $context->get($arg);
+            }
+            
+            //push the options    
+            $args[] = array(
+                //special fields
+                'data' => array(
+                    'index' => $context->get('@index'),
+                    'key' => $context->get('@key'),
+                    'first' => $context->get('@first'),
+                    'last' => $context->get('@last')),
+                // Named arguments
+                'hash' => $named,
+                // A renderer for block helper
+                'fn' => function ($inContext = null) use ($context, $template) {
+                    $defined = !!$inContext;
+                    
+                    if (!$defined) {
+                        $inContext = $context;
+                        $inContext->push($inContext->last());
+                    } else if (!$inContext instanceof Context) {
+                        $inContext = new ChildContext($inContext);
+                        $inContext->setParent($context);
+                    }
+                    
+                    $template->setStopToken('else');
+                    $buffer = $template->render($inContext);
+                    $template->setStopToken(false);
+                    //what if it's a loop ?
+                    $template->rewind();
+                    //What's the point of this again?
+                    //I mean in this context (literally)
+                    //$template->discard($inContext);
+                    
+                    if ($defined) {
+                        $inContext->pop();
+                    }
+                    
+                    return $buffer;
+                },
+                
+                // A render for the else block
+                'inverse' => function ($inContext = null) use ($context, $template) {
+                    $defined = !!$inContext;
+                    
+                    if (!$defined) {
+                        $inContext = $context;
+                        $inContext->push($inContext->last());
+                    } else if (!$inContext instanceof Context) {
+                        $inContext = new ChildContext($inContext);
+                        $inContext->setParent($context);
+                    }
+                    
+                    $template->setStopToken('else');
+                    $template->discard($inContext);
+                    $template->setStopToken(false);
+                    $buffer = $template->render($inContext);
+                    
+                    if ($defined) {
+                        $inContext->pop();
+                    }
+                    
+                    return $buffer;
+                },
+                
+                // The current context.
+                'context' => $context,
+                // The current template
+                'template' => $template);
+            
+            return call_user_func_array($helper, $args);
+        };
+    
+        $this->addHelper($name, $callback);
+    }
 
     /**
      * Remove a helper by name.
@@ -284,7 +402,7 @@ class Handlebars
     }
 
     /**
-     * get current loader
+     * Get current loader
      *
      * @return Loader
      */
@@ -310,7 +428,7 @@ class Handlebars
     }
 
     /**
-     * get current partials loader
+     * Get current partials loader
      *
      * @return Loader
      */
