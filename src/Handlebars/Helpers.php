@@ -23,7 +23,7 @@ namespace Handlebars;
 /**
  * Handlebars helpers
  *
- * a collection of helper function. normally a function like
+ * A collection of helper function. normally a function like
  * function ($sender, $name, $arguments) $arguments is unscaped arguments and
  * is a string, not array
  *
@@ -35,10 +35,11 @@ namespace Handlebars;
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-
 class Helpers
 {
     /**
+     * Raw helper array
+     *
      * @var array array of helpers
      */
     protected $helpers = array();
@@ -147,13 +148,20 @@ class Helpers
             );
         }
 
+        $parsedArgs = new Arguments($args);
         if ($this->helpers[$name] instanceof Helper) {
             return $this->helpers[$name]->execute(
-                $template, $context, $args, $source
+                $template, $context, $parsedArgs, $source
             );
         }
 
-        return call_user_func($this->helpers[$name], $template, $context, $args, $source);
+        return call_user_func(
+            $this->helpers[$name], 
+            $template, 
+            $context, 
+            $parsedArgs, 
+            $source
+        );
     }
 
     /**
@@ -196,7 +204,7 @@ class Helpers
      * @param string $name helper name
      *
      * @return boolean
-     * @see Handlebras_Helpers::has
+     * @see    Handlebras_Helpers::has
      */
     public function __isset($name)
     {
