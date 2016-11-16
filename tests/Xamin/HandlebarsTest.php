@@ -592,9 +592,9 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $expected1 = 'bonjour, mon nom est Foo! comment sont les enfants de votre 6 et dog?';
         
         //case 2 - when
-        $variable2 = array('gender' => 'female');
-        $template2 = "Hello {{#when gender '===' 'male'}}sir{{else}}maam{{/when}}";
-        $expected2 = 'Hello maam';
+        $variable2 = array('gender' => 'female', 'foo' => 'bar');
+        $template2 = "Hello {{#when gender '===' 'male'}}sir{{else}}maam{{/when}} {{foo}}";
+        $expected2 = 'Hello maam bar';
         
         //case 3 - when else
         $variable3 = array('gender' => 'male');
@@ -621,14 +621,15 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $variable5 = $variable4;
         $variable5['me'] = 'Jack Doe';
         $variable5['admins'] = array('Jane Doe', 'John Doe');
-        $template5 = "{{#in admins me}}<ul>".$template4."</ul>{{else}}No Access{{/in}}";
+        $template5 = "{{#in admins me}}<ul>".$template4."</ul>{{else}}No Access{{/in}}{{suffix}}";
         $expected5 = 'No Access';
         
         //case 6 - array in else
         $variable6 = $variable5;
         $variable6['me'] = 'Jane Doe';
+        $variable6['suffix'] = 'qux';
         $template6 = $template5;
-        $expected6 = '<ul><li>Jane Doe - Apr 04</li><li>John Doe - Jan 21</li></ul>';
+        $expected6 = '<ul><li>Jane Doe - Apr 04</li><li>John Doe - Jan 21</li></ul>qux';
         
         //case 7 - nested templates and parent-grand variables
         $variable7 = array('test' => 'Hello World');
@@ -637,6 +638,16 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
             .'In 2: {{test5}}{{#nested2}}  '
             .'In 3: {{test6}}  {{../../../test}}{{/nested2}}{{/nested1}}{{/nested1}}';
         $expected7 = '  In 1: Hello World  In 2: This is Test 5  In 3: This is Test 6  Hello World';
+        
+        //case 8 - when inside an each
+        $variable8 = array('data' => array(0, 1, 2, 3),'finish' => 'ok');
+        $template8 = '{{#each data}}{{#when this ">" "0"}}{{this}}{{/when}}{{/each}} {{finish}}';
+        $expected8 = '123 ok';
+        
+        //case 9 - when inside an each
+        $variable9 = array('data' => array(),'finish' => 'ok');
+        $template9 = '{{#each data}}{{#when this ">" "0"}}{{this}}{{/when}}{{else}}foo{{/each}} {{finish}}';
+        $expected9 = 'foo ok';
         
         //LAST UP: the actual testing
         
@@ -647,6 +658,8 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected5, $engine->render($template5, $variable5));
         $this->assertEquals($expected6, $engine->render($template6, $variable6));
         $this->assertEquals($expected7, $engine->render($template7, $variable7));
+        $this->assertEquals($expected8, $engine->render($template8, $variable8));
+        $this->assertEquals($expected9, $engine->render($template9, $variable9));
     }
 
     public function testInvalidHelper()

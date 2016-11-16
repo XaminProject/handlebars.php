@@ -335,7 +335,7 @@ class Handlebars
                     //I mean in this context (literally)
                     //$template->discard($inContext);
                     
-                    if ($defined) {
+                    if (!$defined) {
                         $inContext->pop();
                     }
                     
@@ -359,7 +359,7 @@ class Handlebars
                     $template->setStopToken(false);
                     $buffer = $template->render($inContext);
                     
-                    if ($defined) {
+                    if (!$defined) {
                         $inContext->pop();
                     }
                     
