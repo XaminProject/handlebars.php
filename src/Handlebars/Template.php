@@ -64,7 +64,7 @@ class Template
      *
      * @var array Run stack
      */
-    private $_stack = array();
+    protected $_stack = array();
 
     /**
      * Handlebars template constructor
@@ -226,7 +226,7 @@ class Template
      *
      * @return string
      */
-    private function _renderInternal($current, $context)
+    protected function _renderInternal($current, $context)
     {
         $result = '';
         switch ($current[Tokenizer::TYPE]) {
