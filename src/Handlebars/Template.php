@@ -64,7 +64,7 @@ class Template
      *
      * @var array Run stack
      */
-    protected $_stack = array();
+    protected $stack = array();
 
     /**
      * Handlebars template constructor
@@ -78,7 +78,7 @@ class Template
         $this->handlebars = $engine;
         $this->tree = $tree;
         $this->source = $source;
-        array_push($this->_stack, array(0, $this->getTree(), false));
+        array_push($this->stack, array(0, $this->getTree(), false));
     }
 
     /**
@@ -120,9 +120,9 @@ class Template
      */
     public function setStopToken($token)
     {
-        $topStack = array_pop($this->_stack);
+        $topStack = array_pop($this->stack);
         $topStack[2] = $token;
-        array_push($this->_stack, $topStack);
+        array_push($this->stack, $topStack);
     }
 
     /**
@@ -132,7 +132,7 @@ class Template
      */
     public function getStopToken()
     {
-        $topStack = end($this->_stack);
+        $topStack = end($this->stack);
 
         return $topStack[2];
     }
@@ -144,7 +144,7 @@ class Template
      */
     public function getCurrentTokenTree()
     {
-        $topStack = end($this->_stack);
+        $topStack = end($this->stack);
 
         return $topStack[1];
     }
@@ -162,7 +162,7 @@ class Template
         if (!$context instanceof Context) {
             $context = new Context($context);
         }
-        $topTree = end($this->_stack); // never pop a value from stack
+        $topTree = end($this->stack); // never pop a value from stack
         list($index, $tree, $stop) = $topTree;
 
         $buffer = '';
@@ -183,7 +183,7 @@ class Template
                 $buffer = rtrim($buffer);
             }
 
-            $tmp = $this->_renderInternal($current, $context);
+            $tmp = $this->renderInternal($current, $context);
 
             if (isset($current[Tokenizer::TRIM_LEFT]) 
                 && $current[Tokenizer::TRIM_LEFT]
@@ -209,10 +209,10 @@ class Template
         }
         if ($stop) {
             //Ok break here, the helper should be aware of this.
-            $newStack = array_pop($this->_stack);
+            $newStack = array_pop($this->stack);
             $newStack[0] = $index;
             $newStack[2] = false; //No stop token from now on
-            array_push($this->_stack, $newStack);
+            array_push($this->stack, $newStack);
         }
 
         return $buffer;
@@ -226,7 +226,7 @@ class Template
      *
      * @return string
      */
-    protected function _renderInternal($current, $context)
+    protected function renderInternal($current, $context)
     {
         $result = '';
         switch ($current[Tokenizer::TYPE]) {
@@ -235,16 +235,16 @@ class Template
         case Tokenizer::T_SECTION :
             $newStack = isset($current[Tokenizer::NODES])
                 ? $current[Tokenizer::NODES] : array();
-            array_push($this->_stack, array(0, $newStack, false));
+            array_push($this->stack, array(0, $newStack, false));
             $result = $this->_section($context, $current);
-            array_pop($this->_stack);
+            array_pop($this->stack);
             break;
         case Tokenizer::T_INVERTED :
             $newStack = isset($current[Tokenizer::NODES]) ?
                 $current[Tokenizer::NODES] : array();
-            array_push($this->_stack, array(0, $newStack, false));
+            array_push($this->stack, array(0, $newStack, false));
             $result = $this->_inverted($context, $current);
-            array_pop($this->_stack);
+            array_pop($this->stack);
             break;
         case Tokenizer::T_COMMENT :
             $result = '';
@@ -282,7 +282,7 @@ class Template
      */
     public function discard()
     {
-        $topTree = end($this->_stack); //This method never pop a value from stack
+        $topTree = end($this->stack); //This method never pop a value from stack
         list($index, $tree, $stop) = $topTree;
         while (array_key_exists($index, $tree)) {
             $current = $tree[$index];
@@ -297,10 +297,10 @@ class Template
         }
         if ($stop) {
             //Ok break here, the helper should be aware of this.
-            $newStack = array_pop($this->_stack);
+            $newStack = array_pop($this->stack);
             $newStack[0] = $index;
             $newStack[2] = false;
-            array_push($this->_stack, $newStack);
+            array_push($this->stack, $newStack);
         }
 
         return '';
@@ -313,9 +313,9 @@ class Template
      */
     public function rewind()
     {
-        $topStack = array_pop($this->_stack);
+        $topStack = array_pop($this->stack);
         $topStack[0] = 0;
-        array_push($this->_stack, $topStack);
+        array_push($this->stack, $topStack);
     }
 
     /**
