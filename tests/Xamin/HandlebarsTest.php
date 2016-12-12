@@ -177,6 +177,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 array('first' => false, 'second' => true),
                 'The second'
             ),
+            array(
+                '{{#value}}Hello {{value}}, from {{parent_context}}{{/value}}',
+                array('value' => 'string', 'parent_context' => 'parent string'),
+                'Hello string, from parent string'
+            ),
         );
     }
 
