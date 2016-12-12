@@ -87,6 +87,8 @@ class Parser
 
                         if (!array_key_exists(Tokenizer::NODES, $result)
                             && isset($result[Tokenizer::NAME])
+                            && ($result[Tokenizer::TYPE] == Tokenizer::T_SECTION
+                            || $result[Tokenizer::TYPE] == Tokenizer::T_INVERTED)
                             && $result[Tokenizer::NAME] == $token[Tokenizer::NAME]
                         ) {
                             if (isset($result[Tokenizer::TRIM_RIGHT]) 
