@@ -689,12 +689,18 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $engine->render('{{^x}}yes{{/x}}', array('x' => true)));
         $this->assertEquals('1234', $engine->render('{{#x}}{{this}}{{/x}}', array('x' => array(1, 2, 3, 4))));
         $this->assertEquals('012', $engine->render('{{#x}}{{@index}}{{/x}}', array('x' => array('a', 'b', 'c'))));
-        $this->assertEquals('abc', $engine->render('{{#x}}{{@key}}{{/x}}', array('x' => array('a' => 1, 'b' => 2, 'c' => 3))));
-        $this->assertEquals('the_only_key', $engine->render('{{#x}}{{@key}}{{/x}}', array('x' => array('the_only_key' => 1))));
+        $this->assertEquals('123', $engine->render('{{#x}}{{a}}{{b}}{{c}}{{/x}}', array('x' => array('a' => 1, 'b' => 2, 'c' => 3))));
+        $this->assertEquals('1', $engine->render('{{#x}}{{the_only_key}}{{/x}}', array('x' => array('the_only_key' => 1))));
         $std = new stdClass();
         $std->value = 1;
+        $std->other = 4;
         $this->assertEquals('1', $engine->render('{{#x}}{{value}}{{/x}}', array('x' => $std)));
         $this->assertEquals('1', $engine->render('{{{x}}}', array('x' => 1)));
+        $this->assertEquals('1 2', $engine->render('{{#x}}{{value}} {{parent}}{{/x}}', array('x' => $std, 'parent' => 2)));
+
+        $y = new stdClass();
+        $y->value = 2;
+        $this->assertEquals('2 1 3 4', $engine->render('{{#x}}{{#y}}{{value}} {{x.value}} {{from_root}} {{other}}{{/y}}{{/x}}', array('x' => $std, 'y' => $y, 'from_root' => 3)));
     }
 
     /**
@@ -962,6 +968,7 @@ EOM;
 
         $this->setExpectedException('RuntimeException');
         $engine->render('{{>foo-again}}', array());
+
     }
 
     /**
