@@ -24,6 +24,7 @@
 
 namespace Handlebars;
 use Handlebars\Arguments;
+use Traversable;
 
 /**
  * Handlebars base template
@@ -447,35 +448,29 @@ class Template
             );
         }
         $buffer = '';
-        if (is_array($sectionVar) || $sectionVar instanceof \Traversable) {
-            $isList = is_array($sectionVar) &&
-                (array_keys($sectionVar) === range(0, count($sectionVar) - 1));
+        if ($this->_checkIterable($sectionVar)) {
             $index = 0;
-            $lastIndex = $isList ? (count($sectionVar) - 1) : false;
-
+            $lastIndex = (count($sectionVar) - 1);
             foreach ($sectionVar as $key => $d) {
-                $specialVariables = array(
-                    '@index' => $index,
-                    '@first' => ($index === 0),
-                    '@last' => ($index === $lastIndex),
+                $context->pushSpecialVariables(
+                    array(
+                        '@index' => $index,
+                        '@first' => ($index === 0),
+                        '@last' => ($index === $lastIndex),
+                        '@key' => $key
+                    )
                 );
-                if (!$isList) {
-                    $specialVariables['@key'] = $key;
-                }
-                $context->pushSpecialVariables($specialVariables);
                 $context->push($d);
                 $buffer .= $this->render($context);
                 $context->pop();
                 $context->popSpecialVariables();
                 $index++;
             }
-        } elseif (is_object($sectionVar)) {
+        } elseif ($sectionVar) {
             //Act like with
             $context->push($sectionVar);
             $buffer = $this->render($context);
             $context->pop();
-        } elseif ($sectionVar) {
-            $buffer = $this->render($context);
         }
 
         return $buffer;
@@ -711,5 +706,32 @@ class Template
         }
 
         return $args->getPositionalArguments();
+    }
+
+    /**
+     * Tests whether a value should be iterated over (e.g. in a section context).
+     *
+     * @param mixed $value Value to check if iterable.
+     *
+     * @return bool True if the value is 'iterable'
+     *
+     * @see https://github.com/bobthecow/mustache.php/blob/18a2adc/src/Mustache/Template.php#L85-L113
+     */
+    private function _checkIterable($value)
+    {
+        switch (gettype($value)) {
+        case 'object':
+            return $value instanceof Traversable;
+        case 'array':
+            $i = 0;
+            foreach ($value as $k => $v) {
+                if ($k !== $i++) {
+                    return false;
+                }
+            }
+            return true;
+        default:
+            return false;
+        }
     }
 }

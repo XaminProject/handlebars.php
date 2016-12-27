@@ -73,7 +73,7 @@ class Context
     protected $key = array();
 
     /**
-     * Special variables stack for sections. 
+     * Special variables stack for sections.
      *
      * @var array Each stack element can
      * contain elements with "@index", "@key", "@first" and "@last" keys.
@@ -186,7 +186,7 @@ class Context
      * @param boolean $strict       strict search? if not found then throw exception
      *
      * @throws \InvalidArgumentException in strict mode and variable not found
-     * @throws \RuntimeException if supplied argument is a malformed quoted string 
+     * @throws \RuntimeException if supplied argument is a malformed quoted string
      * @throws \InvalidArgumentException if variable name is invalid
      * @return mixed
      */
@@ -252,12 +252,17 @@ class Context
             }
         } else {
             $chunks = $this->_splitVariableName($variableName);
-            foreach ($chunks as $chunk) {
-                if (is_string($current) and $current == '') {
-                    return $current;
+            do {
+                $current = current($this->stack);
+                foreach ($chunks as $chunk) {
+                    if (is_string($current) and $current == '') {
+                        return $current;
+                    }
+                    $current = $this->_findVariableInContext($current, $chunk, $strict);
                 }
-                $current = $this->_findVariableInContext($current, $chunk, $strict);
-            }
+                prev($this->stack);
+
+            } while ($current === null && current($this->stack) !== false);
         }
         return $current;
     }
@@ -316,18 +321,18 @@ class Context
         $bad_chars = preg_quote(self::NOT_VALID_NAME_CHARS, '/');
         $bad_seg_chars = preg_quote(self::NOT_VALID_SEGMENT_NAME_CHARS, '/');
 
-        $name_pattern = "(?:[^" 
-            . $bad_chars 
-            . "\s]+)|(?:\[[^" 
-            . $bad_seg_chars 
+        $name_pattern = "(?:[^"
+            . $bad_chars
+            . "\s]+)|(?:\[[^"
+            . $bad_seg_chars
             . "]+\])";
-        
-        $check_pattern = "/^((" 
-            . $name_pattern 
-            . ")\.)*(" 
-            . $name_pattern  
+
+        $check_pattern = "/^(("
+            . $name_pattern
+            . ")\.)*("
+            . $name_pattern
             . ")\.?$/";
-        
+
         $get_pattern = "/(?:" . $name_pattern . ")/";
 
         if (!preg_match($check_pattern, $variableName)) {
