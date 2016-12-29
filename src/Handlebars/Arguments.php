@@ -109,7 +109,7 @@ class Arguments
         $bad_chars = preg_quote(Context::NOT_VALID_NAME_CHARS, '#');
         $bad_seg_chars = preg_quote(Context::NOT_VALID_SEGMENT_NAME_CHARS, '#');
 
-        $name_chunk = '(?:[^' . $bad_chars . '\s]+)|(?:\[[^' . $bad_seg_chars . ']+\])';
+        $name_chunk = '(?:@?[^' . $bad_chars . '\s]+)|(?:\[[^' . $bad_seg_chars . ']+\])';
         $variable_name = '(?:\.\.\/)*(?:(?:' . $name_chunk . ')[\.\/])*(?:' . $name_chunk  . ')\.?';
         $special_variable_name = '@[a-z]+';
         $escaped_value = '(?:(?<!\\\\)".*?(?<!\\\\)"|(?<!\\\\)\'.*?(?<!\\\\)\')';
