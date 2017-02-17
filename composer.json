@@ -1,5 +1,5 @@
 {
-    "name": "xamin/handlebars.php",
+    "name": "opine/handlebars.php",
     "description": "Handlebars processor for php",
     "homepage": "https://github.com/XaminProject/handlebars.php",
     "type": "library",
@@ -16,9 +16,7 @@
             "email": "everplays@gmail.com"
         }
     ],
-    "require": {
-
-    },
+    "require": {},
     "require-dev": {
         "phpunit/phpunit": "~4.4",
         "squizlabs/php_codesniffer": "~1.5"
