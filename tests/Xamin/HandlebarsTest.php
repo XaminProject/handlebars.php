@@ -230,6 +230,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
                 ''
             ),
             array(
+                '{{#if first}}The first{{else}}{{#if second}}The second{{/if}}{{/if}}',
+                array('first' => false, 'second' => true),
+                'The second'
+            ),
+            array(
                 '{{#with data}}{{key}}{{/with}}',
                 array('data' => array('key' => 'result')),
                 'result'
