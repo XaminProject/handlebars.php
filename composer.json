@@ -1,13 +1,13 @@
 {
-    "name": "xamin/handlebars.php",
-    "description": "Handlebars processor for php",
-    "homepage": "https://github.com/XaminProject/handlebars.php",
+    "name": "wgs1taskforce/handlebars.php",
+    "description": "Handlebars processor for php, forked from xamin/handlebars.php",
+    "homepage": "https://git.gree-dev.net/wgs1taskforce/handlebars.php",
     "type": "library",
-    "license": "MIT",
+    "license": "MIT",    
     "authors": [
         {
-            "name": "fzerorubigd",
-            "email": "fzerorubigd@gmail.com"
+            "name": "Yuta Araki",
+            "email":"yuta.araki@gree.net"
         }
     ],
     "require": {
