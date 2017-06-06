@@ -45,6 +45,10 @@ class FilesystemLoader implements Loader
     private $_extension = '.handlebars';
     private $_prefix = '';
     private $_templates = array();
+    private $assetDir = 'public/assets/';
+    private $assetExtension = '.compiled';
+    private $assetFiles = [];
+    private $assetTypes = ['css', 'js'];
 
     /**
      * Handlebars filesystem Loader constructor.
@@ -190,12 +194,63 @@ class FilesystemLoader implements Loader
             if ($lastCharacters !== $this->_extension) {
                 $fileName .= $this->_extension;
             }
+
             if (file_exists($fileName)) {
+               $this->getAssests($fileName);
                 return $fileName;
             }
         }
 
         return false;
+    }
+
+    protected function getAssests($fileName){
+
+        $this->getAssetFileNames($fileName);
+
+        foreach($this->assetFiles as $assetFile){
+            if(file_exists($assetFile)){
+                $sections = explode('.',$assetFile);
+                $type = array_pop($sections);
+                if(!isset($GLOBALS['App']['assets'][$type])){
+                    $GLOBALS['App']['assets'][$type] = file_get_contents($assetFile);
+                } else{
+                    $GLOBALS['App']['assets'][$type] .= file_get_contents($assetFile);
+                }
+            }
+        }
+        $this->getGlobalAssests();
+    }
+
+    protected function getGlobalAssests(){
+        $globalCssDir = 'public/assets/css/web/global.compiled.css';
+        $globalJsDir = 'public/assets/js/web/global.compiled.js';
+
+        $globalCss = file_get_contents($globalCssDir);
+        $globalJs = file_get_contents($globalJsDir);
+        $GLOBALS['App']['assets']['css'] .= $globalCss;
+        $GLOBALS['App']['assets']['js'] .= $globalJs;
+    }
+
+    protected function getAssetFileNames($fileName){
+        $paths = explode('/', dirname($fileName));
+        $start = array_search('web', $paths);
+        $length = count($paths) - $start;
+
+        foreach($this->assetTypes as $assetType){
+            $assetPath = '';
+            for($i = 0; $i < $length; $i ++){
+                $assetPath .= $paths[$start + $i] . '/';
+            }
+            if($assetType == 'css'){
+                $this->assetFiles[]= $this->assetDir.$assetType."/".$assetPath."s".$assetType."/". $paths[count($paths) - 1] .$this->assetExtension ."." . $assetType;
+            }else{
+                $this->assetFiles[]= $this->assetDir.$assetType."/".$assetPath.$assetType."/". $paths[count($paths) - 1] .$this->assetExtension ."." . $assetType;
+
+            }
+
+        }
+
     }
 
 }
