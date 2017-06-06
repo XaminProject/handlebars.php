@@ -83,6 +83,7 @@ class Helpers
         $this->add('each', new Helper\EachHelper());
         $this->add('unless', new Helper\UnlessHelper());
         $this->add('with', new Helper\WithHelper());
+        $this->add('times', new Helper\TimesHelper());
 
         //Just for compatibility with ember
         $this->add('bindAttr', new Helper\BindAttrHelper());
